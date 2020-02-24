@@ -134,7 +134,7 @@ event sources:
  - tracepoints
  - kprobes (originally part of dprobes) (hope that's not needed)
    - ebpf installable as kprobes, from userspace. **bcc** helps with this!
- - ftrace
+ - ftrace (includes a function tracer, event tracer, and some other things that make use of kprobes)
  - dtrace (third-party)
 
 event sources for userspace:
@@ -144,9 +144,10 @@ event sources for userspace:
 
 higher-level solutions:
 
- - event tracer
- - perf
- - systemtap
+ - bcc as mentioned above (maximum control, but complex)
+ - trace-cmd (probably going to be the most useful)
+ - perf (oriented into kernel profiling, not what we need)
+ - systemtap (I think it's better to use the features directly)
 
 https://www.kernel.org/doc/html/latest/accounting/index.html
 
@@ -157,4 +158,111 @@ through the taskstats (netlink) interface we can get
  - per-process stats
 
 the closest usable thing would be written byte count, there's also I/O delay
+
+## 2020-02-23
+
+Learn more in depth about the tracing subsystem (ftrace), how to enable events,
+parse the buffer, event filtering, triggers, etc. First, mount the tracefs filesystem
+if it's not already mounted:
+
+~~~
+sudo mount -t tracefs tracefs /sys/kernel/tracing
+~~~
+
+**Note:** The location above is the right one. [Historically](https://www.kernel.org/doc/html/latest/trace/ftrace.html#the-file-system)
+(before 4.1) there was no tracefs, this info was available at `/sys/kernel/debug/tracing`.
+For backwards compatibility, it's still available there as well.
+
+The [`writeback` subsystem](https://github.com/torvalds/linux/blob/master/include/trace/events/writeback.h) is what we should look at. Relevant events:
+
+ - **writeback:balance_dirty_pages**  
+   function that does the throttling, according to investigation
+   - fields
+
+ - **writeback:global_dirty_state**
+   reports current state regarding dirty pages! just what we need ^^
+   gives current dirty, writeback and unstable pages  
+   gives background and normal thresholds, in pages (I think)  
+   gives 'dirty limit' <- **FIXME** what's this?  
+   gives accumulated dirtied and written pages
+
+ - **writeback:bdi_dirty_ratelimit**  
+   AFAIK, this only applies on per-'block device' dirty pages limiting
+
+ - **writeback:writeback_wake_background**
+
+ - **writeback:writeback_pages_written**  
+   just reports number of written pages
+
+Other events: `grep dirty /sys/kernel/debug/tracing/available_events`
+
+Build quick Node.JS program to plot the following in realtime:
+
+ - dirty pages
+ - global dirtyable memory
+ - throttling (??)
+
+In the future, program should also record events to disk
+
+**Important** It seems the Linux tracer provides enough info for what we need,
+and we can log additional info *into the tracer* which is great. So I think we can just
+record ftrace events and inspect them later. We shouldn't need any more flexibility
+than that, at least in recording time.
+
+Update: While I was writing the application I discovered KernelShark & trace-cmd & libtracefs & libtracecmd & libparsevent (all this is part of trace-cmd). KernelShark is a GUI frontend, which is
+super cool, but it won't let me monitor a field in the event info..... so :(
+
+There's trace-cmd which records the trace_pipe_raw buffers from all CPUs into a single
+`trace.dat` file, and it does it using `splice` so there's no userspace involved. **It
+also has a [Python API](https://github.com/rostedt/trace-cmd/blob/master/Documentation/README.PythonPlugin)
+to read 'most information' of the records in `trace.dat`!**
+
+> Question: Do `trace_pipe_raw` and `trace.dat` record trace markers?  
+> A: It seems they do! As `print` events.
+>
+> Question: Does it support real-time viewing?
+> A: No.
+
+So it seems pretty much what I need. In addition to this, I only need to write
+a few control jobs and I can begin to run tests!
+
+The Python bindings end up at `/usr/lib/trace-cmd/python`.
+But WTF, it doesn't link to the library at all!
+
+~~~
+alba@alba-tpi ~> export PYTHONPATH=/usr/lib/trace-cmd/python
+alba@alba-tpi ~> python
+Python 3.8.1 (default, Jan 22 2020, 06:38:00) 
+[GCC 9.2.0] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import ctracecmd
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+ImportError: /usr/lib/trace-cmd/python/ctracecmd.so: undefined symbol: tracecmd_append_cpu_data
+>>> 
+alba@alba-tpi ~> ldd /usr/lib/trace-cmd/python/ctracecmd.so 
+ldd: avís: no teniu permís d’execució per a `/usr/lib/trace-cmd/python/ctracecmd.so'
+	linux-vdso.so.1 (0x00007fffbbd57000)
+	libc.so.6 => /usr/lib/libc.so.6 (0x00007f31765a2000)
+	/usr/lib64/ld-linux-x86-64.so.2 (0x00007f317685a000)
+~~~
+
+This may be due to the AUR package passing wrong flags...
+
+Did some initial tests with cgroups and the monitor application.
+And it appears that **a memcg successfully prevents the
+throttling  
+
+Next steps:
+ - Fix the python binding so we can access event data
+ - Understand the fields of `balance_dirty_pages` events
+ - Do some proper tests, and use cgroupv2
+
+Possible issues that complicate the project:
+ - Processes that spawn childs which *themselves* do the I/O spam...
+   we should detect these cases and add the parent too
+ - As said above, we can't directly restrict the dirty
+   limit for a cgroup
+ - We need to create sub-cgroups in the hierarchy, and delete
+   them when no longer needed
 

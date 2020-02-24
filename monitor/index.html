@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Event monitor</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="smoothie.js"></script>
+    <style>
+        body {
+            font: 1em 'Roboto', sans-serif;
+        }
+
+        div.smoothie-chart-tooltip {
+            background: #444;
+            padding: 1em;
+            margin-top: 20px;
+            color: white;
+            font-size: 10px;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Event monitor</h1>
+    <p>Status: <span class="status">disconnected</span></p>
+
+    <div class="content">
+        <div class="chart">
+            <h4 class="title">Value</h4>
+            <canvas id="chart1" width="550" height="200"></canvas>
+        </div>
+    </div>
+
+    <script>
+        const socket = io()
+        const statusLabel = document.querySelector('.status')
+        socket.on('connect', () => statusLabel.innerHTML = 'connected')
+        socket.on('disconnect', () => statusLabel.innerHTML = 'disconnected')
+
+        setupChart(document.getElementById('chart1'), {
+            millisPerPixel: 58,
+            grid: { verticalSections: 4 },
+            labels: {},
+            delay: 0,
+            tooltip: true,
+        }, [
+            {
+                init: ts => socket.on('global_dirty_state', x => {
+                    console.log('event:', x)
+                    ts.append(Date.now(), x.dirty)
+                }),
+                options: {
+                    lineWidth: 2,
+                },
+            },
+            {
+                init: ts => socket.on('global_dirty_state', x => {
+                    ts.append(Date.now(), x.writeback)
+                }),
+                options: {
+                    lineWidth: 2,
+                    strokeStyle: 'rgba(0,0,255,1)',
+                },
+            },
+            {
+                init: ts => socket.on('global_dirty_state', x => {
+                    ts.append(Date.now(), x.thresh)
+                }),
+                options: {
+                    strokeStyle: 'rgba(255,0,0,0.80)',
+                },
+            },
+            {
+                init: ts => socket.on('global_dirty_state', x => {
+                    ts.append(Date.now(), x.bg_thresh)
+                }),
+                options: {
+                    strokeStyle: 'rgba(0,255,0,0.80)',
+                },
+            },
+            {
+                init: ts => socket.on('global_dirty_state', x => {
+                    ts.append(Date.now(), (x.bg_thresh + x.thresh) / 2)
+                }),
+                options: {
+                    strokeStyle: 'rgba(235,235,0,0.80)',
+                },
+            },
+        ])
+
+        function setupChart(element, options, timeSeries) {
+            const chart = new SmoothieChart(options)
+            for (const ts of timeSeries) {
+                const line = new TimeSeries()
+                ts.init(line)
+                chart.addTimeSeries(line, ts.options)
+            }
+            chart.streamTo(element, options && options.delay)
+        }
+    </script>
+</body>
+</html>

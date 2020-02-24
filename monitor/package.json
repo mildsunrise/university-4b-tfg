@@ -1,0 +1,9 @@
+{
+    "name": "monitor",
+    "description": "App to monitor variables from the event tracer and other sources",
+    "private": true,
+    "dependencies": {
+        "express": "^4.17.1",
+        "socket.io": "^2.3.0"
+    }
+}
