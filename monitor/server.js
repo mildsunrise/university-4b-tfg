@@ -3,6 +3,7 @@ const fs = require('fs')
 const path = require('path')
 const express = require('express')
 const readline = require('readline')
+const { execSync } = require('child_process')
 
 const app = express()
 const server = require('http').createServer(app)
@@ -24,6 +25,7 @@ server.listen(4444, () => {
 // LINUX EVENT TRACING
 
 function setupEvents() {
+    const pageSize = Number(execSync('getconf PAGESIZE'))
     // You may need to `sudo mount -t tracefs tracefs /sys/kernel/tracing` first
     const traceFsBase = '/sys/kernel/debug/tracing'
 
@@ -33,7 +35,7 @@ function setupEvents() {
 
     subscribeToEvent('writeback/global_dirty_state')
     subscribeToEvent('writeback/balance_dirty_pages')
-    
+
     const eventsPipe = readline.createInterface({
         input: fs.createReadStream(path.join(traceFsBase, 'trace_pipe')),
     })
@@ -51,7 +53,7 @@ function setupEvents() {
                 parsedInfo[m[1]] = Number(m[2])
             })
             if (stateTimer) return
-            io.emit('global_dirty_state', parsedInfo)
+            io.emit('global_dirty_state', { ...parsedInfo, pageSize })
             stateTimer = setTimeout(() => stateTimer = null, 100)
         } else {
             console.log('Got event', event, info)

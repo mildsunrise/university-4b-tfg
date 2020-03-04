@@ -20,6 +20,16 @@
             font-size: 10px;
             pointer-events: none;
         }
+        .legend {
+            background-color: black;
+            color: white;
+            display: inline-block;
+            padding: 0.2em 0.3em;
+        }
+        .legend > span {
+            margin: 0 1em;
+        }
+        
     </style>
 </head>
 <body>
@@ -28,8 +38,15 @@
 
     <div class="content">
         <div class="chart">
-            <h4 class="title">Value</h4>
-            <canvas id="chart1" width="550" height="200"></canvas>
+            <h4 class="title">Global domain status</h4>
+            <canvas id="chart1" width="600" height="200"></canvas>
+            <div>All values in MB </div>
+            <div class="legend"> Legend:
+                <span style="color: red">threshold</span>
+                <span style="color: green">background threshold</span>
+                <span style="color: white">dirty + writeback</span>
+                <span style="color: blue">writeback</span>
+            </div>
         </div>
     </div>
 
@@ -38,6 +55,10 @@
         const statusLabel = document.querySelector('.status')
         socket.on('connect', () => statusLabel.innerHTML = 'connected')
         socket.on('disconnect', () => statusLabel.innerHTML = 'disconnected')
+
+        function fromPages(pages, event) {
+            return pages / (1024 * 1024 / event.pageSize);
+        }
 
         setupChart(document.getElementById('chart1'), {
             millisPerPixel: 58,
@@ -48,16 +69,31 @@
         }, [
             {
                 init: ts => socket.on('global_dirty_state', x => {
-                    console.log('event:', x)
-                    ts.append(Date.now(), x.dirty)
+                    ts.append(Date.now(), fromPages(x.thresh, x))
                 }),
                 options: {
-                    lineWidth: 2,
+                    strokeStyle: 'rgba(255,0,0,0.80)',
                 },
             },
             {
                 init: ts => socket.on('global_dirty_state', x => {
-                    ts.append(Date.now(), x.writeback)
+                    ts.append(Date.now(), fromPages(x.bg_thresh, x))
+                }),
+                options: {
+                    strokeStyle: 'rgba(0,255,0,0.80)',
+                },
+            },
+            {
+                init: ts => socket.on('global_dirty_state', x => {
+                    ts.append(Date.now(), fromPages((x.bg_thresh + x.thresh) / 2, x))
+                }),
+                options: {
+                    strokeStyle: 'rgba(235,235,0,0.80)',
+                },
+            },
+            {
+                init: ts => socket.on('global_dirty_state', x => {
+                    ts.append(Date.now(), fromPages(x.writeback, x))
                 }),
                 options: {
                     lineWidth: 2,
@@ -66,26 +102,10 @@
             },
             {
                 init: ts => socket.on('global_dirty_state', x => {
-                    ts.append(Date.now(), x.thresh)
+                    ts.append(Date.now(), fromPages(x.dirty + x.writeback, x))
                 }),
                 options: {
-                    strokeStyle: 'rgba(255,0,0,0.80)',
-                },
-            },
-            {
-                init: ts => socket.on('global_dirty_state', x => {
-                    ts.append(Date.now(), x.bg_thresh)
-                }),
-                options: {
-                    strokeStyle: 'rgba(0,255,0,0.80)',
-                },
-            },
-            {
-                init: ts => socket.on('global_dirty_state', x => {
-                    ts.append(Date.now(), (x.bg_thresh + x.thresh) / 2)
-                }),
-                options: {
-                    strokeStyle: 'rgba(235,235,0,0.80)',
+                    lineWidth: 2,
                 },
             },
         ])
