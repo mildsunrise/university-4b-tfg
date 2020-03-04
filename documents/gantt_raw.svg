@@ -1,0 +1,3120 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   version="1.1"
+   preserveAspectRatio="xMidYMid meet"
+   shape-rendering="geometricPrecision"
+   text-rendering="geometricPrecision"
+   viewBox="0 -16.599998474121094 960 556.5999755859375"
+   id="ember962"
+   class="unselectable defaultCursor pin-visual js-pin-visual ember-view"
+   height="5565.999755859375"
+   width="9600"
+   style="width: 888px; height: 514.855px;"
+   sodipodi:docname="gantt_orig.svg"
+   inkscape:version="0.92.4 5da689c313, 2019-01-14">
+  <metadata
+     id="metadata509">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs507">
+    <filter
+       width="104%"
+       height="104%"
+       y="-2%"
+       x="-2%"
+       id="boxShadowFilter">
+      <feGaussianBlur
+         id="feGaussianBlur5"
+         stdDeviation="5"
+         in="SourceAlpha" />
+      <!-- stdDeviation is how much to blur -->
+      <feOffset
+         id="feOffset7"
+         result="offsetblur"
+         dy="2"
+         dx="2" />
+      <!-- how much to offset -->
+      <feComponentTransfer
+         id="feComponentTransfer11">
+        <feFuncA
+           id="feFuncA9"
+           type="linear"
+           slope="0.2" />
+        <!-- slope is the opacity of the shadow -->
+      </feComponentTransfer>
+      <feMerge
+         id="feMerge17">
+        <feMergeNode
+           id="feMergeNode13" />
+        <!-- this contains the offset blurred image -->
+        <feMergeNode
+           id="feMergeNode15"
+           in="SourceGraphic" />
+        <!-- this contains the element that the filter is applied to -->
+      </feMerge>
+    </filter>
+  </defs>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1280"
+     inkscape:window-height="960"
+     id="namedview505"
+     showgrid="false"
+     inkscape:zoom="0.058041682"
+     inkscape:cx="4673.1358"
+     inkscape:cy="4074.7525"
+     inkscape:window-x="1366"
+     inkscape:window-y="27"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="ember962" />
+  <symbol
+     id="inner-border-rect">
+    <rect
+       class="inner-border"
+       width="100%"
+       height="100%"
+       style="fill:rgb(255,255,255);stroke-width:1px;stroke:rgb(237,237,238)"
+       id="rect2" />
+  </symbol>
+  <g
+     class="qa-today-marker ember-view"
+     style="display:none;visibility:hidden"
+     id="ember973"
+     transform="translate(77,116.4)"
+     visibility="hidden">
+    <rect
+       style="fill:#000000;fill-opacity:0"
+       id="rect64"
+       height="0"
+       width="0"
+       y="0"
+       x="0" />
+    <path
+       inkscape:connector-curvature="0"
+       class="ember-view"
+       id="ember974"
+       width="7"
+       height="9"
+       x="0"
+       y="0"
+       shapeType=""
+       style="fill:#ff0000;fill-opacity:1"
+       d="m -3.5,9 h 7 L 0,0 Z" />
+    <text
+       style="font-style:normal;font-weight:normal;font-size:11px;font-family:Arial;text-anchor:middle"
+       x="0"
+       class="ember-view"
+       id="ember975"
+       y="18"
+       font-size="11"
+       init-drag="false"
+       font-weight="normal"
+       font-style="normal"
+       text-decoration="normal"
+       data-max-width="0">
+      <tspan
+         id="tspan67"
+         dy="0"
+         x="0">Today</tspan>
+    </text>
+  </g>
+  <g
+     class="pin-visual-mile ember-view"
+     id="milestone6576cd6c-86ed-471b-bb96-d3bb30dca8be"
+     transform="translate(114,91.400002)">
+    <g
+       style="fill:#80b9de"
+       class="verticalConnector ember-view"
+       id="ember977"
+       width="1"
+       height="50"
+       x="0"
+       y="0"
+       dragGroup="false">
+      <path
+         style="fill-opacity:0"
+         inkscape:connector-curvature="0"
+         id="path71"
+         dragGroup="false"
+         d="m -3.5,-38.722 h 7 V -5 h -7 v -33.722" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path73"
+         dragGroup="false"
+         d="m -0.5,-38.722 h 1 V -5 h -1 v -33.722" />
+    </g>
+    <g
+       class="js-pin-visual-dragable-milestone-shape ember-view"
+       id="milestoneShape6576cd6c-86ed-471b-bb96-d3bb30dca8be">
+      <path
+         inkscape:connector-curvature="0"
+         class="js-pin-visual-milestone-shape movementPointer ember-view"
+         id="ember978"
+         width="13"
+         height="14.444"
+         x="0"
+         y="0"
+         shapeType=""
+         transform="translate(2.5,-38.722)"
+         style="fill:#589ad7;fill-opacity:1"
+         d="M 0,0 13,7.222 0,14.444 Z" />
+    </g>
+    <g
+       class="js-pin-visual-milestone-details ember-view"
+       id="ember979"
+       transform="translate(19.5,-21)">
+      <rect
+         style="fill:none"
+         id="rect78"
+         height="11"
+         width="81.099998"
+         x="0"
+         y="-21"
+         class="titleBg" />
+      <rect
+         style="fill:none"
+         id="rect80"
+         height="10"
+         width="26"
+         x="0"
+         y="-10"
+         class="dateBg" />
+      <text
+         style="font-style:normal;font-weight:bold;font-size:10px;font-family:Arial;text-decoration:none;text-decoration-line:none;text-anchor:start;fill:#000000"
+         x="0"
+         type="title"
+         class="ember-view"
+         id="ember980"
+         y="-12"
+         font-size="10"
+         init-drag="false"
+         font-weight="bold"
+         font-style="normal"
+         text-decoration="none"
+         data-max-width="200">
+        <tspan
+           id="tspan82"
+           dy="0"
+           x="0">Project proposal</tspan>
+      </text>
+      <text
+         style="font-style:normal;font-weight:normal;font-size:9px;font-family:Arial;text-decoration:none;text-decoration-line:none;text-anchor:start;fill:#44546a"
+         x="0"
+         type="startDate"
+         class="ember-view"
+         id="ember982"
+         y="-2"
+         font-size="9"
+         init-drag="false"
+         font-weight="normal"
+         font-style="normal"
+         text-decoration="none"
+         data-max-width="200">
+        <tspan
+           id="tspan85"
+           dy="0"
+           x="0">8 Mar</tspan>
+      </text>
+    </g>
+  </g>
+  <g
+     class="pin-visual-mile ember-view"
+     id="milestonef16f7cf3-4aa1-4f36-9017-c2280a1f8cc6"
+     transform="translate(369,91.400002)">
+    <g
+       style="fill:#80b9de"
+       class="verticalConnector ember-view"
+       id="ember984"
+       width="1"
+       height="50"
+       x="0"
+       y="0"
+       dragGroup="false">
+      <path
+         style="fill-opacity:0"
+         inkscape:connector-curvature="0"
+         id="path90"
+         dragGroup="false"
+         d="m -3.5,-41.5 h 7 V -5 h -7 v -36.5" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path92"
+         dragGroup="false"
+         d="m -0.5,-41.5 h 1 V -5 h -1 v -36.5" />
+    </g>
+    <g
+       class="js-pin-visual-dragable-milestone-shape ember-view"
+       id="milestoneShapef16f7cf3-4aa1-4f36-9017-c2280a1f8cc6">
+      <path
+         inkscape:connector-curvature="0"
+         class="js-pin-visual-milestone-shape movementPointer ember-view"
+         id="ember985"
+         width="18"
+         height="20"
+         x="0"
+         y="0"
+         shapeType=""
+         transform="translate(2.5,-41.5)"
+         style="fill:#0072bc;fill-opacity:1"
+         d="M 0,0 18,10 0,20 Z" />
+    </g>
+    <g
+       class="js-pin-visual-milestone-details ember-view"
+       id="ember986"
+       transform="translate(24.5,-21)">
+      <rect
+         style="fill:none"
+         id="rect97"
+         height="11"
+         width="70"
+         x="0"
+         y="-21"
+         class="titleBg" />
+      <rect
+         style="fill:none"
+         id="rect99"
+         height="10"
+         width="29.5"
+         x="0"
+         y="-10"
+         class="dateBg" />
+      <text
+         style="font-style:normal;font-weight:bold;font-size:10px;font-family:Arial;text-decoration:none;text-decoration-line:none;text-anchor:start;fill:#000000"
+         x="0"
+         type="title"
+         class="ember-view"
+         id="ember987"
+         y="-12"
+         font-size="10"
+         init-drag="false"
+         font-weight="bold"
+         font-style="normal"
+         text-decoration="none"
+         data-max-width="200">
+        <tspan
+           id="tspan101"
+           dy="0"
+           x="0">Critical review</tspan>
+      </text>
+      <text
+         style="font-style:normal;font-weight:normal;font-size:9px;font-family:Arial;text-decoration:none;text-decoration-line:none;text-anchor:start;fill:#44546a"
+         x="0"
+         type="startDate"
+         class="ember-view"
+         id="ember989"
+         y="-2"
+         font-size="9"
+         init-drag="false"
+         font-weight="normal"
+         font-style="normal"
+         text-decoration="none"
+         data-max-width="200">
+        <tspan
+           id="tspan104"
+           dy="0"
+           x="0">14 Apr</tspan>
+      </text>
+    </g>
+  </g>
+  <g
+     class="pin-visual-mile ember-view"
+     id="milestoneed1945f9-5553-4e2d-9f10-f8cbdcf279ae"
+     transform="translate(846,91.400002)">
+    <g
+       style="fill:#ed7d31"
+       class="verticalConnector ember-view"
+       id="ember991"
+       width="1"
+       height="50"
+       x="0"
+       y="0"
+       dragGroup="false">
+      <path
+         style="fill-opacity:0"
+         inkscape:connector-curvature="0"
+         id="path109"
+         dragGroup="false"
+         d="m -3.5,-41.5 h 7 V -5 h -7 v -36.5" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path111"
+         dragGroup="false"
+         d="m -0.5,-41.5 h 1 V -5 h -1 v -36.5" />
+    </g>
+    <g
+       class="js-pin-visual-dragable-milestone-shape ember-view"
+       id="milestoneShapeed1945f9-5553-4e2d-9f10-f8cbdcf279ae">
+      <path
+         inkscape:connector-curvature="0"
+         class="js-pin-visual-milestone-shape movementPointer ember-view"
+         id="ember992"
+         width="18"
+         height="20"
+         x="0"
+         y="0"
+         shapeType=""
+         transform="translate(2.5,-41.5)"
+         style="fill:#c0504d;fill-opacity:1"
+         d="M 0,0 18,10 0,20 Z" />
+    </g>
+    <g
+       class="js-pin-visual-milestone-details ember-view"
+       id="ember993"
+       transform="translate(24.5,-21)">
+      <rect
+         style="fill:none"
+         id="rect116"
+         height="11"
+         width="66.400002"
+         x="0"
+         y="-21"
+         class="titleBg" />
+      <rect
+         style="fill:none"
+         id="rect118"
+         height="10"
+         width="29"
+         x="0"
+         y="-10"
+         class="dateBg" />
+      <text
+         style="font-style:normal;font-weight:bold;font-size:10px;font-family:Arial;text-decoration:none;text-decoration-line:none;text-anchor:start;fill:#000000"
+         x="0"
+         type="title"
+         class="ember-view"
+         id="ember994"
+         y="-12"
+         font-size="10"
+         init-drag="false"
+         font-weight="bold"
+         font-style="normal"
+         text-decoration="none"
+         data-max-width="76.60000000000002">
+        <tspan
+           id="tspan120"
+           dy="0"
+           x="0">Final delivery</tspan>
+      </text>
+      <text
+         style="font-style:normal;font-weight:normal;font-size:9px;font-family:Arial;text-decoration:none;text-decoration-line:none;text-anchor:start;fill:#44546a"
+         x="0"
+         type="startDate"
+         class="ember-view"
+         id="ember996"
+         y="-2"
+         font-size="9"
+         init-drag="false"
+         font-weight="normal"
+         font-style="normal"
+         text-decoration="none"
+         data-max-width="76.60000000000002">
+        <tspan
+           id="tspan123"
+           dy="0"
+           x="0">22 Jun</tspan>
+      </text>
+    </g>
+  </g>
+  <g
+     class="ember-view"
+     id="groupab0a6584-acf1-461e-acca-3297b3d88e34">
+    <g
+       class="pin-visual-task ember-view"
+       id="taskab0a6584-acf1-461e-acca-3297b3d88e34"
+       transform="translate(59,132.4)">
+      <g
+         style="fill:#cccccc"
+         width="0"
+         class="horizontalConnector ember-view"
+         id="ember998"
+         height="1"
+         x="0"
+         y="5.5"
+         dragGroup="false">
+        <rect
+           style="fill-opacity:0"
+           id="rect128"
+           width="0"
+           dragGroup="false"
+           height="7"
+           y="2.5"
+           x="0" />
+        <rect
+           id="rect130"
+           width="0"
+           dragGroup="false"
+           height="1"
+           y="5.5"
+           x="0" />
+      </g>
+      <g
+         style="fill:#0072bc"
+         height="-51.99999389648437"
+         class="verticalConnector ember-view"
+         id="ember999"
+         width="1"
+         x="0"
+         y="0"
+         dragGroup="false">
+        <path
+           style="fill-opacity:0"
+           inkscape:connector-curvature="0"
+           id="path133"
+           dragGroup="false"
+           d="M -3,-15.999994 H 4 V 6 h -7 v -21.999994" />
+        <path
+           inkscape:connector-curvature="0"
+           id="path135"
+           dragGroup="false"
+           d="M 0,-19.399994 H 1 V 6 H 0 v -25.399994"
+           sodipodi:nodetypes="ccccc" />
+      </g>
+      <g
+         style="fill:#0072bc"
+         height="-51.99999389648437"
+         class="verticalConnector ember-view"
+         id="ember1000"
+         width="1"
+         x="0"
+         y="0"
+         dragGroup="false">
+        <path
+           style="fill-opacity:0"
+           inkscape:connector-curvature="0"
+           id="path138"
+           dragGroup="false"
+           d="m 189,-15.999994 h 7 V 6 h -7 v -21.999994" />
+        <path
+           inkscape:connector-curvature="0"
+           id="path140"
+           dragGroup="false"
+           d="m 192,-15.999994 h 1 V 6 h -1 v -21.999994" />
+      </g>
+      <text
+         style="font-style:normal;font-weight:normal;font-size:8px;font-family:Arial;text-anchor:start;fill:#c0504d"
+         y="0"
+         type="duration"
+         class="topField ember-view"
+         id="ember1001"
+         dx="0"
+         dy="0"
+         font-size="8"
+         dragGroup="false"
+         init-drag="true"
+         font-weight="normal"
+         font-style="normal"
+         text-decoration="normal"
+         data-max-width="200"
+         tspanDX="2">
+        <!---->
+      </text>
+      <g
+         class="centerShape js-pin-visual-task-shape movementPointer ember-view"
+         id="ember1002">
+        <path
+           inkscape:connector-curvature="0"
+           width="193"
+           class="js-pin__timeline-shape-with-overlay__shape movementPointer ember-view"
+           id="ember1003"
+           height="12"
+           x="0"
+           y="0"
+           shapeType=""
+           style="fill:#0072bc;fill-opacity:1"
+           d="M 0,0 M 0,10.8 V 1.2 Q 0.3,0.3 1.2,0 h 190.6 q 0.9,0.3 1.2,1.2 v 9.6 q -0.3,0.9 -1.2,1.2 H 1.2 Q 0.3,11.7 0,10.8 Z" />
+        <!---->
+      </g>
+      <text
+         style="font-style:normal;font-weight:bold;font-size:8px;font-family:Arial;text-anchor:middle;fill:#ffffff"
+         y="8"
+         type="title"
+         class="centerField ember-view"
+         id="ember1004"
+         dx="0"
+         dy="0"
+         font-size="8"
+         dragGroup="false"
+         init-drag="true"
+         font-weight="bold"
+         font-style="normal"
+         text-decoration="normal"
+         data-max-width="311">
+        <tspan
+           id="tspan146"
+           dy="0"
+           x="96.5">WP1. Analysis</tspan>
+      </text>
+      <text
+         style="font-style:normal;font-weight:normal;font-size:8px;font-family:Arial;text-anchor:end;fill:#c0504d"
+         y="12"
+         type="progress"
+         class="bottomField ember-view"
+         id="ember1006"
+         dx="0"
+         dy="0"
+         font-size="8"
+         dragGroup="false"
+         init-drag="true"
+         font-weight="normal"
+         font-style="normal"
+         text-decoration="normal"
+         data-max-width="200"
+         tspanDX="2">
+        <!---->
+      </text>
+      <text
+         style="font-style:normal;font-weight:normal;font-size:9px;font-family:Arial;text-anchor:start;fill:#0072bc"
+         y="9"
+         type="endDate"
+         class="rightField ember-view"
+         id="ember1007"
+         dx="0"
+         dy="0"
+         font-size="9"
+         dragGroup="false"
+         init-drag="true"
+         font-weight="normal"
+         font-style="normal"
+         text-decoration="normal"
+         data-max-width="200">
+        <tspan
+           id="tspan150"
+           dy="0"
+           x="197">Sat 28/3/20</tspan>
+      </text>
+      <text
+         style="font-style:normal;font-weight:normal;font-size:9px;font-family:Arial;text-anchor:end;fill:#0072bc"
+         data-max-width="45"
+         y="9"
+         type="startDate"
+         class="leftField ember-view"
+         id="ember1009"
+         dx="0"
+         dy="0"
+         font-size="9"
+         dragGroup="false"
+         init-drag="true"
+         font-weight="normal"
+         font-style="normal"
+         text-decoration="normal">
+        <tspan
+           id="tspan153"
+           dy="0"
+           x="-4">Sun 1/3/20</tspan>
+      </text>
+      <text
+         style="text-anchor:start"
+         y="6"
+         type=""
+         class="farLeftField ember-view"
+         id="ember1011"
+         dx="0"
+         dy="0"
+         dragGroup="false"
+         init-drag="true"
+         data-max-width="0">
+        <!---->
+      </text>
+    </g>
+  </g>
+  <g
+     class="ember-view"
+     id="groupe21de3af-c409-4304-a0e8-6be988faf168">
+    <g
+       class="pin-visual-task ember-view"
+       id="taske21de3af-c409-4304-a0e8-6be988faf168"
+       transform="translate(80,150.4)">
+      <g
+         style="fill:#cccccc"
+         width="0"
+         class="horizontalConnector ember-view"
+         id="ember1012"
+         height="1"
+         x="0"
+         y="3.5"
+         dragGroup="false">
+        <rect
+           style="fill-opacity:0"
+           id="rect159"
+           width="0"
+           dragGroup="false"
+           height="7"
+           y="0.5"
+           x="0" />
+        <rect
+           id="rect161"
+           width="0"
+           dragGroup="false"
+           height="1"
+           y="3.5"
+           x="0" />
+      </g>
+      <!---->
+      <text
+         style="font-style:normal;font-weight:normal;font-size:8px;font-family:Arial;text-anchor:start;fill:#c0504d"
+         y="0"
+         type="duration"
+         class="topField ember-view"
+         id="ember1013"
+         dx="0"
+         dy="0"
+         font-size="8"
+         dragGroup="false"
+         init-drag="true"
+         font-weight="normal"
+         font-style="normal"
+         text-decoration="normal"
+         data-max-width="200"
+         tspanDX="2">
+        <!---->
+      </text>
+      <g
+         class="centerShape js-pin-visual-task-shape movementPointer ember-view"
+         id="ember1014">
+        <path
+           inkscape:connector-curvature="0"
+           width="27"
+           class="js-pin__timeline-shape-with-overlay__shape movementPointer ember-view"
+           id="ember1015"
+           height="8"
+           x="0"
+           y="0"
+           shapeType=""
+           style="fill:#0072bc;fill-opacity:1"
+           d="m 0,0 h 23 l 4,4 -4,4 H 0 Z" />
+        <!---->
+      </g>
+      <text
+         style="text-anchor:middle"
+         y="4"
+         type=""
+         class="centerField ember-view"
+         id="ember1016"
+         dx="0"
+         dy="0"
+         dragGroup="false"
+         init-drag="true"
+         data-max-width="0">
+        <!---->
+      </text>
+      <text
+         style="font-style:normal;font-weight:normal;font-size:8px;font-family:Arial;text-anchor:end;fill:#c0504d"
+         y="8"
+         type="progress"
+         class="bottomField ember-view"
+         id="ember1017"
+         dx="0"
+         dy="0"
+         font-size="8"
+         dragGroup="false"
+         init-drag="true"
+         font-weight="normal"
+         font-style="normal"
+         text-decoration="normal"
+         data-max-width="200"
+         tspanDX="2">
+        <!---->
+      </text>
+      <text
+         style="font-style:normal;font-weight:bold;font-size:8px;font-family:Arial;text-anchor:start;fill:#000000"
+         y="6"
+         type="title"
+         class="rightField ember-view"
+         id="ember1018"
+         dx="0"
+         dy="0"
+         font-size="8"
+         dragGroup="false"
+         init-drag="true"
+         font-weight="bold"
+         font-style="normal"
+         text-decoration="normal"
+         data-max-width="839">
+        <tspan
+           id="tspan169"
+           dy="0"
+           x="31">Real-time monitor</tspan>
+      </text>
+      <text
+         style="font-style:normal;font-weight:normal;font-size:8px;font-family:Arial;text-anchor:end;fill:#a5a5a5"
+         data-max-width="66"
+         y="6"
+         type="startDate"
+         class="leftField ember-view"
+         id="ember1020"
+         dx="0"
+         dy="0"
+         font-size="8"
+         dragGroup="false"
+         init-drag="true"
+         font-weight="normal"
+         font-style="normal"
+         text-decoration="normal">
+        <tspan
+           id="tspan172"
+           dy="0"
+           x="-4">4 Mar - 7 Mar</tspan>
+      </text>
+      <text
+         style="text-anchor:start"
+         y="4"
+         type=""
+         class="farLeftField ember-view"
+         id="ember1022"
+         dx="0"
+         dy="0"
+         dragGroup="false"
+         init-drag="true"
+         data-max-width="0">
+        <!---->
+      </text>
+    </g>
+  </g>
+  <g
+     class="ember-view"
+     id="groupfa04fc06-bfcb-4cf4-b653-44adddcc386e">
+    <g
+       class="pin-visual-task ember-view"
+       id="taskfa04fc06-bfcb-4cf4-b653-44adddcc386e"
+       transform="translate(114,164.4)">
+      <g
+         style="fill:#cccccc"
+         width="0"
+         class="horizontalConnector ember-view"
+         id="ember1023"
+         height="1"
+         x="0"
+         y="3.5"
+         dragGroup="false">
+        <rect
+           style="fill-opacity:0"
+           id="rect178"
+           width="0"
+           dragGroup="false"
+           height="7"
+           y="0.5"
+           x="0" />
+        <rect
+           id="rect180"
+           width="0"
+           dragGroup="false"
+           height="1"
+           y="3.5"
+           x="0" />
+      </g>
+      <!---->
+      <text
+         style="font-style:normal;font-weight:normal;font-size:8px;font-family:Arial;text-anchor:start;fill:#c0504d"
+         y="0"
+         type="duration"
+         class="topField ember-view"
+         id="ember1024"
+         dx="0"
+         dy="0"
+         font-size="8"
+         dragGroup="false"
+         init-drag="true"
+         font-weight="normal"
+         font-style="normal"
+         text-decoration="normal"
+         data-max-width="200"
+         tspanDX="2">
+        <!---->
+      </text>
+      <g
+         class="centerShape js-pin-visual-task-shape movementPointer ember-view"
+         id="ember1025">
+        <path
+           inkscape:connector-curvature="0"
+           width="42"
+           class="js-pin__timeline-shape-with-overlay__shape movementPointer ember-view"
+           id="ember1026"
+           height="8"
+           x="0"
+           y="0"
+           shapeType=""
+           style="fill:#0072bc;fill-opacity:1"
+           d="m 0,0 h 38 l 4,4 -4,4 H 0 Z" />
+        <!---->
+      </g>
+      <text
+         style="text-anchor:middle"
+         y="4"
+         type=""
+         class="centerField ember-view"
+         id="ember1027"
+         dx="0"
+         dy="0"
+         dragGroup="false"
+         init-drag="true"
+         data-max-width="0">
+        <!---->
+      </text>
+      <text
+         style="font-style:normal;font-weight:normal;font-size:8px;font-family:Arial;text-anchor:end;fill:#c0504d"
+         y="8"
+         type="progress"
+         class="bottomField ember-view"
+         id="ember1028"
+         dx="0"
+         dy="0"
+         font-size="8"
+         dragGroup="false"
+         init-drag="true"
+         font-weight="normal"
+         font-style="normal"
+         text-decoration="normal"
+         data-max-width="200"
+         tspanDX="2">
+        <!---->
+      </text>
+      <text
+         style="font-style:normal;font-weight:bold;font-size:8px;font-family:Arial;text-anchor:start;fill:#000000"
+         y="6"
+         type="title"
+         class="rightField ember-view"
+         id="ember1029"
+         dx="0"
+         dy="0"
+         font-size="8"
+         dragGroup="false"
+         init-drag="true"
+         font-weight="bold"
+         font-style="normal"
+         text-decoration="normal"
+         data-max-width="790">
+        <tspan
+           id="tspan188"
+           dy="0"
+           x="46">ftrace analysis</tspan>
+      </text>
+      <text
+         style="font-style:normal;font-weight:normal;font-size:8px;font-family:Arial;text-anchor:end;fill:#a5a5a5"
+         data-max-width="100"
+         y="6"
+         type="startDate"
+         class="leftField ember-view"
+         id="ember1031"
+         dx="0"
+         dy="0"
+         font-size="8"
+         dragGroup="false"
+         init-drag="true"
+         font-weight="normal"
+         font-style="normal"
+         text-decoration="normal">
+        <tspan
+           id="tspan191"
+           dy="0"
+           x="-4">9 Mar - 14 Mar</tspan>
+      </text>
+      <text
+         style="text-anchor:start"
+         y="4"
+         type=""
+         class="farLeftField ember-view"
+         id="ember1033"
+         dx="0"
+         dy="0"
+         dragGroup="false"
+         init-drag="true"
+         data-max-width="0">
+        <!---->
+      </text>
+    </g>
+  </g>
+  <g
+     class="ember-view"
+     id="groupc1a9752a-b743-47c6-a686-15c3ef2fc6fc">
+    <g
+       class="pin-visual-task ember-view"
+       id="taskc1a9752a-b743-47c6-a686-15c3ef2fc6fc"
+       transform="translate(169,178.4)">
+      <g
+         style="fill:#cccccc"
+         width="0"
+         class="horizontalConnector ember-view"
+         id="ember1034"
+         height="1"
+         x="0"
+         y="3.5"
+         dragGroup="false">
+        <rect
+           style="fill-opacity:0"
+           id="rect197"
+           width="0"
+           dragGroup="false"
+           height="7"
+           y="0.5"
+           x="0" />
+        <rect
+           id="rect199"
+           width="0"
+           dragGroup="false"
+           height="1"
+           y="3.5"
+           x="0" />
+      </g>
+      <!---->
+      <text
+         style="font-style:normal;font-weight:normal;font-size:8px;font-family:Arial;text-anchor:start;fill:#c0504d"
+         y="0"
+         type="duration"
+         class="topField ember-view"
+         id="ember1035"
+         dx="0"
+         dy="0"
+         font-size="8"
+         dragGroup="false"
+         init-drag="true"
+         font-weight="normal"
+         font-style="normal"
+         text-decoration="normal"
+         data-max-width="200"
+         tspanDX="2">
+        <!---->
+      </text>
+      <g
+         class="centerShape js-pin-visual-task-shape movementPointer ember-view"
+         id="ember1036">
+        <path
+           inkscape:connector-curvature="0"
+           width="21"
+           class="js-pin__timeline-shape-with-overlay__shape movementPointer ember-view"
+           id="ember1037"
+           height="8"
+           x="0"
+           y="0"
+           shapeType=""
+           style="fill:#0072bc;fill-opacity:1"
+           d="m 0,0 h 17 l 4,4 -4,4 H 0 Z" />
+        <!---->
+      </g>
+      <text
+         style="text-anchor:middle"
+         y="4"
+         type=""
+         class="centerField ember-view"
+         id="ember1038"
+         dx="0"
+         dy="0"
+         dragGroup="false"
+         init-drag="true"
+         data-max-width="0">
+        <!---->
+      </text>
+      <text
+         style="font-style:normal;font-weight:normal;font-size:8px;font-family:Arial;text-anchor:end;fill:#c0504d"
+         y="8"
+         type="progress"
+         class="bottomField ember-view"
+         id="ember1039"
+         dx="0"
+         dy="0"
+         font-size="8"
+         dragGroup="false"
+         init-drag="true"
+         font-weight="normal"
+         font-style="normal"
+         text-decoration="normal"
+         data-max-width="200"
+         tspanDX="2">
+        <!---->
+      </text>
+      <text
+         style="font-style:normal;font-weight:bold;font-size:8px;font-family:Arial;text-anchor:start;fill:#000000"
+         y="6"
+         type="title"
+         class="rightField ember-view"
+         id="ember1040"
+         dx="0"
+         dy="0"
+         font-size="8"
+         dragGroup="false"
+         init-drag="true"
+         font-weight="bold"
+         font-style="normal"
+         text-decoration="normal"
+         data-max-width="756">
+        <tspan
+           id="tspan207"
+           dy="0"
+           x="25">Dummy loads / processes</tspan>
+      </text>
+      <text
+         style="font-style:normal;font-weight:normal;font-size:9px;font-family:Arial;text-anchor:end;fill:#44546a"
+         data-max-width="155"
+         y="7"
+         type="startDate"
+         class="leftField ember-view"
+         id="ember1042"
+         dx="0"
+         dy="0"
+         font-size="9"
+         dragGroup="false"
+         init-drag="true"
+         font-weight="normal"
+         font-style="normal"
+         text-decoration="normal">
+        <tspan
+           id="tspan210"
+           dy="0"
+           x="-4">17 Mar - 19 Mar</tspan>
+      </text>
+      <text
+         style="text-anchor:start"
+         y="4"
+         type=""
+         class="farLeftField ember-view"
+         id="ember1044"
+         dx="0"
+         dy="0"
+         dragGroup="false"
+         init-drag="true"
+         data-max-width="0">
+        <!---->
+      </text>
+    </g>
+  </g>
+  <g
+     class="ember-view"
+     id="groupb7419df0-c15a-418c-8735-46cd7d8438df">
+    <g
+       class="pin-visual-task ember-view"
+       id="taskb7419df0-c15a-418c-8735-46cd7d8438df"
+       transform="translate(190,193.4)">
+      <g
+         style="fill:#cccccc"
+         width="0"
+         class="horizontalConnector ember-view"
+         id="ember1045"
+         height="1"
+         x="0"
+         y="3.5"
+         dragGroup="false">
+        <rect
+           style="fill-opacity:0"
+           id="rect216"
+           width="0"
+           dragGroup="false"
+           height="7"
+           y="0.5"
+           x="0" />
+        <rect
+           id="rect218"
+           width="0"
+           dragGroup="false"
+           height="1"
+           y="3.5"
+           x="0" />
+      </g>
+      <!---->
+      <text
+         style="font-style:normal;font-weight:normal;font-size:8px;font-family:Arial;text-anchor:start;fill:#c0504d"
+         y="0"
+         type="duration"
+         class="topField ember-view"
+         id="ember1046"
+         dx="0"
+         dy="0"
+         font-size="8"
+         dragGroup="false"
+         init-drag="true"
+         font-weight="normal"
+         font-style="normal"
+         text-decoration="normal"
+         data-max-width="200"
+         tspanDX="2">
+        <!---->
+      </text>
+      <g
+         class="centerShape js-pin-visual-task-shape movementPointer ember-view"
+         id="ember1047">
+        <path
+           inkscape:connector-curvature="0"
+           width="28"
+           class="js-pin__timeline-shape-with-overlay__shape movementPointer ember-view"
+           id="ember1048"
+           height="8"
+           x="0"
+           y="0"
+           shapeType=""
+           style="fill:#0072bc;fill-opacity:1"
+           d="m 0,0 h 24 l 4,4 -4,4 H 0 Z" />
+        <!---->
+      </g>
+      <text
+         style="text-anchor:middle"
+         y="4"
+         type=""
+         class="centerField ember-view"
+         id="ember1049"
+         dx="0"
+         dy="0"
+         dragGroup="false"
+         init-drag="true"
+         data-max-width="0">
+        <!---->
+      </text>
+      <text
+         style="font-style:normal;font-weight:normal;font-size:8px;font-family:Arial;text-anchor:end;fill:#c0504d"
+         y="8"
+         type="progress"
+         class="bottomField ember-view"
+         id="ember1050"
+         dx="0"
+         dy="0"
+         font-size="8"
+         dragGroup="false"
+         init-drag="true"
+         font-weight="normal"
+         font-style="normal"
+         text-decoration="normal"
+         data-max-width="200"
+         tspanDX="2">
+        <!---->
+      </text>
+      <text
+         style="font-style:normal;font-weight:bold;font-size:8px;font-family:Arial;text-anchor:start;fill:#000000"
+         y="6"
+         type="title"
+         class="rightField ember-view"
+         id="ember1051"
+         dx="0"
+         dy="0"
+         font-size="8"
+         dragGroup="false"
+         init-drag="true"
+         font-weight="bold"
+         font-style="normal"
+         text-decoration="normal"
+         data-max-width="728">
+        <tspan
+           id="tspan226"
+           dy="0"
+           x="32">Perform basic tests</tspan>
+      </text>
+      <text
+         style="font-style:normal;font-weight:normal;font-size:9px;font-family:Arial;text-anchor:end;fill:#44546a"
+         data-max-width="176"
+         y="7"
+         type="startDate"
+         class="leftField ember-view"
+         id="ember1053"
+         dx="0"
+         dy="0"
+         font-size="9"
+         dragGroup="false"
+         init-drag="true"
+         font-weight="normal"
+         font-style="normal"
+         text-decoration="normal">
+        <tspan
+           id="tspan229"
+           dy="0"
+           x="-4">20 Mar - 23 Mar</tspan>
+      </text>
+      <text
+         style="text-anchor:start"
+         y="4"
+         type=""
+         class="farLeftField ember-view"
+         id="ember1055"
+         dx="0"
+         dy="0"
+         dragGroup="false"
+         init-drag="true"
+         data-max-width="0">
+        <!---->
+      </text>
+    </g>
+  </g>
+  <g
+     class="ember-view"
+     id="group3961320d-56ef-4c73-a0da-e3634fdaab95">
+    <g
+       class="pin-visual-task ember-view"
+       id="task3961320d-56ef-4c73-a0da-e3634fdaab95"
+       transform="translate(204,208.4)">
+      <g
+         style="fill:#cccccc"
+         width="0"
+         class="horizontalConnector ember-view"
+         id="ember1056"
+         height="1"
+         x="0"
+         y="3.5"
+         dragGroup="false">
+        <rect
+           style="fill-opacity:0"
+           id="rect235"
+           width="0"
+           dragGroup="false"
+           height="7"
+           y="0.5"
+           x="0" />
+        <rect
+           id="rect237"
+           width="0"
+           dragGroup="false"
+           height="1"
+           y="3.5"
+           x="0" />
+      </g>
+      <!---->
+      <text
+         style="font-style:normal;font-weight:normal;font-size:8px;font-family:Arial;text-anchor:start;fill:#c0504d"
+         y="0"
+         type="duration"
+         class="topField ember-view"
+         id="ember1057"
+         dx="0"
+         dy="0"
+         font-size="8"
+         dragGroup="false"
+         init-drag="true"
+         font-weight="normal"
+         font-style="normal"
+         text-decoration="normal"
+         data-max-width="200"
+         tspanDX="2">
+        <!---->
+      </text>
+      <g
+         class="centerShape js-pin-visual-task-shape movementPointer ember-view"
+         id="ember1058">
+        <path
+           inkscape:connector-curvature="0"
+           width="28"
+           class="js-pin__timeline-shape-with-overlay__shape movementPointer ember-view"
+           id="ember1059"
+           height="8"
+           x="0"
+           y="0"
+           shapeType=""
+           style="fill:#0072bc;fill-opacity:1"
+           d="m 0,0 h 24 l 4,4 -4,4 H 0 Z" />
+        <!---->
+      </g>
+      <text
+         style="text-anchor:middle"
+         y="4"
+         type=""
+         class="centerField ember-view"
+         id="ember1060"
+         dx="0"
+         dy="0"
+         dragGroup="false"
+         init-drag="true"
+         data-max-width="0">
+        <!---->
+      </text>
+      <text
+         style="font-style:normal;font-weight:normal;font-size:8px;font-family:Arial;text-anchor:end;fill:#c0504d"
+         y="8"
+         type="progress"
+         class="bottomField ember-view"
+         id="ember1061"
+         dx="0"
+         dy="0"
+         font-size="8"
+         dragGroup="false"
+         init-drag="true"
+         font-weight="normal"
+         font-style="normal"
+         text-decoration="normal"
+         data-max-width="200"
+         tspanDX="2">
+        <!---->
+      </text>
+      <text
+         style="font-style:normal;font-weight:bold;font-size:8px;font-family:Arial;text-anchor:start;fill:#000000"
+         y="6"
+         type="title"
+         class="rightField ember-view"
+         id="ember1062"
+         dx="0"
+         dy="0"
+         font-size="8"
+         dragGroup="false"
+         init-drag="true"
+         font-weight="bold"
+         font-style="normal"
+         text-decoration="normal"
+         data-max-width="714">
+        <tspan
+           id="tspan245"
+           dy="0"
+           x="32">Perform cgroup tests</tspan>
+      </text>
+      <text
+         style="font-style:normal;font-weight:normal;font-size:9px;font-family:Arial;text-anchor:end;fill:#44546a"
+         data-max-width="190"
+         y="7"
+         type="startDate"
+         class="leftField ember-view"
+         id="ember1064"
+         dx="0"
+         dy="0"
+         font-size="9"
+         dragGroup="false"
+         init-drag="true"
+         font-weight="normal"
+         font-style="normal"
+         text-decoration="normal">
+        <tspan
+           id="tspan248"
+           dy="0"
+           x="-4">22 Mar - 25 Mar</tspan>
+      </text>
+      <text
+         style="text-anchor:start"
+         y="4"
+         type=""
+         class="farLeftField ember-view"
+         id="ember1066"
+         dx="0"
+         dy="0"
+         dragGroup="false"
+         init-drag="true"
+         data-max-width="0">
+        <!---->
+      </text>
+    </g>
+  </g>
+  <g
+     class="ember-view"
+     id="groupedac08db-5232-4e31-a2e1-81e76d407983">
+    <g
+       class="pin-visual-task ember-view"
+       id="taskedac08db-5232-4e31-a2e1-81e76d407983"
+       transform="translate(252,222.4)">
+      <g
+         style="fill:#cccccc"
+         width="0"
+         class="horizontalConnector ember-view"
+         id="ember1067"
+         height="1"
+         x="0"
+         y="5.5"
+         dragGroup="false">
+        <rect
+           style="fill-opacity:0"
+           id="rect254"
+           width="0"
+           dragGroup="false"
+           height="7"
+           y="2.5"
+           x="0" />
+        <rect
+           id="rect256"
+           width="0"
+           dragGroup="false"
+           height="1"
+           y="5.5"
+           x="0" />
+      </g>
+      <g
+         style="fill:#b20e12"
+         height="-141.9999938964843"
+         class="verticalConnector ember-view"
+         id="ember1068"
+         width="1"
+         x="0"
+         y="0"
+         dragGroup="false">
+        <path
+           style="fill-opacity:0"
+           inkscape:connector-curvature="0"
+           id="path259"
+           dragGroup="false"
+           d="M -3,-105.99999 H 4 V -47 h -7 v -58.99999 M -3,-34 h 7 v 2 h -7 v -2 m 0,15 h 7 v 2 h -7 v -2 m 0,15 H 4 V 6 H -3 V -4" />
+        <path
+           inkscape:connector-curvature="0"
+           id="path261"
+           dragGroup="false"
+           d="M 0,-105.99999 H 1 V -47 H 0 v -58.99999 M 0,-34 h 1 v 2 H 0 v -2 m 0,15 h 1 v 2 H 0 v -2 M 0,-4 H 1 V 6 H 0 V -4" />
+      </g>
+      <g
+         style="fill:#b20e12"
+         height="-141.9999938964843"
+         class="verticalConnector ember-view"
+         id="ember1069"
+         width="1"
+         x="0"
+         y="0"
+         dragGroup="false">
+        <path
+           style="fill-opacity:0"
+           inkscape:connector-curvature="0"
+           id="path264"
+           dragGroup="false"
+           d="m 238,-105.99999 h 7 V 6 h -7 v -111.99999" />
+        <path
+           inkscape:connector-curvature="0"
+           id="path266"
+           dragGroup="false"
+           d="m 241,-105.99999 h 1 V 6 h -1 v -111.99999" />
+      </g>
+      <text
+         style="font-style:normal;font-weight:normal;font-size:8px;font-family:Arial;text-anchor:start;fill:#c0504d"
+         y="0"
+         type="duration"
+         class="topField ember-view"
+         id="ember1070"
+         dx="0"
+         dy="0"
+         font-size="8"
+         dragGroup="false"
+         init-drag="true"
+         font-weight="normal"
+         font-style="normal"
+         text-decoration="normal"
+         data-max-width="200"
+         tspanDX="2">
+        <!---->
+      </text>
+      <g
+         class="centerShape js-pin-visual-task-shape movementPointer ember-view"
+         id="ember1071">
+        <path
+           inkscape:connector-curvature="0"
+           width="242"
+           class="js-pin__timeline-shape-with-overlay__shape movementPointer ember-view"
+           id="ember1072"
+           height="12"
+           x="0"
+           y="0"
+           shapeType=""
+           style="fill:#b20e12;fill-opacity:1"
+           d="M 0,0 M 0,10.8 V 1.2 Q 0.3,0.3 1.2,0 h 239.6 q 0.9,0.3 1.2,1.2 v 9.6 q -0.3,0.9 -1.2,1.2 H 1.2 Q 0.3,11.7 0,10.8 Z" />
+        <!---->
+      </g>
+      <text
+         style="font-style:normal;font-weight:bold;font-size:8px;font-family:Arial;text-anchor:middle;fill:#ffffff"
+         y="8"
+         type="title"
+         class="centerField ember-view"
+         id="ember1073"
+         dx="0"
+         dy="0"
+         font-size="8"
+         dragGroup="false"
+         init-drag="true"
+         font-weight="bold"
+         font-style="normal"
+         text-decoration="normal"
+         data-max-width="746">
+        <tspan
+           id="tspan272"
+           dy="0"
+           x="121">WP2. Implementation</tspan>
+      </text>
+      <text
+         style="font-style:normal;font-weight:normal;font-size:8px;font-family:Arial;text-anchor:end;fill:#c0504d"
+         y="12"
+         type="progress"
+         class="bottomField ember-view"
+         id="ember1075"
+         dx="0"
+         dy="0"
+         font-size="8"
+         dragGroup="false"
+         init-drag="true"
+         font-weight="normal"
+         font-style="normal"
+         text-decoration="normal"
+         data-max-width="200"
+         tspanDX="2">
+        <!---->
+      </text>
+      <text
+         style="font-style:normal;font-weight:normal;font-size:8px;font-family:Arial;text-anchor:start;fill:#b20e12"
+         y="8"
+         type="endDate"
+         class="rightField ember-view"
+         id="ember1076"
+         dx="0"
+         dy="0"
+         font-size="8"
+         dragGroup="false"
+         init-drag="true"
+         font-weight="normal"
+         font-style="normal"
+         text-decoration="normal"
+         data-max-width="200">
+        <tspan
+           id="tspan276"
+           dy="0"
+           x="246">Sat 2/5/20</tspan>
+      </text>
+      <text
+         style="font-style:normal;font-weight:normal;font-size:8px;font-family:Arial;text-anchor:end;fill:#b20e12"
+         data-max-width="200"
+         y="8"
+         type="startDate"
+         class="leftField ember-view"
+         id="ember1078"
+         dx="0"
+         dy="0"
+         font-size="8"
+         dragGroup="false"
+         init-drag="true"
+         font-weight="normal"
+         font-style="normal"
+         text-decoration="normal">
+        <tspan
+           id="tspan279"
+           dy="0"
+           x="-4">Sun 29/3/20</tspan>
+      </text>
+      <text
+         style="text-anchor:start"
+         y="6"
+         type=""
+         class="farLeftField ember-view"
+         id="ember1080"
+         dx="0"
+         dy="0"
+         dragGroup="false"
+         init-drag="true"
+         data-max-width="0">
+        <!---->
+      </text>
+    </g>
+  </g>
+  <g
+     class="ember-view"
+     id="group176fffd9-2286-4822-9bb4-b7201c9a030d">
+    <g
+       class="pin-visual-task ember-view"
+       id="task176fffd9-2286-4822-9bb4-b7201c9a030d"
+       transform="translate(259,240.4)">
+      <g
+         style="fill:#cccccc"
+         width="0"
+         class="horizontalConnector ember-view"
+         id="ember1081"
+         height="1"
+         x="0"
+         y="3.5"
+         dragGroup="false">
+        <rect
+           style="fill-opacity:0"
+           id="rect285"
+           width="0"
+           dragGroup="false"
+           height="7"
+           y="0.5"
+           x="0" />
+        <rect
+           id="rect287"
+           width="0"
+           dragGroup="false"
+           height="1"
+           y="3.5"
+           x="0" />
+      </g>
+      <!---->
+      <text
+         style="font-style:normal;font-weight:normal;font-size:8px;font-family:Arial;text-anchor:start;fill:#c0504d"
+         y="0"
+         type="duration"
+         class="topField ember-view"
+         id="ember1082"
+         dx="0"
+         dy="0"
+         font-size="8"
+         dragGroup="false"
+         init-drag="true"
+         font-weight="normal"
+         font-style="normal"
+         text-decoration="normal"
+         data-max-width="200"
+         tspanDX="2">
+        <!---->
+      </text>
+      <g
+         class="centerShape js-pin-visual-task-shape movementPointer ember-view"
+         id="ember1083">
+        <path
+           inkscape:connector-curvature="0"
+           width="34"
+           class="js-pin__timeline-shape-with-overlay__shape movementPointer ember-view"
+           id="ember1084"
+           height="8"
+           x="0"
+           y="0"
+           shapeType=""
+           style="fill:#ff0000;fill-opacity:1"
+           d="m 0,0 h 30 l 4,4 -4,4 H 0 Z" />
+        <!---->
+      </g>
+      <text
+         style="text-anchor:middle"
+         y="4"
+         type=""
+         class="centerField ember-view"
+         id="ember1085"
+         dx="0"
+         dy="0"
+         dragGroup="false"
+         init-drag="true"
+         data-max-width="0">
+        <!---->
+      </text>
+      <text
+         style="font-style:normal;font-weight:normal;font-size:8px;font-family:Arial;text-anchor:end;fill:#c0504d"
+         y="8"
+         type="progress"
+         class="bottomField ember-view"
+         id="ember1086"
+         dx="0"
+         dy="0"
+         font-size="8"
+         dragGroup="false"
+         init-drag="true"
+         font-weight="normal"
+         font-style="normal"
+         text-decoration="normal"
+         data-max-width="200"
+         tspanDX="2">
+        <!---->
+      </text>
+      <text
+         style="font-style:normal;font-weight:bold;font-size:8px;font-family:Arial;text-anchor:start;fill:#000000"
+         y="6"
+         type="title"
+         class="rightField ember-view"
+         id="ember1087"
+         dx="0"
+         dy="0"
+         font-size="8"
+         dragGroup="false"
+         init-drag="true"
+         font-weight="bold"
+         font-style="normal"
+         text-decoration="normal"
+         data-max-width="653">
+        <tspan
+           id="tspan295"
+           dy="0"
+           x="38">Understand throttling dynamics</tspan>
+      </text>
+      <text
+         style="font-style:normal;font-weight:normal;font-size:8px;font-family:Arial;text-anchor:end;fill:#a5a5a5"
+         data-max-width="200"
+         y="6"
+         type="startDate"
+         class="leftField ember-view"
+         id="ember1089"
+         dx="0"
+         dy="0"
+         font-size="8"
+         dragGroup="false"
+         init-drag="true"
+         font-weight="normal"
+         font-style="normal"
+         text-decoration="normal">
+        <tspan
+           id="tspan298"
+           dy="0"
+           x="-4">30 Mar - 3 Apr</tspan>
+      </text>
+      <text
+         style="text-anchor:start"
+         y="4"
+         type=""
+         class="farLeftField ember-view"
+         id="ember1091"
+         dx="0"
+         dy="0"
+         dragGroup="false"
+         init-drag="true"
+         data-max-width="0">
+        <!---->
+      </text>
+    </g>
+  </g>
+  <g
+     class="ember-view"
+     id="groupdac56bc7-108f-4620-9180-63e83cccde1d">
+    <g
+       class="pin-visual-task ember-view"
+       id="taskdac56bc7-108f-4620-9180-63e83cccde1d"
+       transform="translate(300,254.4)">
+      <g
+         style="fill:#cccccc"
+         width="0"
+         class="horizontalConnector ember-view"
+         id="ember1092"
+         height="1"
+         x="0"
+         y="3.5"
+         dragGroup="false">
+        <rect
+           style="fill-opacity:0"
+           id="rect304"
+           width="0"
+           dragGroup="false"
+           height="7"
+           y="0.5"
+           x="0" />
+        <rect
+           id="rect306"
+           width="0"
+           dragGroup="false"
+           height="1"
+           y="3.5"
+           x="0" />
+      </g>
+      <!---->
+      <text
+         style="font-style:normal;font-weight:normal;font-size:8px;font-family:Arial;text-anchor:start;fill:#c0504d"
+         y="0"
+         type="duration"
+         class="topField ember-view"
+         id="ember1093"
+         dx="0"
+         dy="0"
+         font-size="8"
+         dragGroup="false"
+         init-drag="true"
+         font-weight="normal"
+         font-style="normal"
+         text-decoration="normal"
+         data-max-width="200"
+         tspanDX="2">
+        <!---->
+      </text>
+      <g
+         class="centerShape js-pin-visual-task-shape movementPointer ember-view"
+         id="ember1094">
+        <path
+           inkscape:connector-curvature="0"
+           width="35"
+           class="js-pin__timeline-shape-with-overlay__shape movementPointer ember-view"
+           id="ember1095"
+           height="8"
+           x="0"
+           y="0"
+           shapeType=""
+           style="fill:#ff0000;fill-opacity:1"
+           d="m 0,0 h 31 l 4,4 -4,4 H 0 Z" />
+        <!---->
+      </g>
+      <text
+         style="text-anchor:middle"
+         y="4"
+         type=""
+         class="centerField ember-view"
+         id="ember1096"
+         dx="0"
+         dy="0"
+         dragGroup="false"
+         init-drag="true"
+         data-max-width="0">
+        <!---->
+      </text>
+      <text
+         style="font-style:normal;font-weight:normal;font-size:8px;font-family:Arial;text-anchor:end;fill:#c0504d"
+         y="8"
+         type="progress"
+         class="bottomField ember-view"
+         id="ember1097"
+         dx="0"
+         dy="0"
+         font-size="8"
+         dragGroup="false"
+         init-drag="true"
+         font-weight="normal"
+         font-style="normal"
+         text-decoration="normal"
+         data-max-width="200"
+         tspanDX="2">
+        <!---->
+      </text>
+      <text
+         style="font-style:normal;font-weight:bold;font-size:8px;font-family:Arial;text-anchor:start;fill:#000000"
+         y="6"
+         type="title"
+         class="rightField ember-view"
+         id="ember1098"
+         dx="0"
+         dy="0"
+         font-size="8"
+         dragGroup="false"
+         init-drag="true"
+         font-weight="bold"
+         font-style="normal"
+         text-decoration="normal"
+         data-max-width="611">
+        <tspan
+           id="tspan314"
+           dy="0"
+           x="39">Design general operation</tspan>
+      </text>
+      <text
+         style="font-style:normal;font-weight:normal;font-size:8px;font-family:Arial;text-anchor:end;fill:#a5a5a5"
+         data-max-width="200"
+         y="6"
+         type="startDate"
+         class="leftField ember-view"
+         id="ember1100"
+         dx="0"
+         dy="0"
+         font-size="8"
+         dragGroup="false"
+         init-drag="true"
+         font-weight="normal"
+         font-style="normal"
+         text-decoration="normal">
+        <tspan
+           id="tspan317"
+           dy="0"
+           x="-4">5 Apr - 9 Apr</tspan>
+      </text>
+      <text
+         style="text-anchor:start"
+         y="4"
+         type=""
+         class="farLeftField ember-view"
+         id="ember1102"
+         dx="0"
+         dy="0"
+         dragGroup="false"
+         init-drag="true"
+         data-max-width="0">
+        <!---->
+      </text>
+    </g>
+  </g>
+  <g
+     class="ember-view"
+     id="group914376a9-1b8f-4f9d-9c9b-0830ac335958">
+    <g
+       class="pin-visual-task ember-view"
+       id="task914376a9-1b8f-4f9d-9c9b-0830ac335958"
+       transform="translate(349,268.4)">
+      <g
+         style="fill:#cccccc"
+         width="0"
+         class="horizontalConnector ember-view"
+         id="ember1103"
+         height="1"
+         x="0"
+         y="3.5"
+         dragGroup="false">
+        <rect
+           style="fill-opacity:0"
+           id="rect323"
+           width="0"
+           dragGroup="false"
+           height="7"
+           y="0.5"
+           x="0" />
+        <rect
+           id="rect325"
+           width="0"
+           dragGroup="false"
+           height="1"
+           y="3.5"
+           x="0" />
+      </g>
+      <!---->
+      <text
+         style="font-style:normal;font-weight:normal;font-size:8px;font-family:Arial;text-anchor:start;fill:#c0504d"
+         y="0"
+         type="duration"
+         class="topField ember-view"
+         id="ember1104"
+         dx="0"
+         dy="0"
+         font-size="8"
+         dragGroup="false"
+         init-drag="true"
+         font-weight="normal"
+         font-style="normal"
+         text-decoration="normal"
+         data-max-width="200"
+         tspanDX="2">
+        <!---->
+      </text>
+      <g
+         class="centerShape js-pin-visual-task-shape movementPointer ember-view"
+         id="ember1105">
+        <path
+           inkscape:connector-curvature="0"
+           width="83"
+           class="js-pin__timeline-shape-with-overlay__shape movementPointer ember-view"
+           id="ember1106"
+           height="8"
+           x="0"
+           y="0"
+           shapeType=""
+           style="fill:#ff0000;fill-opacity:1"
+           d="m 0,0 h 79 l 4,4 -4,4 H 0 Z" />
+        <!---->
+      </g>
+      <text
+         style="text-anchor:middle"
+         y="4"
+         type=""
+         class="centerField ember-view"
+         id="ember1107"
+         dx="0"
+         dy="0"
+         dragGroup="false"
+         init-drag="true"
+         data-max-width="0">
+        <!---->
+      </text>
+      <text
+         style="font-style:normal;font-weight:normal;font-size:8px;font-family:Arial;text-anchor:end;fill:#c0504d"
+         y="8"
+         type="progress"
+         class="bottomField ember-view"
+         id="ember1108"
+         dx="0"
+         dy="0"
+         font-size="8"
+         dragGroup="false"
+         init-drag="true"
+         font-weight="normal"
+         font-style="normal"
+         text-decoration="normal"
+         data-max-width="200"
+         tspanDX="2">
+        <!---->
+      </text>
+      <text
+         style="font-style:normal;font-weight:bold;font-size:8px;font-family:Arial;text-anchor:start;fill:#000000"
+         y="6"
+         type="title"
+         class="rightField ember-view"
+         id="ember1109"
+         dx="0"
+         dy="0"
+         font-size="8"
+         dragGroup="false"
+         init-drag="true"
+         font-weight="bold"
+         font-style="normal"
+         text-decoration="normal"
+         data-max-width="514">
+        <tspan
+           id="tspan333"
+           dy="0"
+           x="87">PoC development</tspan>
+      </text>
+      <text
+         style="font-style:normal;font-weight:normal;font-size:8px;font-family:Arial;text-anchor:end;fill:#a5a5a5"
+         data-max-width="200"
+         y="6"
+         type="startDate"
+         class="leftField ember-view"
+         id="ember1111"
+         dx="0"
+         dy="0"
+         font-size="8"
+         dragGroup="false"
+         init-drag="true"
+         font-weight="normal"
+         font-style="normal"
+         text-decoration="normal">
+        <tspan
+           id="tspan336"
+           dy="0"
+           x="-4">12 Apr - 23 Apr</tspan>
+      </text>
+      <text
+         style="text-anchor:start"
+         y="4"
+         type=""
+         class="farLeftField ember-view"
+         id="ember1113"
+         dx="0"
+         dy="0"
+         dragGroup="false"
+         init-drag="true"
+         data-max-width="0">
+        <!---->
+      </text>
+    </g>
+  </g>
+  <g
+     class="ember-view"
+     id="group868ecb1b-cff0-4cab-88be-337ae3adb314">
+    <g
+       class="pin-visual-task ember-view"
+       id="task868ecb1b-cff0-4cab-88be-337ae3adb314"
+       transform="translate(445,282.4)">
+      <g
+         style="fill:#cccccc"
+         width="0"
+         class="horizontalConnector ember-view"
+         id="ember1114"
+         height="1"
+         x="0"
+         y="3.5"
+         dragGroup="false">
+        <rect
+           style="fill-opacity:0"
+           id="rect342"
+           width="0"
+           dragGroup="false"
+           height="7"
+           y="0.5"
+           x="0" />
+        <rect
+           id="rect344"
+           width="0"
+           dragGroup="false"
+           height="1"
+           y="3.5"
+           x="0" />
+      </g>
+      <!---->
+      <text
+         style="font-style:normal;font-weight:normal;font-size:8px;font-family:Arial;text-anchor:start;fill:#c0504d"
+         y="0"
+         type="duration"
+         class="topField ember-view"
+         id="ember1115"
+         dx="0"
+         dy="0"
+         font-size="8"
+         dragGroup="false"
+         init-drag="true"
+         font-weight="normal"
+         font-style="normal"
+         text-decoration="normal"
+         data-max-width="200"
+         tspanDX="2">
+        <!---->
+      </text>
+      <g
+         class="centerShape js-pin-visual-task-shape movementPointer ember-view"
+         id="ember1116">
+        <path
+           inkscape:connector-curvature="0"
+           width="14"
+           class="js-pin__timeline-shape-with-overlay__shape movementPointer ember-view"
+           id="ember1117"
+           height="8"
+           x="0"
+           y="0"
+           shapeType=""
+           style="fill:#ff0000;fill-opacity:1"
+           d="m 0,0 h 10 l 4,4 -4,4 H 0 Z" />
+        <!---->
+      </g>
+      <text
+         style="text-anchor:middle"
+         y="4"
+         type=""
+         class="centerField ember-view"
+         id="ember1118"
+         dx="0"
+         dy="0"
+         dragGroup="false"
+         init-drag="true"
+         data-max-width="0">
+        <!---->
+      </text>
+      <text
+         style="font-style:normal;font-weight:normal;font-size:8px;font-family:Arial;text-anchor:end;fill:#c0504d"
+         y="8"
+         type="progress"
+         class="bottomField ember-view"
+         id="ember1119"
+         dx="0"
+         dy="0"
+         font-size="8"
+         dragGroup="false"
+         init-drag="true"
+         font-weight="normal"
+         font-style="normal"
+         text-decoration="normal"
+         data-max-width="200"
+         tspanDX="2">
+        <!---->
+      </text>
+      <text
+         style="font-style:normal;font-weight:bold;font-size:8px;font-family:Arial;text-anchor:start;fill:#000000"
+         y="6"
+         type="title"
+         class="rightField ember-view"
+         id="ember1120"
+         dx="0"
+         dy="0"
+         font-size="8"
+         dragGroup="false"
+         init-drag="true"
+         font-weight="bold"
+         font-style="normal"
+         text-decoration="normal"
+         data-max-width="487">
+        <tspan
+           id="tspan352"
+           dy="0"
+           x="18">Perform basic tests</tspan>
+      </text>
+      <text
+         style="font-style:normal;font-weight:normal;font-size:8px;font-family:Arial;text-anchor:end;fill:#a5a5a5"
+         data-max-width="200"
+         y="6"
+         type="startDate"
+         class="leftField ember-view"
+         id="ember1122"
+         dx="0"
+         dy="0"
+         font-size="8"
+         dragGroup="false"
+         init-drag="true"
+         font-weight="normal"
+         font-style="normal"
+         text-decoration="normal">
+        <tspan
+           id="tspan355"
+           dy="0"
+           x="-4">26 Apr - 27 Apr</tspan>
+      </text>
+      <text
+         style="text-anchor:start"
+         y="4"
+         type=""
+         class="farLeftField ember-view"
+         id="ember1124"
+         dx="0"
+         dy="0"
+         dragGroup="false"
+         init-drag="true"
+         data-max-width="0">
+        <!---->
+      </text>
+    </g>
+  </g>
+  <g
+     class="ember-view"
+     id="group9c6842d7-84ec-4b4e-b37e-2df9586251b0">
+    <g
+       class="pin-visual-task ember-view"
+       id="task9c6842d7-84ec-4b4e-b37e-2df9586251b0"
+       transform="translate(494,295.4)">
+      <g
+         style="fill:#cccccc"
+         width="0"
+         class="horizontalConnector ember-view"
+         id="ember1125"
+         height="1"
+         x="0"
+         y="5.5"
+         dragGroup="false">
+        <rect
+           style="fill-opacity:0"
+           id="rect361"
+           width="0"
+           dragGroup="false"
+           height="7"
+           y="2.5"
+           x="0" />
+        <rect
+           id="rect363"
+           width="0"
+           dragGroup="false"
+           height="1"
+           y="5.5"
+           x="0" />
+      </g>
+      <g
+         style="fill:#ed7d31"
+         height="-214.9999938964843"
+         class="verticalConnector ember-view"
+         id="ember1126"
+         width="1"
+         x="0"
+         y="0"
+         dragGroup="false">
+        <path
+           style="fill-opacity:0"
+           inkscape:connector-curvature="0"
+           id="path366"
+           dragGroup="false"
+           d="M -3,-178.99999 H 4 V -75 H -3 V -178.99999 M -3,-59 h 7 v 29 h -7 v -29 m 0,42 h 7 v 1 h -7 v -1 m 0,14 h 7 v 9 h -7 v -9" />
+        <path
+           inkscape:connector-curvature="0"
+           id="path368"
+           dragGroup="false"
+           d="M 0,-178.99999 H 1 V -75 H 0 V -178.99999 M 0,-59 h 1 v 29 H 0 v -29 m 0,42 h 1 v 1 H 0 v -1 M 0,-3 H 1 V 6 H 0 v -9" />
+      </g>
+      <g
+         style="fill:#ed7d31"
+         height="-214.9999938964843"
+         class="verticalConnector ember-view"
+         id="ember1127"
+         width="1"
+         x="0"
+         y="0"
+         dragGroup="false">
+        <path
+           style="fill-opacity:0"
+           inkscape:connector-curvature="0"
+           id="path371"
+           dragGroup="false"
+           d="m 251,-178.99999 h 7 V 6 h -7 v -184.99999" />
+        <path
+           inkscape:connector-curvature="0"
+           id="path373"
+           dragGroup="false"
+           d="m 254,-178.99999 h 1 V 6 h -1 v -184.99999" />
+      </g>
+      <text
+         style="font-style:normal;font-weight:normal;font-size:8px;font-family:Arial;text-anchor:start;fill:#c0504d"
+         y="0"
+         type="duration"
+         class="topField ember-view"
+         id="ember1128"
+         dx="0"
+         dy="0"
+         font-size="8"
+         dragGroup="false"
+         init-drag="true"
+         font-weight="normal"
+         font-style="normal"
+         text-decoration="normal"
+         data-max-width="200"
+         tspanDX="2">
+        <!---->
+      </text>
+      <g
+         class="centerShape js-pin-visual-task-shape movementPointer ember-view"
+         id="ember1129">
+        <path
+           inkscape:connector-curvature="0"
+           width="255"
+           class="js-pin__timeline-shape-with-overlay__shape movementPointer ember-view"
+           id="ember1130"
+           height="12"
+           x="0"
+           y="0"
+           shapeType=""
+           style="fill:#ed7d31;fill-opacity:1"
+           d="M 0,0 M 0,10.8 V 1.2 Q 0.3,0.3 1.2,0 h 252.6 q 0.9,0.3 1.2,1.2 v 9.6 q -0.3,0.9 -1.2,1.2 H 1.2 Q 0.3,11.7 0,10.8 Z" />
+        <!---->
+      </g>
+      <text
+         style="font-style:normal;font-weight:bold;font-size:8px;font-family:Arial;text-anchor:middle;fill:#ffffff"
+         y="8"
+         type="title"
+         class="centerField ember-view"
+         id="ember1131"
+         dx="0"
+         dy="0"
+         font-size="8"
+         dragGroup="false"
+         init-drag="true"
+         font-weight="bold"
+         font-style="normal"
+         text-decoration="normal"
+         data-max-width="677">
+        <tspan
+           id="tspan379"
+           dy="0"
+           x="127.5">WP3. Discussion</tspan>
+      </text>
+      <text
+         style="font-style:normal;font-weight:normal;font-size:8px;font-family:Arial;text-anchor:end;fill:#c0504d"
+         y="12"
+         type="progress"
+         class="bottomField ember-view"
+         id="ember1133"
+         dx="0"
+         dy="0"
+         font-size="8"
+         dragGroup="false"
+         init-drag="true"
+         font-weight="normal"
+         font-style="normal"
+         text-decoration="normal"
+         data-max-width="200"
+         tspanDX="2">
+        <!---->
+      </text>
+      <text
+         style="font-style:normal;font-weight:normal;font-size:9px;font-family:Arial;text-anchor:start;fill:#ed7d31"
+         y="9"
+         type="endDate"
+         class="rightField ember-view"
+         id="ember1134"
+         dx="0"
+         dy="0"
+         font-size="9"
+         dragGroup="false"
+         init-drag="true"
+         font-weight="normal"
+         font-style="normal"
+         text-decoration="normal"
+         data-max-width="197">
+        <tspan
+           id="tspan383"
+           dy="0"
+           x="259">Mon 8/6/20</tspan>
+      </text>
+      <text
+         style="font-style:normal;font-weight:normal;font-size:9px;font-family:Arial;text-anchor:end;fill:#ed7d31"
+         data-max-width="200"
+         y="9"
+         type="startDate"
+         class="leftField ember-view"
+         id="ember1136"
+         dx="0"
+         dy="0"
+         font-size="9"
+         dragGroup="false"
+         init-drag="true"
+         font-weight="normal"
+         font-style="normal"
+         text-decoration="normal">
+        <tspan
+           id="tspan386"
+           dy="0"
+           x="-4">Sun 3/5/20</tspan>
+      </text>
+      <text
+         style="text-anchor:start"
+         y="6"
+         type=""
+         class="farLeftField ember-view"
+         id="ember1138"
+         dx="0"
+         dy="0"
+         dragGroup="false"
+         init-drag="true"
+         data-max-width="0">
+        <!---->
+      </text>
+    </g>
+  </g>
+  <g
+     class="ember-view"
+     id="groupf65749dc-21cc-4d65-a30b-c3fb9507c3d0">
+    <g
+       class="pin-visual-task ember-view"
+       id="taskf65749dc-21cc-4d65-a30b-c3fb9507c3d0"
+       transform="translate(521,313.4)">
+      <g
+         style="fill:#cccccc"
+         width="0"
+         class="horizontalConnector ember-view"
+         id="ember1139"
+         height="1"
+         x="0"
+         y="3.5"
+         dragGroup="false">
+        <rect
+           style="fill-opacity:0"
+           id="rect392"
+           width="0"
+           dragGroup="false"
+           height="7"
+           y="0.5"
+           x="0" />
+        <rect
+           id="rect394"
+           width="0"
+           dragGroup="false"
+           height="1"
+           y="3.5"
+           x="0" />
+      </g>
+      <!---->
+      <text
+         style="font-style:normal;font-weight:normal;font-size:8px;font-family:Arial;text-anchor:start;fill:#c0504d"
+         y="0"
+         type="duration"
+         class="topField ember-view"
+         id="ember1140"
+         dx="0"
+         dy="0"
+         font-size="8"
+         dragGroup="false"
+         init-drag="true"
+         font-weight="normal"
+         font-style="normal"
+         text-decoration="normal"
+         data-max-width="200"
+         tspanDX="2">
+        <!---->
+      </text>
+      <g
+         class="centerShape js-pin-visual-task-shape movementPointer ember-view"
+         id="ember1141">
+        <path
+           inkscape:connector-curvature="0"
+           width="35"
+           class="js-pin__timeline-shape-with-overlay__shape movementPointer ember-view"
+           id="ember1142"
+           height="8"
+           x="0"
+           y="0"
+           shapeType=""
+           style="fill:#ed7d31;fill-opacity:1"
+           d="m 0,0 h 31 l 4,4 -4,4 H 0 Z" />
+        <!---->
+      </g>
+      <text
+         style="text-anchor:middle"
+         y="4"
+         type=""
+         class="centerField ember-view"
+         id="ember1143"
+         dx="0"
+         dy="0"
+         dragGroup="false"
+         init-drag="true"
+         data-max-width="0">
+        <!---->
+      </text>
+      <text
+         style="font-style:normal;font-weight:normal;font-size:8px;font-family:Arial;text-anchor:end;fill:#c0504d"
+         y="8"
+         type="progress"
+         class="bottomField ember-view"
+         id="ember1144"
+         dx="0"
+         dy="0"
+         font-size="8"
+         dragGroup="false"
+         init-drag="true"
+         font-weight="normal"
+         font-style="normal"
+         text-decoration="normal"
+         data-max-width="200"
+         tspanDX="2">
+        <!---->
+      </text>
+      <text
+         style="font-style:normal;font-weight:bold;font-size:8px;font-family:Arial;text-anchor:start;fill:#000000"
+         y="6"
+         type="title"
+         class="rightField ember-view"
+         id="ember1145"
+         dx="0"
+         dy="0"
+         font-size="8"
+         dragGroup="false"
+         init-drag="true"
+         font-weight="bold"
+         font-style="normal"
+         text-decoration="normal"
+         data-max-width="390">
+        <tspan
+           id="tspan402"
+           dy="0"
+           x="39">Production tests, measures</tspan>
+      </text>
+      <text
+         style="font-style:normal;font-weight:normal;font-size:8px;font-family:Arial;text-anchor:end;fill:#a5a5a5"
+         data-max-width="200"
+         y="6"
+         type="startDate"
+         class="leftField ember-view"
+         id="ember1147"
+         dx="0"
+         dy="0"
+         font-size="8"
+         dragGroup="false"
+         init-drag="true"
+         font-weight="normal"
+         font-style="normal"
+         text-decoration="normal">
+        <tspan
+           id="tspan405"
+           dy="0"
+           x="-4">7 May - 11 May</tspan>
+      </text>
+      <text
+         style="text-anchor:start"
+         y="4"
+         type=""
+         class="farLeftField ember-view"
+         id="ember1149"
+         dx="0"
+         dy="0"
+         dragGroup="false"
+         init-drag="true"
+         data-max-width="0">
+        <!---->
+      </text>
+    </g>
+  </g>
+  <g
+     class="ember-view"
+     id="group3158e05d-9878-40ce-b3d0-8400ab05f94e">
+    <g
+       class="pin-visual-task ember-view"
+       id="task3158e05d-9878-40ce-b3d0-8400ab05f94e"
+       transform="translate(590,327.4)">
+      <g
+         style="fill:#cccccc"
+         width="0"
+         class="horizontalConnector ember-view"
+         id="ember1150"
+         height="1"
+         x="0"
+         y="3.5"
+         dragGroup="false">
+        <rect
+           style="fill-opacity:0"
+           id="rect411"
+           width="0"
+           dragGroup="false"
+           height="7"
+           y="0.5"
+           x="0" />
+        <rect
+           id="rect413"
+           width="0"
+           dragGroup="false"
+           height="1"
+           y="3.5"
+           x="0" />
+      </g>
+      <!---->
+      <text
+         style="font-style:normal;font-weight:normal;font-size:8px;font-family:Arial;text-anchor:start;fill:#c0504d"
+         y="0"
+         type="duration"
+         class="topField ember-view"
+         id="ember1151"
+         dx="0"
+         dy="0"
+         font-size="8"
+         dragGroup="false"
+         init-drag="true"
+         font-weight="normal"
+         font-style="normal"
+         text-decoration="normal"
+         data-max-width="200"
+         tspanDX="2">
+        <!---->
+      </text>
+      <g
+         class="centerShape js-pin-visual-task-shape movementPointer ember-view"
+         id="ember1152">
+        <path
+           inkscape:connector-curvature="0"
+           width="14"
+           class="js-pin__timeline-shape-with-overlay__shape movementPointer ember-view"
+           id="ember1153"
+           height="8"
+           x="0"
+           y="0"
+           shapeType=""
+           style="fill:#ed7d31;fill-opacity:1"
+           d="m 0,0 h 10 l 4,4 -4,4 H 0 Z" />
+        <!---->
+      </g>
+      <text
+         style="text-anchor:middle"
+         y="4"
+         type=""
+         class="centerField ember-view"
+         id="ember1154"
+         dx="0"
+         dy="0"
+         dragGroup="false"
+         init-drag="true"
+         data-max-width="0">
+        <!---->
+      </text>
+      <text
+         style="font-style:normal;font-weight:normal;font-size:8px;font-family:Arial;text-anchor:end;fill:#c0504d"
+         y="8"
+         type="progress"
+         class="bottomField ember-view"
+         id="ember1155"
+         dx="0"
+         dy="0"
+         font-size="8"
+         dragGroup="false"
+         init-drag="true"
+         font-weight="normal"
+         font-style="normal"
+         text-decoration="normal"
+         data-max-width="200"
+         tspanDX="2">
+        <!---->
+      </text>
+      <text
+         style="font-style:normal;font-weight:bold;font-size:8px;font-family:Arial;text-anchor:start;fill:#000000"
+         y="6"
+         type="title"
+         class="rightField ember-view"
+         id="ember1156"
+         dx="0"
+         dy="0"
+         font-size="8"
+         dragGroup="false"
+         init-drag="true"
+         font-weight="bold"
+         font-style="normal"
+         text-decoration="normal"
+         data-max-width="342">
+        <tspan
+           id="tspan421"
+           dy="0"
+           x="18">Improvement anaysis</tspan>
+      </text>
+      <text
+         style="font-style:normal;font-weight:normal;font-size:8px;font-family:Arial;text-anchor:end;fill:#a5a5a5"
+         data-max-width="200"
+         y="6"
+         type="startDate"
+         class="leftField ember-view"
+         id="ember1158"
+         dx="0"
+         dy="0"
+         font-size="8"
+         dragGroup="false"
+         init-drag="true"
+         font-weight="normal"
+         font-style="normal"
+         text-decoration="normal">
+        <tspan
+           id="tspan424"
+           dy="0"
+           x="-4">17 May - 18 May</tspan>
+      </text>
+      <text
+         style="text-anchor:start"
+         y="4"
+         type=""
+         class="farLeftField ember-view"
+         id="ember1160"
+         dx="0"
+         dy="0"
+         dragGroup="false"
+         init-drag="true"
+         data-max-width="0">
+        <!---->
+      </text>
+    </g>
+  </g>
+  <g
+     class="ember-view"
+     id="group628f783a-3055-4621-ad84-36a20cf4adc5">
+    <g
+       class="pin-visual-task ember-view"
+       id="task628f783a-3055-4621-ad84-36a20cf4adc5"
+       transform="translate(632,341.4)">
+      <g
+         style="fill:#cccccc"
+         width="0"
+         class="horizontalConnector ember-view"
+         id="ember1161"
+         height="1"
+         x="0"
+         y="3.5"
+         dragGroup="false">
+        <rect
+           style="fill-opacity:0"
+           id="rect430"
+           width="0"
+           dragGroup="false"
+           height="7"
+           y="0.5"
+           x="0" />
+        <rect
+           id="rect432"
+           width="0"
+           dragGroup="false"
+           height="1"
+           y="3.5"
+           x="0" />
+      </g>
+      <!---->
+      <text
+         style="font-style:normal;font-weight:normal;font-size:8px;font-family:Arial;text-anchor:start;fill:#c0504d"
+         y="0"
+         type="duration"
+         class="topField ember-view"
+         id="ember1162"
+         dx="0"
+         dy="0"
+         font-size="8"
+         dragGroup="false"
+         init-drag="true"
+         font-weight="normal"
+         font-style="normal"
+         text-decoration="normal"
+         data-max-width="200"
+         tspanDX="2">
+        <!---->
+      </text>
+      <g
+         class="centerShape js-pin-visual-task-shape movementPointer ember-view"
+         id="ember1163">
+        <path
+           inkscape:connector-curvature="0"
+           width="110"
+           class="js-pin__timeline-shape-with-overlay__shape movementPointer ember-view"
+           id="ember1164"
+           height="8"
+           x="0"
+           y="0"
+           shapeType=""
+           style="fill:#c0504d;fill-opacity:1"
+           d="m 0,0 h 106 l 4,4 -4,4 H 0 Z" />
+        <!---->
+      </g>
+      <text
+         style="text-anchor:middle"
+         y="4"
+         type=""
+         class="centerField ember-view"
+         id="ember1165"
+         dx="0"
+         dy="0"
+         dragGroup="false"
+         init-drag="true"
+         data-max-width="0">
+        <!---->
+      </text>
+      <text
+         style="font-style:normal;font-weight:normal;font-size:8px;font-family:Arial;text-anchor:end;fill:#c0504d"
+         y="8"
+         type="progress"
+         class="bottomField ember-view"
+         id="ember1166"
+         dx="0"
+         dy="0"
+         font-size="8"
+         dragGroup="false"
+         init-drag="true"
+         font-weight="normal"
+         font-style="normal"
+         text-decoration="normal"
+         data-max-width="200"
+         tspanDX="2">
+        <!---->
+      </text>
+      <text
+         style="font-style:normal;font-weight:bold;font-size:8px;font-family:Arial;text-anchor:start;fill:#000000"
+         y="6"
+         type="title"
+         class="rightField ember-view"
+         id="ember1167"
+         dx="0"
+         dy="0"
+         font-size="8"
+         dragGroup="false"
+         init-drag="true"
+         font-weight="bold"
+         font-style="normal"
+         text-decoration="normal"
+         data-max-width="204">
+        <tspan
+           id="tspan440"
+           dy="0"
+           x="114">Kernel patch development</tspan>
+      </text>
+      <text
+         style="font-style:normal;font-weight:normal;font-size:8px;font-family:Arial;text-anchor:end;fill:#a5a5a5"
+         data-max-width="200"
+         y="6"
+         type="startDate"
+         class="leftField ember-view"
+         id="ember1169"
+         dx="0"
+         dy="0"
+         font-size="8"
+         dragGroup="false"
+         init-drag="true"
+         font-weight="normal"
+         font-style="normal"
+         text-decoration="normal">
+        <tspan
+           id="tspan443"
+           dy="0"
+           x="-4">23 May - 7 Jun</tspan>
+      </text>
+      <text
+         style="text-anchor:start"
+         y="4"
+         type=""
+         class="farLeftField ember-view"
+         id="ember1171"
+         dx="0"
+         dy="0"
+         dragGroup="false"
+         init-drag="true"
+         data-max-width="0">
+        <!---->
+      </text>
+    </g>
+  </g>
+  <g
+     style="font-weight:400;font-size:8px;font-family:'Source Sans Pro';display:none;visibility:hidden;fill:#ffffff"
+     class="js-strip-on-download c-pin__vertical-drag-label ember-view"
+     id="ember1176"
+     font-size="8"
+     font-weight="400"
+     font-style="regular"
+     visibility="hidden">
+    <filter
+       width="1.3"
+       height="1.5"
+       id="dropshadow">
+      <feGaussianBlur
+         id="feGaussianBlur453"
+         stdDeviation="3"
+         in="SourceAlpha" />
+      <!-- stdDeviation is how much to blur -->
+      <feOffset
+         id="feOffset455"
+         result="offsetblur"
+         dy="2"
+         dx="2" />
+      <!-- how much to offset -->
+      <feComponentTransfer
+         id="feComponentTransfer459">
+        <feFuncA
+           id="feFuncA457"
+           type="linear"
+           slope="0.2" />
+        <!-- slope is the opacity of the shadow -->
+      </feComponentTransfer>
+      <feMerge
+         id="feMerge465">
+        <feMergeNode
+           id="feMergeNode461" />
+        <!-- this contains the offset blurred image -->
+        <feMergeNode
+           id="feMergeNode463"
+           in="SourceGraphic" />
+        <!-- this contains the element that the filter is applied to -->
+      </feMerge>
+    </filter>
+    <path
+       inkscape:connector-curvature="0"
+       id="path468"
+       style="fill:#c54321;fill-opacity:1;filter:url(#dropshadow)"
+       d="" />
+    <text
+       style="text-anchor:start"
+       id="text472"
+       y="3"
+       x="5">
+      <tspan
+         id="tspan470"
+         dy="1em"
+         class="c-pin__vertical-drag-label__text">
+        <!---->
+      </tspan>
+    </text>
+  </g>
+  <g
+     class="pin-visual-timeband js-pin-visual-timeband ember-view"
+     id="ember964"
+     transform="translate(59,86.4)">
+    <text
+       style="font-style:normal;font-weight:bold;font-size:12px;font-family:Arial;text-decoration:none;text-decoration-line:none;text-anchor:end;visibility:hidden;fill:#c0504d"
+       font-style="normal"
+       text-decoration="none"
+       font-weight="bold"
+       type="leftEndCaps"
+       class="js-pin__left-end-caps ember-view"
+       id="ember965"
+       y="19.239258"
+       dx="-10"
+       dy="0"
+       font-size="12"
+       visibility="hidden"
+       data-max-width="0"
+       x="-10.799994">
+      <tspan
+         id="tspan37"
+         dy="0"
+         x="-10.799994">2020</tspan>
+    </text>
+    <text
+       style="font-style:normal;font-weight:bold;font-size:12px;font-family:Arial;text-decoration:none;text-decoration-line:none;text-anchor:start;visibility:visible;fill:#c0504d"
+       font-style="normal"
+       text-decoration="none"
+       font-weight="bold"
+       type="rightEndCaps"
+       class="js-pin__right-end-caps ember-view"
+       id="ember967"
+       y="19.239258"
+       dx="10"
+       dy="0"
+       font-size="12"
+       visibility="visible"
+       data-max-width="0">
+      <tspan
+         id="tspan40"
+         dy="0"
+         x="842">2020</tspan>
+    </text>
+    <g
+       class="js-pin-visual-timeband-shape movementPointer ember-view"
+       id="ember969">
+      <path
+         inkscape:connector-curvature="0"
+         class="js-pin__timeline-shape-with-overlay__shape movementPointer ember-view"
+         id="ember970"
+         width="842"
+         height="30"
+         x="0"
+         y="0"
+         shapeType=""
+         style="fill:#44546a;fill-opacity:1"
+         d="M 0,0 M 0,27 V 3 Q 0.75,0.75 3,0 h 836 q 2.25,0.75 3,3 v 24 q -0.75,2.25 -3,3 H 3 Q 0.75,29.25 0,27 Z" />
+      <clipPath
+         id="cp78a2372a-397a-4d01-94c3-74be4c8d97a1">
+        <path
+           inkscape:connector-curvature="0"
+           class="js-overlay-for-shape movementPointer ember-view"
+           id="ember971"
+           width="842"
+           height="30"
+           x="0"
+           y="0"
+           shapeType=""
+           style="fill:#000000;fill-opacity:0"
+           d="M 0,0 M 0,27 V 3 Q 0.75,0.75 3,0 h 836 q 2.25,0.75 3,3 v 24 q -0.75,2.25 -3,3 H 3 Q 0.75,29.25 0,27 Z" />
+      </clipPath>
+      <path
+         inkscape:connector-curvature="0"
+         class="js-pin-visual-shape-overlay movementPointer ember-view"
+         id="ember972"
+         width="18"
+         height="30"
+         x="0"
+         y="0"
+         shapeType=""
+         style="fill:#ff0000;fill-opacity:1"
+         d="m 0,25 h 18 v 5 H 0 Z"
+         clip-path="url(#cp78a2372a-397a-4d01-94c3-74be4c8d97a1)" />
+    </g>
+    <!---->
+    <text
+       style="font-style:normal;font-weight:normal;font-size:9px;font-family:Arial;text-decoration:none;text-decoration-line:none;text-anchor:start;fill:#ffffff"
+       type="scaleText"
+       class="u-mouse-disabled ember-view"
+       id="segmentText0"
+       y="18"
+       dx="0"
+       dy="0"
+       font-size="9"
+       font-weight="normal"
+       font-style="normal"
+       text-decoration="none"
+       data-max-width="0">
+      <tspan
+         id="tspan48"
+         dy="0"
+         x="4">Mar</tspan>
+    </text>
+    <line
+       style="stroke:#ffffff;stroke-width:1;stroke-opacity:0.3"
+       id="s1"
+       y2="26"
+       x2="214"
+       y1="5"
+       x1="214" />
+    <text
+       style="font-style:normal;font-weight:normal;font-size:9px;font-family:Arial;text-decoration:none;text-decoration-line:none;text-anchor:start;fill:#ffffff"
+       type="scaleText"
+       class="u-mouse-disabled ember-view"
+       id="segmentText1"
+       y="18"
+       dx="0"
+       dy="0"
+       font-size="9"
+       font-weight="normal"
+       font-style="normal"
+       text-decoration="none"
+       data-max-width="0">
+      <tspan
+         id="tspan52"
+         dy="0"
+         x="218">Apr</tspan>
+    </text>
+    <line
+       style="stroke:#ffffff;stroke-width:1;stroke-opacity:0.3"
+       id="s2"
+       y2="26"
+       x2="421"
+       y1="5"
+       x1="421" />
+    <text
+       style="font-style:normal;font-weight:normal;font-size:9px;font-family:Arial;text-decoration:none;text-decoration-line:none;text-anchor:start;fill:#ffffff"
+       type="scaleText"
+       class="u-mouse-disabled ember-view"
+       id="segmentText2"
+       y="18"
+       dx="0"
+       dy="0"
+       font-size="9"
+       font-weight="normal"
+       font-style="normal"
+       text-decoration="none"
+       data-max-width="0">
+      <tspan
+         id="tspan56"
+         dy="0"
+         x="425">May</tspan>
+    </text>
+    <line
+       style="stroke:#ffffff;stroke-width:1;stroke-opacity:0.3"
+       id="s3"
+       y2="26"
+       x2="635"
+       y1="5"
+       x1="635" />
+    <text
+       style="font-style:normal;font-weight:normal;font-size:9px;font-family:Arial;text-decoration:none;text-decoration-line:none;text-anchor:start;fill:#ffffff"
+       type="scaleText"
+       class="u-mouse-disabled ember-view"
+       id="segmentText3"
+       y="18"
+       dx="0"
+       dy="0"
+       font-size="9"
+       font-weight="normal"
+       font-style="normal"
+       text-decoration="none"
+       data-max-width="0">
+      <tspan
+         id="tspan60"
+         dy="0"
+         x="639">Jun</tspan>
+    </text>
+  </g>
+</svg>
