@@ -10,6 +10,7 @@
    - `wb_position_ratio`: algorithm that implements the actual ratelimiting curve, called from `balance_dirty_pages`
    - `global_dirtyable_memory`: function that looks up total dirtyable memory
  - `mm/backing-dev.c`
+ - `fs/fs-writeback.c`
  - `mm/memcontrol.c`
 
 #### Documentation
@@ -28,7 +29,15 @@ unknown:
 nothing is done until dirty space surpasses `dirty_ratio` (20% by default); then I/O is throttled
 
 [143dfe86](https://github.com/torvalds/linux/commit/143dfe8611a63030ce0c79419dc362f7838be557):
-soft throttling begins when dirty space surpasses `avg(dirty_ratio, background_dirty_ratio)` (15% by default)
+soft throttling begins when dirty space surpasses `avg(dirty_ratio, background_dirty_ratio)` (15% by default)  
+this also removes some process-level fairness
+
+[1df64719](https://github.com/torvalds/linux/commit/1df647197c5b8aacaeb58592cba9a1df322c9000):
+"hard throttle 1000+ dd on a slow USB stick" (attempts to completely stop a task
+when rate-limiting isn't enough)
+
+[468e6a20](https://github.com/torvalds/linux/commit/468e6a20afaccb67e2a7d7f60d301f90e1c6f301):
+`task->dirties` and `vm_dirties` are removed because 'no longer used'
 
 [ece13ac3](https://github.com/torvalds/linux/commit/ece13ac31bbe492d940ba0bc4ade2ae1521f46a5):
 tracepoint (re)added to `balance_dirty_pages`
@@ -316,7 +325,8 @@ ramps it up depending on the limit. **Is this per task?** → doesn't seem so.
 
 what is the `strictlimit` feature?  
 what is `struct pglist_data`, called node?  
-what is `get_writeback_state`?
-what changes have been done to `wb_position_ratio`?
+what is `get_writeback_state`?  
+what changes have been done to `wb_position_ratio`?  
+what happened to `dirties` field in `task_struct`, when was it removed?
 
 Position control line seems to be made of two curves, one for the BDI and other for the wb_domain (i.e. memcg?).
