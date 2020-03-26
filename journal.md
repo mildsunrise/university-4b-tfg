@@ -55,6 +55,9 @@ per cgroup 'dirty pages' are now counted
 [a1c3bfb2](https://github.com/torvalds/linux/commit/a1c3bfb2f67ef766de03f1f56bdfff9c8595ab14):
 dirtyable maximum space no longer includes anon (i.e. swappable) pages; that means the effective limit is lowered
 
+[a53eaff8](https://github.com/torvalds/linux/commit/a53eaff8c1192bb5bdfda5deb484bc8f415c5dfd):
+`PF_LESS_THROTTLE` limit increase was increased a bit more (see mention below) to prevent nfsd deadlocks
+
 
 #### Other
 
@@ -327,6 +330,136 @@ what is the `strictlimit` feature?
 what is `struct pglist_data`, called node?  
 what is `get_writeback_state`?  
 what changes have been done to `wb_position_ratio`?  
-what happened to `dirties` field in `task_struct`, when was it removed?
+what happened to `dirties` field in `task_struct`, when was it removed?  
+what is 'period switching'?
 
 Position control line seems to be made of two curves, one for the BDI and other for the wb_domain (i.e. memcg?).
+
+
+## 2020-03-03 (meeting)
+
+Nothing technical, just do a full revision of the workplan, agree on deadlines and tasks.  
+There was no time left to do technical review, we'll do it next.
+
+## 2020-03-06 (meeting)
+
+Conclusions:
+
+ - Making a kernel module, and monkeypatching kernel structures, may be a more feasible flow that changing kernel code
+   and recompiling. It may even be better to do that instead of a userspace daemon.
+   - Read 'Linux device drivers' for how to make Linux modules
+
+ - The dirty bit is integrated into the RAM / architecture, for most of them. It's set automatically by HW and cleared by OS.
+
+ - With respect to the second question at `2020-02-29` (contradiction between having task info and needing FS support):
+
+   - current theory: `account_dirty_page` must be called explicitely by FS... so, the previous per-task fairness was **also** limited to FSes that supported it.
+     - verify it by writing to i.e. `vfat` and see if `account_dirty_page` gets called for that task.
+
+
+## 2020-03-19
+
+Anecdote: `mkfs.ext2` has the `-D` option to use direct I/O, and the man page explains the effects.
+
+Tests will be done over **commit 16fbf79b**.
+
+#### Python tracecmd module
+
+It was REALLY antiquated and needed some fixes and building from git, but everything working now.
+No undefined symbols. And it seems to work on python 3. I've recorded the patches needed at
+`misc`, as well as the built module.
+
+Quick test shows it's working, I can access data inside a recording.
+Good.
+
+#### Dummy loads
+
+The dummy loads will be a single Python program. We'll check with strace
+that no extra syscalls are being made. The core of the loads is to call
+a `cycle` function repeatedly, and log the times of each call.
+
+Dummy loads simulate real programs in a system.
+
+Kinds of dummy loads:
+
+ - control: cycle is only a sleep
+ - read: cycle is a read (few bytes) + sleep
+ - write: cycle is a write (few bytes) + sleep
+ - load: first cycle is a big sleep (to observe normal behaviour), next cycles are just a write of a block (write at full speed)
+
+Some preliminary tests on my own disk: What The Actual Fuck, loads are not throttled
+at all, except when they are throttled, in which case the `write` takes **seconds**
+to complete. Like, maybe 11 seconds. Doesn't look like soft-throttling...
+
+#### Modules
+
+Linux Device Drivers last edition is from 2005 / 2.6, should be enough. Also [this](http://www.tldp.org/LDP/lkmpg/2.6/html/)  
+Kernel documentation on building external modules:
+https://github.com/torvalds/linux/blob/master/Documentation/kbuild/modules.rst
+
+In a nutshell:
+ - write code
+ - write makefile
+ - `make -C /lib/modules/$(uname -r)/build M=$PWD`
+
+#### UML
+
+Advantages of UML for this:
+
+ - like a VM, i.e. I don't need to sacrifice the current system
+ - but it's cheap, doesn't even need root!
+ - automatable tests! <3
+ - helps reproducibility!
+ - integrates easily with host (i.e. hostfs, file devices, networking)
+ - I can patch kernel directly, if I decide not to write modules in the end
+
+In a nutshell: build linux using ARCH=um
+
+Did some simple tries, with a pacman base FS (weights around 2GB) -> systemd
+initializes mostly okay but *fails to start login manager*, so system is useless.
+But I can start bash and this stuff, so it should be good for automation. Always
+use with COW.
+
+Parameters to control:
+
+ - **Memory:** `mem=150M`, this should give us a 30MB dirty limit
+ 
+ - **Kernel config:** straight defconfig + the following:
+   - CONFIG_BLK_DEV_THROTTLING
+   - CONFIG_FTRACE, CONFIG_TRACING
+   - CONFIG_MEMCG
+   - **without** CONFIG_BLK_WBT, which would enable per-block-device throttling curve
+ 
+ - **Rootfs**: we'll use hostfs for the rootfs
+ 
+ - **Block device**: we'll create a **100MB** block device in /run which should always be a tmpfs, to make
+   sure we don't write to a real disk. we'll format/mount it as **ext2**, cache doesn't appear to kick in
+   if we use the block device directly
+
+ - **Disk bandwidth:** we'll cap it lower than most modern disks, say **1MB/s**
+   This should also make throttling more apparent.  
+   **Options:**
+   - Use in-guest blkio limiting?  (will this affect results?)
+   - Use in-host blkio limiting?  (we first need an actual block device for this)
+   we'll go for the first one, doesn't require real root nor an actual block device on the host
+
+To halt without init: `python -c 'import ctypes; ctypes.CDLL(None).reboot(0x4321fedc)'`
+
+#### Experiment
+
+I have started working on `experiment.py`, which performs a full automated
+experiment session (i.e. creates block device, formats as ext2, launches kernel, sets up throttling,
+mounts ext2, starts actual experiment, save results, power off).
+
+The automation is working!! trace-cmd starts, now we just need to plug in a real test
+based on the dummy loads.
+
+#### Next tasks (analysis WP)
+
+ - Finish writing the dummy loads.
+ - Think about how/where are we going to log the results, and how are we going to
+   synchronize with the trace-cmd report (we should log PIDs too).
+ - Plug in the experiment, verify that we get similar behaviour in the controlled environment.
+ - Graph things, analyze the trace-cmd report more deeply.
+
+Then we should have everything ready, we can start debugging / patching.

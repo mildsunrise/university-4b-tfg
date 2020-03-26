@@ -1,0 +1,73 @@
+#!/usr/bin/env python3
+# Dependencies: python 3, trace-cmd
+# This should be in a path WITHOUT SPACES or weird control characters
+
+import ctypes
+import tempfile
+import sys
+import os
+from os.path import dirname, join, abspath
+from subprocess import run, DEVNULL
+
+base = dirname(dirname(__file__))
+
+## EXPERIMENT PARAMETERS ##
+kernel_path = join(base, 'linux', 'linux')
+memory = '256M'
+write_bps = 1 * 1024 * 1024
+dev_size = 100 * 1024 * 1024
+
+def main():
+    # Create experiment directory
+    experiment_base = tempfile.mkdtemp(prefix='exp')
+    print('Preparing experiment at:', experiment_base)
+    
+    # Mount a tmpfs
+    print('Mounting tmpfs...')
+    tmpfs_mountpoint = join(experiment_base, 'tmpfs')
+    os.mkdir(tmpfs_mountpoint)
+    run(check=True, args=[ 'sudo', 'mount', '-t', 'tmpfs', 'tmpfs', tmpfs_mountpoint ])
+    dev_number = '0:{}'.format( os.stat(tmpfs_mountpoint).st_dev )
+
+    # Create device file, filled with 0xFF
+    print('Preparing block device...')
+    dev_file = join(tmpfs_mountpoint, 'blkdev')
+    with open(dev_file, 'wb') as f:
+        block = bytes([ 0xFF ] * 4096)
+        for _ in range(dev_size // len(block)): f.write(block)
+    
+    # Launch kernel!
+    print('\x1b[1m-- Launching kernel --\x1b[m')
+    run(check=True, args=[ kernel_path, 'mem=' + memory,
+            'root=/dev/root', 'rootfstype=hostfs', 'rw',
+            'ubdb=' + dev_file,
+            'init=' + abspath(__file__), '--', 'test a', experiment_base ])
+    
+    # FIXME: put in finally
+    # Unmount tmpfs
+    run(check=True, args=[ 'sudo', 'umount', tmpfs_mountpoint ])
+
+def inside_container():
+    print('\x1b[1m-- Inside kernel --\x1b[m')
+    
+    dev_file = '/dev/ubdb'
+    dev_number = os.stat(dev_file).st_rdev
+    dev_number = '{}:{}'.format(os.major(dev_number), os.minor(dev_number))
+    
+    # Throttle write bandwidth
+    print('Throttling bandwidth...')
+    blkio_base = '/sys/fs/cgroup/blkio'
+    run(check=True, args=[ 'mount', '-t', 'cgroup', '-o', 'blkio', 'none', blkio_base ])
+    
+    blkio_write_bps = join(blkio_base, 'blkio.throttle.write_bps_device')
+    run(check=True, args=[ 'sudo', 'tee', '--', blkio_write_bps ], stdout=DEVNULL, input='{} {}'.format(dev_number, write_bps), text=True)
+
+    # at the end, we need to invoke the 'reboot' syscall to power off
+    ctypes.CDLL(None).reboot(0x4321fedc)
+
+
+if os.getpid() == 1:
+    # we're init inside the VM! omfg!
+    inside_container()
+else:
+    main()

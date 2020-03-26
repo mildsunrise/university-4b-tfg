@@ -1,0 +1,84 @@
+diff --git a/Makefile b/Makefile
+index 2f9620e..9f2ecba 100644
+--- a/Makefile
++++ b/Makefile
+@@ -127,7 +127,7 @@ endif
+ ifndef NO_PYTHON
+ PYTHON		:= ctracecmd.so
+ 
+-PYTHON_VERS ?= python
++PYTHON_VERS ?= python3
+ PYTHON_PKGCONFIG_VERS ?= $(PYTHON_VERS)
+ 
+ # Can build python?
+diff --git a/include/trace-cmd/trace-cmd.h b/include/trace-cmd/trace-cmd.h
+index 595919d..a161620 100644
+--- a/include/trace-cmd/trace-cmd.h
++++ b/include/trace-cmd/trace-cmd.h
+@@ -432,7 +432,7 @@ struct tracecmd_time_sync {
+ 	void				*context;
+ };
+ 
+-void tracecmd_tsync_init(void);
++//void tracecmd_tsync_init(void);
+ int tracecmd_tsync_proto_getall(char **proto_mask, int *words);
+ unsigned int tracecmd_tsync_proto_select(char *proto_mask, int words);
+ bool tsync_proto_is_supported(unsigned int proto_id);
+diff --git a/python/tracecmd.py b/python/tracecmd.py
+index 4d48157..15788e9 100644
+--- a/python/tracecmd.py
++++ b/python/tracecmd.py
+@@ -20,7 +20,7 @@
+ 
+ from functools import update_wrapper
+ from ctracecmd import *
+-from UserDict import DictMixin
++from collections.abc import Mapping
+ 
+ """
+ Python interface to the tracecmd library for parsing ftrace traces
+@@ -51,7 +51,7 @@ def cached_property(func, name=None):
+         self.__cached_properties.pop(name, None)
+     return property(_get, None, _del)
+ 
+-class Event(object, DictMixin):
++class Event(Mapping):
+     """
+     This class can be used to access event data
+     according to an event's record and format.
+@@ -62,9 +62,10 @@ class Event(object, DictMixin):
+         self._format = format
+ 
+     def __str__(self):
+-        return "%d.%09d CPU%d %s: pid=%d comm=%s type=%d" % \
+-               (self.ts/1000000000, self.ts%1000000000, self.cpu, self.name,
+-                self.num_field("common_pid"), self.comm, self.type)
++        return "%d.%09d CPU%d %s: pid=%d comm=%s type=%d %s" % \
++               (self.ts//1000000000, self.ts%1000000000, self.cpu, self.name,
++                self.num_field("common_pid"), self.comm, self.type,
++                " ".join("%s=%r" % (k, bytes(v.data)) for k, v in self.items()))
+ 
+     def __del__(self):
+         free_record(self._record)
+@@ -78,6 +79,12 @@ class Event(object, DictMixin):
+     def keys(self):
+         return py_format_get_keys(self._format)
+ 
++    # FIXME: cheat and implement these on top of keys()
++    def __iter__(self):
++        return iter(self.keys())
++    def __len__(self):
++        return len(self.keys())
++
+     @cached_property
+     def comm(self):
+         return tep_data_comm_from_pid(self._pevent, self.pid)
+@@ -88,7 +95,7 @@ class Event(object, DictMixin):
+ 
+     @cached_property
+     def name(self):
+-        return event_format_name_get(self._format)
++        return tep_event_name_get(self._format)
+ 
+     @cached_property
+     def pid(self):
