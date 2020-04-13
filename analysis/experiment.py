@@ -3,25 +3,37 @@
 # This should be in a path WITHOUT SPACES or weird control characters
 # Do NOT run as root!!
 
+import time
+import datetime
 import ctypes
 import tempfile
 import sys
 import os
+import signal
+import shutil
 from os.path import dirname, join, abspath
-from subprocess import run, DEVNULL
+from subprocess import run, Popen, DEVNULL
+import json
 libc = ctypes.CDLL(None)
 
-base = dirname(dirname(__file__))
+def checked_wait(task, timeout=None):
+    rc = task.wait(timeout)
+    if rc:
+        raise Exception('Task {} terminated with exit code {}'.format(task.args, rc))
+
+base = dirname(dirname(abspath(__file__)))
 
 ## EXPERIMENT PARAMETERS ##
 kernel_path = join(base, 'linux', 'linux')
 memory = '150M'
 write_bps = 1 * 1024 * 1024
-dev_size = 100 * 1024 * 1024
+dev_size = 130 * 1024 * 1024
 
 def main():
     # Create experiment directory
-    experiment_base = tempfile.mkdtemp(prefix='exp')
+    expname = datetime.datetime.now().strftime('%m-%d_%H-%M')
+    experiment_base = join(base, 'exp', '_' + expname)
+    os.makedirs(experiment_base)
     print('Preparing experiment at:', experiment_base)
 
     # Create device file, filled with 0xFF
@@ -42,8 +54,9 @@ def main():
             'root=/dev/root', 'rootfstype=hostfs', 'rw',
             'ubdb=' + dev_file.name,
             'init=' + abspath(__file__), '--', experiment_base ])
-    
-    print('\x1b[1m\x1b[32m-- Completed successfully --\x1b[m')
+
+    os.rename(experiment_base, join(base, 'exp', expname))
+    print('\x1b[1m\x1b[32m-- Completed successfully --\nResults at: {}\x1b[m'.format(expname))
 
 def inside_container():
     print('\x1b[1m-- Inside kernel --\x1b[m')
@@ -72,12 +85,40 @@ def inside_container():
     print('-- Mounting FS --')
     run(check=True, args=[ 'mount', dev_file, '/mnt' ])
     
+    # Preliminary things
+    print('-- Preparing --')
+    with open('experiment.json', 'w') as f:
+        json.dump({
+            'kind': 'uml',
+            'start': datetime.datetime.now().isoformat(),
+            'kernel': os.uname().release,
+            'write_bps': write_bps,
+            'dev_size': dev_size,
+            'memory': memory,
+        }, f, indent=4)
+        f.write('\n')
+
     # Start experiment
     print('-- Starting experiment --')
-    #run('trace-cmd record -e balance_dirty_pages -e global_dirty_state', shell=True)
-    run(check=True, args=[ '/sbin/bash' ])
-    run(check=True, args=[ 'dd', 'if=/dev/zero', 'of=/mnt/huge', 'bs=1024', 'count=70000' ])
-    
+    tasks = []
+    add_task = lambda x: tasks.append(Popen(x, shell=True))
+    def add_load(name, kind, *p):
+        tasks.append(Popen([ join(base, 'analysis', 'load.py'), name, kind, *map(str, p) ]))
+
+    #run(check=True, args=[ '/sbin/bash' ])
+    add_task('trace-cmd record -e balance_dirty_pages -e global_dirty_state')
+    time.sleep(3) # wait for it to start up
+
+    add_load('c1', 'control', 0.05)
+    add_load('w1', 'write', '/mnt/write1', 0.05)
+    add_load('mw1', 'multiwrite', '/mnt/multiwrite1', 0.1)
+    add_load('l2', 'load', '/mnt/load2', 43, int(dev_size*.2), 512)
+    add_load('l1', 'load', '/mnt/load1',  5, int(dev_size*.5), 1024)
+
+    checked_wait(tasks.pop())    
+    for task in tasks: task.send_signal(signal.SIGINT)
+    for task in tasks: checked_wait(task, 4)
+
     # at the end, we need to invoke the 'reboot' syscall to power off
     print('-- Powering off --')
     libc.syncfs(os.open('/', 0)) # force hostfs to sync data... poweroff unmounts forcefully

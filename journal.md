@@ -357,11 +357,11 @@ Conclusions:
      - verify it by writing to i.e. `vfat` and see if `account_dirty_page` gets called for that task.
 
 
-## 2020-03-19
+## 2020-03-19 - 2020-03-25
 
 Anecdote: `mkfs.ext2` has the `-D` option to use direct I/O, and the man page explains the effects.
 
-Tests will be done over **commit 16fbf79b**.
+Tests will be done over **commit 16fbf79b** of the kernel.
 
 #### Python tracecmd module
 
@@ -387,13 +387,16 @@ Kinds of dummy loads:
  - write: cycle is a write (few bytes) + sleep
  - load: first cycle is a big sleep (to observe normal behaviour), next cycles are just a write of a block (write at full speed)
 
+The control load accounts for general CPU usage, extra syscalls python
+might make (allocations, etc.).
+
 Some preliminary tests on my own disk: What The Actual Fuck, loads are not throttled
 at all, except when they are throttled, in which case the `write` takes **seconds**
 to complete. Like, maybe 11 seconds. Doesn't look like soft-throttling...
 
 #### Modules
 
-Linux Device Drivers last edition is from 2005 / 2.6, should be enough. Also [this](http://www.tldp.org/LDP/lkmpg/2.6/html/)  
+Linux Device Drivers last edition is from 2005 / 2.6, should be enough. Also [this](http://www.tldp.org/LDP/lkmpg/2.6/html/).  
 Kernel documentation on building external modules:
 https://github.com/torvalds/linux/blob/master/Documentation/kbuild/modules.rst
 
