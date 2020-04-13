@@ -1,2 +1,5 @@
 /linux/
 .ipynb_checkpoints
+*.pyc
+__pycache__/
+/analysis/out.png
