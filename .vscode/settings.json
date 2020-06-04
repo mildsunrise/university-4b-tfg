@@ -1,0 +1,4 @@
+{
+    "latex-workshop.intellisense.file.base": "file relative",
+    "latex-workshop.latex.outDir": "%DIR%/build"
+}

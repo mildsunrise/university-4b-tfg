@@ -1,0 +1,46 @@
+\begin{ganttchart}[y unit title=0.4cm,
+y unit chart=0.5cm,
+vgrid,hgrid,
+title height=1,
+today=25,%
+today offset=.5,%
+today label=Now,%
+bar/.style={draw,fill=cyan},
+bar incomplete/.append style={fill=yellow!50},
+bar height=0.7]{1}{30}
+
+ % dies
+ \gantttitle{Phases of the Project}{30} \\
+ \gantttitle{2019}{15}
+ \gantttitle{2020}{15} \\
+ \gantttitle{1st Q.}{5}
+ \gantttitle{2nd Q.}{5}
+ \gantttitle{3rd Q.}{5}
+ \gantttitle{1st Q.}{5}
+ \gantttitle{2nd Q.}{5}
+ \gantttitle{3rd Q.}{5} \\
+ 
+ % caixes elem0 .. elem9 
+ \ganttgroup[inline=false]{Planning}{2}{9}\\
+ \ganttbar[progress=100]{Phase1}{2}{8} \\
+ \ganttbar[progress=100]{Phase2}{5}{9} \\
+ \ganttbar[progress=100]{Phase3}{2}{4} \\
+ \ganttgroup[inline=false]{Process}{10}{23}\\
+ \ganttbar[progress=100]{Phase4}{10}{18} \\
+ \ganttbar[progress=100]{Phase5}{19}{23} \\
+ \ganttbar[progress=100]{Testing}{10}{22} \\
+ \ganttgroup[inline=false]{Future}{24}{29}\\
+ \ganttbar[progress=25]{Environm.}{25}{29} \\
+ \ganttbar[progress=25]{Future}{24}{29} \\
+
+ 
+ % relacions
+ \ganttlink{elem1}{elem5}
+ \ganttlink{elem1}{elem5}
+ \ganttlink{elem2}{elem7}
+ \ganttlink{elem3}{elem7}
+ \ganttlink{elem5}{elem6}
+ \ganttlink{elem6}{elem9}
+ \ganttlink{elem7}{elem10}
+
+\end{ganttchart}
