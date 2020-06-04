@@ -1,0 +1,27 @@
+\begin{algorithm}
+\caption{Temperature-Distributed algorithm}\label{alg:tempdistrib}
+\begin{algorithmic}[1]
+\Procedure{Temp-Spread}{$GN_i, HN_j, temperatures$}\Comment{Lowest temperature priority}
+\State $temperature\_list\gets short(temperatures)$
+\State $max_temperature\gets max(temperature_list)$
+\State $ThresHold\gets 0.5$
+\State $temperature\_impact \gets 0.2$
+\For{$GN_i$ in $i=1,8$}\Comment{Iterate every hardware node on the given GN}
+\State $it\_temperature \gets temperature\_list(GN_i)$
+\State $temp\_weight \gets \frac{max\_temperature-it\_temperature}{max\_temperature}*temperature\_impact$
+\State $\omega(Master-GN_i) \gets ThresHold*temp\_weight$
+\For{$HN_j$ in $j=1,n$}
+\If{$available\_accel_{i,j} > busy\_accel_{i,j}$}
+    \State $policy_\omega = \frac{Available HW}{Total HW}*ThresHold$
+    \State $\omega(GN_i-HN_{i,j}) \gets ThresHold+policy_\omega$
+\Else
+    \State $\omega(GN_i - HN_{i,j}) \gets 1$
+\EndIf
+
+\EndFor
+\EndFor
+\State $node \gets find\_djistra\_shortest\_path(Master\_Node, aux\_node)$
+\State \textbf{$return node$} $b$\Comment{The gcd is b}
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
