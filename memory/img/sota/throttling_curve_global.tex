@@ -1,0 +1,39 @@
+\begin{tikzpicture}
+  \pgfmathsetmacro{\freerun}{1}
+  \pgfmathsetmacro{\limit}{3}
+  \pgfmathsetmacro{\setpoint}{(\freerun+\limit)/2}
+  \pgfplotsset{every axis label/.append style={}}
+  \pgfplotsset{every axis title/.append style={font=\relsize{1.2}}}
+  \begin{axis}[
+    width=11cm, height=7cm,
+    axis lines = left,
+    title = {global control line},
+    ylabel near ticks=true,
+    xmin=0, xmax=4.5,
+    ymin=0, ymax=2.5,
+    xlabel = {dirty pages},
+    ylabel = {\mintinline{text}{pos_ratio}},
+    xtick={\freerun, \setpoint, \limit},
+    xticklabels={\mintinline{text}{freerun}, \mintinline{text}{setpoint}, \mintinline{text}{limit}},
+    ytick={0, 1, 2},
+    tick label style={},
+    x tick label style={color=blue, scale=.9},
+    x label style={at={(axis description cs:1,-0.04)},anchor=south east},
+  ]
+    \addplot[
+      domain=\freerun:\limit,
+      samples=100,
+      color=black,
+      line width=2pt,
+    ]{ 2 * acos(( (x-\freerun)/(\limit-\freerun) )*2-1)/180 };
+    \addplot [only marks,mark=*] coordinates { (\freerun,2) (\setpoint,1) (\limit,0) };
+    \draw[dashed] (axis cs:\freerun,0) -- (axis cs:\freerun,2) -- (axis cs:0,2);
+    \draw[dashed] (axis cs:\setpoint,0) -- (axis cs:\setpoint,1) -- (axis cs:0,1);
+    \node[anchor=north east, scale=.83, text width=6.5cm] at (axis description cs:1,1) {
+      Notes: Curve shape is approximate. \mintinline{text}{pos_ratio}
+      is the \emph{dirty position control ratio} and controls the
+      amount of ratelimiting applied. The three parameters depend
+      on the current computed thresholds.
+    };
+  \end{axis}
+\end{tikzpicture}

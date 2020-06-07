@@ -1,0 +1,37 @@
+\begin{tikzpicture}
+  \pgfmathsetmacro{\setpoint}{1.2}
+  \pgfmathsetmacro{\intercept}{3}
+  \pgfmathsetmacro{\yintercept}{\intercept/(\intercept-\setpoint)}
+  \pgfmathsetmacro{\knee}{1/4*\setpoint + 3/4*\intercept}
+  \pgfplotsset{every axis label/.append style={}}
+  \pgfplotsset{every axis title/.append style={font=\relsize{1.2}}}
+  \begin{axis}[
+    width=11cm, height=7cm,
+    axis lines = left,
+    title = {wb control line},
+    ylabel near ticks=true,
+    xmin=0, xmax=5,
+    ymin=0, ymax=1.5,
+    xlabel = {dirty pages},
+    ylabel = {\mintinline{text}{pos_ratio}},
+    xtick={\setpoint, \intercept},
+    xticklabels={\mintinline{text}{wb_setpoint}, \mintinline{text}{x_intercept}},
+    ytick={0, 1/4, 1},
+    yticklabels={$0$, $\nicefrac{1}{4}$, $1$},
+    tick label style={},
+    x tick label style={color=blue, scale=.9},
+    x label style={at={(axis description cs:1,-0.04)},anchor=south east},
+  ]
+    \draw[color=black, line width=2pt]
+      (axis cs:0,\yintercept) -- (axis cs:\knee,1/4) -- (axis cs:100,1/4);
+    \addplot [only marks,mark=*] coordinates { (\setpoint,1) (\intercept,0) };
+    \draw[dashed] (axis cs:\setpoint,0) -- (axis cs:\setpoint,1) -- (axis cs:0,1);
+    \draw[dashed] (axis cs:\knee,1/4) -- (axis cs:0,1/4);
+    \draw[loosely dashed, line width=2pt, color=gray] (axis cs:\intercept,0) -- (axis cs:\knee,1/4);
+    \node[anchor=north east, scale=.83, text width=6.5cm] at (axis description cs:1,1) {
+      Note: The per-block device curve never throttles below
+      $\nicefrac{1}{4}$ so that if dirty pages start out high,
+      they can be smoothly throttled back to normal by the global curve.
+    };
+  \end{axis}
+\end{tikzpicture}
