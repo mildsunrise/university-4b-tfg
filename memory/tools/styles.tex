@@ -31,9 +31,29 @@
       {]}{{{\color{delim}{]}}}}{1},
 }
 
+\definecolor{codebg}{rgb}{0.98,0.97,0.95}
+\setminted{
+  %frame=leftline,
+  %framesep=12pt,
+  xleftmargin=0pt,
+  breaklines,
+  breakautoindent,
+  breakindent=1em,
+  autogobble,
+}
+\surroundwithmdframed[
+  backgroundcolor=codebg,
+  skipabove=8pt,
+  skipbelow=8pt,
+  innertopmargin=9pt,
+  innerbottommargin=9pt,
+  innerleftmargin=14pt,
+  innerrightmargin=14pt,
+  linewidth=0pt,
+]{minted}
+
 %RBG FFD33E / C95D40
 \definecolor{upcorange}{HTML}{FFD33E}
-\hypersetup{allcolors=black}
 
 % probably a good idea for the nomenclature entries:
 \acsetup{first-style=short}
