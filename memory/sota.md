@@ -26,7 +26,7 @@ When an I/O operation is issued from userspace upon a **mounted filesystem**, th
 
 4. **Disk drive:** When the BIO is selected from the queue, the block driver issues it to the drive. After this, the operation is complete. However, the disk drive itself is often capable of caching the received operations. Since this caching layer is in hardware it's usually transparent to the kernel, except for the need to issue cache flushes when requested. Utilities like `hdparm` may be used to enable or disable the drive's cache.
 
-If the I/O operation is directly upon an opened block device, it goes directly to step 3 and isn't of interest. Also of note is that the VFS layer does have some internal caches for inodes and dentrys, but this doesn't seem to be relevant either.
+If the I/O operation is directly upon an open block device, it goes directly to step 3 and isn't of interest. Also of note is that the VFS layer does have some internal caches for inodes and dentrys, but this doesn't seem to be relevant either.
 
 Step 2 (the writeback cache) is what we'll work with, and its behaviour and interface was further researched and is explained in section \ref{subsec:writeback-cache}.
 
@@ -36,9 +36,9 @@ Figure \ref{fig:io-stack-flow} shows a representation of the flow. Please note h
 
 #### Skipping the cache
 
-Some operations may skip the writeback cache. In this case step 2 is not performed (thus, the memory subsystem is not involved); the BIO is immediately scheduled and completes when issued to the disk. There are many ways for this to happen:
+Some operations may skip the writeback cache. In this case step 2 is not performed (thus, the memory subsystem is not involved); the I/O operation is immediately scheduled and completes when issued to the disk. There are many ways for this to happen:
 
-- From userspace, if the file was opened with `O_DIRECT`. This is a POSIX flag that does precisely that; it instructs operations on the file to skip caching.
+- From userspace, if the file was open with `O_DIRECT`. This is a POSIX flag that does precisely that; it instructs operations on the file to skip caching.
 
   A related option is `O_SYNC`, which instructs data to be written synchronously to disk. They have different meanings, but `O_SYNC` involves among other things skipping the cache.
 
@@ -48,7 +48,7 @@ Some operations may skip the writeback cache. In this case step 2 is not perform
   mount -o remount,sync /
   ~~~
 
-This list isn't exhaustive.
+(This list isn't exhaustive.)
 
 
 \clearpage
@@ -72,9 +72,9 @@ Conceptually, it acts like a large buffer for writes.
 
 Writeback caching works by tracking pages that become **dirty**, i.e. modified with respect to what's stored in the block device. Pages can be modified by regular operations on open files, or through other means such as mapped file memory.
 
-Kernel worker tasks wake up periodically and transition some of the pages into **writeback** state, which means they're being written to the block device. This is done according to some criteria, such as how long the page has been dirty, or whether the current amount of dirty pages surpasses a configured **background dirty threshold**.
+Kernel worker tasks wake up periodically and transition some of the pages into **writeback** state, which means they're being written to the block device (resulting in one or more in-progress BIOs). This is done according to some criteria, such as how long the page has been dirty, or whether the current amount of dirty pages surpasses a configured **background dirty threshold**.
 
-Once the page has been written, it's considered clean and may be removed from the cache.
+Once the page has been written (the BIO has finished), it's considered clean and is now eligible to be removed from the cache.
 
 #### Integration with VFS
 
@@ -106,21 +106,23 @@ Previously, throttling seemed to be simple: when the dirty threshold is surpasse
   \caption{Representation of the per-block device throttling curve}\label{fig:curve-bdi}
 } \end{figure}
 
-Instead, processes now begin to be throttled *before* the dirty threshold is reached (at around the midpoint between it and the background dirty threshold), and the pauses are supposed to increase as the dirty limit is approached. The details are a bit more complicated, as two curves seem to be implemented: a global one, and another for the block device. These are represented in figures \ref{fig:curve-global} and \ref{fig:curve-bdi}. The source code appears to indicate that the minimum of both curves is in effect\cite{source-writeback-curve}.
+Instead, processes now begin to be throttled *before* the dirty threshold is reached (at around the midpoint between it and the background dirty threshold, called the **setpoint**), and the pauses are designed to increase as the dirty limit is approached. The details are a bit more complicated, as two curves seem to be implemented: a global one, and another for the block device. These are represented in figures \ref{fig:curve-global} and \ref{fig:curve-bdi} (the curve parameters are marked in blue). The source code appears to indicate that the minimum of both curves is in effect\cite{source-writeback-curve}.
 
 #### Unfairness
 
-However, the throttling seems to be applied the same way no matter the task. There is a manual exception for tasks that have the `PF_LOCAL_THROTTLE`, which get throttled in less cases. This is expected, given that the memory subsystem has reduced capability of tracking the ownership of each page.
+However, the throttling seems to be applied the same way no matter the task. There is a manual exception for tasks that have the `PF_LOCAL_THROTTLE`, which get throttled in less cases, but little more. This is expected, given that the memory subsystem has reduced capability of tracking the ownership of each page (but see section \ref{subsec:resource-control}).
+
+The block device *does* seem to be taken into account, as we saw, but this doesn't help on most Linux installs which have all the system in one disk.
 
 Taking that into account, it's reasonable to expect the same throttling applied to innocent, non-cache-starving processes than is being applied to the starving ones. Also, workers don't seem to apply any fairness when selecting pages for writeback.
 
 #### Existing parameters
 
-Writeback cache parameters can be adjusted on the fly through the sysctl interface. These are the relevant ones:
+Writeback cache parameters can be adjusted on the fly through the sysctl interface\cite{docs-sysctl-vm}. These are the relevant ones:
 
 \begin{description}
 \item[\mintinline{text}{vm.dirty_background_ratio}]
-    The threshold, as a percentage of free memory, at which dirty pages start to be transitioned to *writeback* state (default: \SI{10}{\percent}).
+    The threshold, as a percentage of free memory, at which dirty pages start to be transitioned to \emph{writeback} state (default: \SI{10}{\percent}).
 \item[\mintinline{text}{vm.dirty_background_bytes}]
     Like \mintinline{text}{vm.dirty_background_ratio}, but specified as an absolute quantity in bytes (default: none).
 \item[\mintinline{text}{vm.dirty_ratio}]
@@ -143,7 +145,108 @@ Some parameters may be adjusted per block device as well, but aren't detailed he
 
 ## Kernel tracing tools {#subsec:tracing}
 
-When performing the experiments, we
+When performing the experiments, we'll likely need to debug the kernel in some way to better understand what's happening. Methods like traditional debugging (kgdb) are out of question because we're trying to analyze behaviour over time. In addition to that, we'd like debugging to be as unobtrusive as possible and avoid modifying the experiment itself (which is tricky, because we're debugging the VM & FS).
+
+Thus, *tracing* seems to be what we need. Available kernel tracing mechanisms were researched; this section presents the most relevant ones.
+
+#### The kernel tracer (ftrace)
+
+Linux has a generic tracing system, which consumes **events** from multiple sources and aggregates them into a ringbuffer. Events are encoded in a binary format and include a timestamp (many clock sources are available), TID, CPU number and event-specific fields.
+
+The tracer has a flexible filter system. Specific events may be enabled or disabled in many ways: either manually, for some time, or in response to another event being fired. This allows to pin down selected events, which is relevant in situations like this one, where interesting data may be buried in a frequently logged event (I/O). There's also some support for aggregating data into histograms, for instance.
+
+Userspace can safely consume the ringbuffer and store it somewhere via the `splice` syscall, which is handy (as the process itself may get throttled). There's also a text-based ringbuffer consumer, but that doesn't support `splice`.
+
+Among the event sources supported are **tracepoints** (explained below), an included **function tracer**, and other profilers. Userspace can also log custom data into the ringbuffer, in the form of `print` events.
+
+We won't go into the details of the user interface, for brevity and because this will be handled by a user-space tool (presented later).
+
+#### Tracepoints
+
+Tracepoints are a debugging mechanism. They are statically inserted in kernel code through a macro, at points of interest. Then, through the API, the user can supply a callback that will be injected at the tracepoint they wish. The only cost of tracepoints, if enabled, is a no-op instruction when not in use\cite{docs-tracepoints}.
+
+They can also serve as event sources. When inserting a tracepoint, the developer can specify additional *glue code* specifying the event name, fields and their representation. The tracepoint may then be enabled in the tracer and will generate an event every time it's hit\cite{docs-tracepoints-events}.
+
+Tracepoints are organized in *subsystems*. In our case, we're mostly interested in the `writeback` subsystem, and specifically in the following events, which were identified to be useful in getting a general overview of the state of the cache:
+
+ - `writeback:global_dirty_state`: This tracepoint fires conditionally at the end of the `domain_dirty_limits` function, which calculates the thresholds mentioned earlier from the configured percentages of free memory. The event reports:
+
+    \begin{description}
+    \item[\mintinline{text}{nr_dirty}]
+      Current number of pages in dirty state
+    \item[\mintinline{text}{nr_writeback}]
+      Current number of pages in writeback state
+    \item[\mintinline{text}{background_thresh}]
+      Calculated background dirty threshold, in pages
+    \item[\mintinline{text}{dirty_thresh}]
+      Calculated dirty threshold, in pages
+    \item[\mintinline{text}{dirty_limit}]
+      Not completely sure what this is, seems to be the absolute limit after which all operations still become synchronous. It's higher than \mintinline{text}{dirty_thresh}.
+    \item[\mintinline{text}{nr_dirtied}]
+      Accumulated counter of dirtied pages
+    \item[\mintinline{text}{nr_written}]
+      Accumulated counter of pages written to disk
+    \end{description}
+
+ - `writeback:balance_dirty_pages`: This tracepoint is placed in multiple points of the `balance_dirty_pages` function, which holds the main / root logic responsible for throttling. It's periodically called for processes that dirty pages, and regulates the amount of throttling (i.e. ratelimit) applied to them.
+ 
+    The event reports too many fields to list them here, but amongst them there's the amount of dirty pages, the parameters (and input) to the throttling curves, and the resulting ratelimit for the task.
+
+Other relevant events include the `syscall` subsystem, which has two events for every possible syscall (enter and exit) and allows similar functionality than `strace`.
+
+#### Kprobes
+
+A more recent technology, Kprobes, allows injecting code on arbitrary positions in memory, barring a few exceptions. They are essentially dynamic tracepoints. How this is accomplished depends on the architecture, but it generally involves patching the instruction at the supplied address, replacing it with a jump to user code, and then executing that missing instruction at the end (before resuming normal execution).
+
+Kprobes are useful as they allow patching any function or spot on the fly. There's also a second type of Kprobes, called Kretprobes, that fire when an arbitrary function returns.
+
+Kprobes can be used together with the tracer as event sources, which is convenient\cite{docs-kprobe-tracing}. They can also invoke BPF programs. Both of these solutions are entirely user-space.
+
+To register Kprobes as event sources, the user writes entries to:
+
+~~~
+/sys/kernel/tracing/dynamic_events
+~~~
+
+These entries specify what info should be obtained and how (i.e. registers, variables, arguments, dereferencing), the symbol to insert the Kprobe at, and an event name. This then appears as a standard event and may be enabled or disabled as usual.
+
+#### BPF
+
+![Overview of current kernel BCC/BPF tracing tools](img/sota/bcc_tracing_tools_2019.png){#fig:bpf-tools width=100%}
+
+Short for Berkeley Packet Filter, it's a VM (Virtual Machine) that lives in the kernel, along with its bytecode format. BPF allows user-space to upload custom, architecture-independent programs that are interpreted in kernel-space at certain contexts.
+
+It is primarily designed to be safe and compact: the kernel verifies the bytecode before running it to make sure there's no infinite loops, etc.
+
+BPF was originally created to filter network packets when capturing traffic, and the first version has been renamed to *classical BPF* (or simply, cBPF). The new version, *extended BPF* (eBPF), performs better and allows the programs to communicate among themselves and with user-space, through shared data structures\cite{article-ebpf}.
+
+Since then, BPF has found more and more uses. A very powerful one is **attaching BPF programs to Kprobes and tracepoints**. This (especially with BCC, see below) provides a powerful way to inspect kernel structures at an arbitrary point of execution that is easy, safe, portable and unobtrusive, entirely from user-space (i.e. instead of modifying the kernel or writing a kernel module).
+
+Programs are verified and can only read memory, not modify it, so it's guaranteed that they won't damage the system. BPF Kprobes are thus safe to load even in production systems. A number of diagnostic tools and possibilities have been made possible, see figure \ref{fig:bpf-tools}.
+
+#### User-space solutions
+
+Until now we've specifically covered available kernel technologies. User-space tools have been created to make the use of some of them easier, and it's worth looking into them due to the limited scope of a degree thesis.
+
+ - **trace-cmd**: This is the official user-space tool for the kernel tracer. A bit unmantained, but seems to be feature complete and easy to use. It is able to configure the tracer and log events to a single `trace.dat` file safely using `splice`, and handles some other technicalities.
+
+   ![Kernelshark screenshot showing an open event capture file](img/sota/kernelshark-1.png){#fig:kernelshark width=100%}
+
+   It also contains libraries for parsing the event binary format, and a Python interface which can be very handy. Also included is **kernelshark** (figure \ref{fig:kernelshark}), a graphical viewer for event capture files produced by `trace-cmd`.
+
+ - **perf**: Kernel profiler. Not deeply investigated as it appears of little relevance to the project.
+
+And some tools are more generic, allowing the user to script their behaviour:
+
+ - **BCC**: Set of tools that make BPF development significantly easier. These include:
+ 
+    - Toolchain that allows BPF programs to be compiled from C code, linked against kernel headers, validated, etc.
+
+    - Generic library that can invoke the toolchain, load the (resulting) BPF programs into the kernel, and manipulate the shared structures from user-space. The library has a Python interface as well.
+
+   The potential of BCC when combined with Kprobes is huge (see figure \ref{fig:bpf-tools}), but has the problem of still being low level. Examples provided by the project include: counting task switches from/to PIDs, tracing data generated by urandom, inspecting KVM, ...
+
+ - **SystemTap**: Is an integrated framework for profiling and tracing the system. It defines its own scripting language and is able to use many kernel technologies under the hood. Higher level than BCC, although probably not as powerful.
 
 
 ## Resource control & accounting {#subsec:resource-control}
