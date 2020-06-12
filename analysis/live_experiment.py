@@ -14,12 +14,22 @@ import shutil
 from os.path import dirname, join, abspath
 from subprocess import run, Popen, DEVNULL
 import json
+import re
 libc = ctypes.CDLL(None)
 
 def checked_wait(task, timeout=None):
     rc = task.wait(timeout)
     if rc:
         raise Exception('Task {} terminated with exit code {}'.format(task.args, rc))
+
+def check_lost_events():
+    base = '/sys/kernel/tracing/per_cpu'
+    for cpu in os.listdir(base):
+        with open(join(base, cpu, 'stats')) as f:
+            stats = dict( re.fullmatch(r'(.+?): (.*)', x.rstrip()).groups() for x in f )
+        lost = int(stats['overrun']) + int(stats['dropped events'])
+        if lost:
+            raise Exception('{} lost events on {}'.format(lost, cpu))
 
 base = dirname(dirname(abspath(__file__)))
 
@@ -68,6 +78,7 @@ def main():
     main = Popen(main_command, shell=True)
     main.wait()
 
+    check_lost_events()
     for task in tasks: task.send_signal(signal.SIGINT)
     for task in tasks: checked_wait(task, 4)
 
