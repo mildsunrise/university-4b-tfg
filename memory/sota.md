@@ -1,6 +1,6 @@
 # State of the art {#sec:sota}
   
-This chapter presents a conceptual overview of the current state of the relevant kernel subsystems and APIs we'll be working with during this project. We'll be analyzing the **memory subsystem**, which is directly responsible of the writeback cache, but as we'll see later, the **block I/O subsystem** and **filesystem layer** are of special importance as well. Those are presented within sections \ref{subsec:io-stack} & \ref{subsec:writeback-cache}.
+This chapter presents a conceptual overview of the current state of the relevant kernel subsystems and APIs we'll be working with during this project. The central part to analyze is the **memory (VM) subsystem**, which is directly responsible of the writeback cache, but as we'll see later, the **block I/O subsystem** and **filesystem (VFS) layer** are of special importance as well. Those are presented within sections \ref{subsec:io-stack} & \ref{subsec:writeback-cache}.
 
 During analysis, we'll probably need to get insight on what is happening in the kernel. For complexity and practicity, this should be preferably done in a *non-invasive way* that avoids modifying the kernel or altering the results of the experiments themselves. Section \ref{subsec:tracing} presents an overview of the currently available mechanisms for tracing & debugging the Linux kernel.
 
@@ -20,7 +20,7 @@ When an I/O operation is issued from userspace upon a **mounted filesystem**, th
 
 2. **Writeback cache:** The pages holding data to be written are marked as *dirty*. The **memory subsystem** (also called VM or MM) keeps track of dirty pages. The VFS operation then usually completes immediately, and at a later time, kernel workers enqueue (some of) the dirty pages to be actually written to the underlying block device. The pages are now in *writeback* state.
 
-3. **BIO:** At this point, the operation is called a BIO ---short for 'Block I/O'--- and it's handled by the **block layer**. It's placed on a per-device queue[^no-queue], and the **I/O scheduler** (or elevator) selects operations from that queue and issues them to the hardware (disk drive). There are many elevators on Linux, such as `bfq` (which provides fair scheduling) or `noop` which is simple FCFS.
+3. **BIO:** At this point, the operation is called a BIO ---short for 'Block I/O'--- and it's handled by the **block layer**. It's placed on a per-device queue[^no-queue] (or set of queues), and the **I/O scheduler** (or elevator) selects operations from that queue and issues them to the hardware (disk drive). There are many elevators on Linux, such as `bfq` (which provides fair scheduling, explained in section \ref{subsec:resource-control}) or `noop` which is simple FCFS.
 
    [^no-queue]: Some special block devices (like loop devices, or the device mapper) don't use a queue or I/O scheduler.
 
@@ -145,7 +145,7 @@ Some parameters may be adjusted per block device as well, but aren't detailed he
 
 ## Kernel tracing tools {#subsec:tracing}
 
-When performing the experiments, we'll likely need to debug the kernel in some way to better understand what's happening. Methods like traditional debugging (kgdb) are out of question because we're trying to analyze behaviour over time. In addition to that, we'd like debugging to be as unobtrusive as possible and avoid modifying the experiment itself (which is tricky, because we're debugging the VM & FS).
+When performing the experiments, we'll likely need to debug the kernel in some way to better understand what's happening. Methods like traditional debugging (kgdb) are out of question because we're trying to analyze behaviour over time, and the problem is hard to reproduce precisely. In addition to that, we'd like debugging to be as unobtrusive as possible and avoid modifying the experiment itself (which is tricky, because we're debugging the VM & FS).
 
 Thus, *tracing* seems to be what we need. Available kernel tracing mechanisms were researched; this section presents the most relevant ones.
 
@@ -196,11 +196,11 @@ Other relevant events include the `syscall` subsystem, which has two events for 
 
 #### Kprobes
 
-A more recent technology, Kprobes, allows injecting code on arbitrary positions in memory, barring a few exceptions. They are essentially dynamic tracepoints. How this is accomplished depends on the architecture, but it generally involves patching the instruction at the supplied address, replacing it with a jump to user code, and then executing that missing instruction at the end (before resuming normal execution).
+A more recent technology, Kprobes (originally part of Dprobes) allows injecting code on arbitrary positions in memory, barring a few exceptions. They are essentially dynamic tracepoints. How this is accomplished depends on the architecture, but it generally involves patching the instruction at the supplied address, replacing it with a jump to user code, and then executing that missing instruction at the end (before resuming normal execution).
 
 Kprobes are useful as they allow patching any function or spot on the fly. There's also a second type of Kprobes, called Kretprobes, that fire when an arbitrary function returns.
 
-Kprobes can be used together with the tracer as event sources, which is convenient\cite{docs-kprobe-tracing}. They can also invoke BPF programs. Both of these solutions are entirely user-space.
+Like tracepoints, Kprobes has a kernel API. However, it can be used together with the tracer as event sources, which is convenient\cite{docs-kprobe-tracing}. They can also invoke BPF programs. Both of these solutions are entirely user-space.
 
 To register Kprobes as event sources, the user writes entries to:
 
@@ -208,7 +208,7 @@ To register Kprobes as event sources, the user writes entries to:
 /sys/kernel/tracing/dynamic_events
 ~~~
 
-These entries specify what info should be obtained and how (i.e. registers, variables, arguments, dereferencing), the symbol to insert the Kprobe at, and an event name. This then appears as a standard event and may be enabled or disabled as usual.
+These entries specify what info should be obtained and how (i.e. registers, variables, arguments, dereferencing), the symbol+offset to insert the Kprobe at, and an event name. This then appears among the other events and may be enabled or disabled as usual.
 
 #### BPF
 
@@ -232,9 +232,9 @@ Until now we've specifically covered available kernel technologies. User-space t
 
    ![Kernelshark screenshot showing an open event capture file](img/sota/kernelshark-1.png){#fig:kernelshark width=100%}
 
-   It also contains libraries for parsing the event binary format, and a Python interface which can be very handy. Also included is **kernelshark** (figure \ref{fig:kernelshark}), a graphical viewer for event capture files produced by `trace-cmd`.
+   It also contains libraries for parsing the event binary format, and a Python interface which can be very handy. Also included is **kernelshark** (figure \ref{fig:kernelshark}), a graphical viewer for event capture files produced by `trace-cmd`. The format is designed for efficiency, and kernelshark can quickly open logs with millions of events.
 
- - **perf**: Kernel profiler. Not deeply investigated as it appears of little relevance to the project.
+ - **perf**: Kernel profiler. Not investigated as it appears of little relevance to the project.
 
 And some tools are more generic, allowing the user to script their behaviour:
 
@@ -246,7 +246,7 @@ And some tools are more generic, allowing the user to script their behaviour:
 
    The potential of BCC when combined with Kprobes is huge (see figure \ref{fig:bpf-tools}), but has the problem of still being low level. Examples provided by the project include: counting task switches from/to PIDs, tracing data generated by urandom, inspecting KVM, ...
 
- - **SystemTap**: Is an integrated framework for profiling and tracing the system. It defines its own scripting language and is able to use many kernel technologies under the hood. Higher level than BCC, although probably not as powerful.
+ - **SystemTap**: An integrated framework for profiling and tracing the system. It defines its own scripting language and is able to use many kernel technologies under the hood. Higher level than BCC, although probably not as powerful.
 
 
 ## Resource control & accounting {#subsec:resource-control}
