@@ -1,12 +1,75 @@
-\DeclareAcronym{EU}{
-  short = EU ,
-  long  = European Union ,
-  tag = abbrev
+\DeclareAcronym{GPOS}{
+  short = GPOS,
+  long  = {General Purpose Operating System},
+  tag = abbrev,
 }
-
-\DeclareAcronym{ETSETB}{
-  short = ETSETB ,
-  long  = Escola Tècnica Superior d'Enginyeria de Telecomunicació de Barcelona ,
-  % long = Barcelona School of Telecommunications Engeneering ,
-  tag = abbrev
+\DeclareAcronym{VM}{
+  short = VM,
+  long  = {Virtual Memory, a subsystem of the Linux kernel that manages memory allocation},
+  tag = abbrev,
+}
+\DeclareAcronym{cgroups}{
+  short = cgroups,
+  long  = {Control Groups, the primordial feature of the Linux kernel for restricting, distributing \& auditing access to system resources among processes},
+  tag = abbrev,
+}
+\DeclareAcronym{memcg}{
+  short = memcg,
+  long  = {the controller (or kind of cgroup) that governs usage of memory},
+  tag = abbrev,
+}
+\DeclareAcronym{VFS}{
+  short = VFS,
+  long  = {Virtual File System, a subsystem of the Linux kernel that manages mounted filesystems and operations upon files},
+  tag = abbrev,
+}
+\DeclareAcronym{blkio}{
+  short = blkio,
+  long  = {the controller (or kind of cgroup) that governs bandwidth \& latency regarding block I/O},
+  tag = abbrev,
+}
+\DeclareAcronym{BIO}{
+  short = BIO,
+  long  = {Block I/O, a request to operate on a block storage device; also refers to the subsystem that manages block storage},
+  tag = abbrev,
+}
+\DeclareAcronym{UML}{
+  short = UML,
+  long  = {User Mode Linux, a mechanism (or special architecture) that allows a kernel to run as a regular user-space application within another kernel},
+  tag = abbrev,
+}
+\DeclareAcronym{FCFS}{
+  short = FCFS,
+  long  = {First Come First Serve, a simple scheduling policy that executes requests in order of arrival},
+  tag = abbrev,
+}
+\DeclareAcronym{inode}{
+  short = inode,
+  long  = {a structure holding metadata about a node in a filesystem (a regular file, directory, symlink, device, pipe or socket)},
+  tag = abbrev,
+}
+\DeclareAcronym{dentry}{
+  short = dentry,
+  long  = {Directory Entry, a structure holding the name, kind and pointed inode for an entry in a directory},
+  tag = abbrev,
+}
+\DeclareAcronym{task}{
+  short = task,
+  long  = {minimum unit of CPU scheduling; this generally refers to user-space threads, but in the general sense includes kernel worker tasks as well},
+  tag = abbrev,
+}
+\DeclareAcronym{BPF}{
+  short  = BPF,
+  long   = {Berkeley Packet Filter, a language \& virtual machine definition},
+  tag = abbrev,
+}
+\DeclareAcronym{BFQ}{
+  short  = BFQ,
+  long   = {Budget Fair Queueing, a proportional-share I/O scheduler of the Linux kernel},
+  tag = abbrev,
+}
+\DeclareAcronym{netlink}{
+  short  = netlink,
+  long   = {mechanism \& transport protocol for user-space processes to communicate with the Linux kernel, usually to perform administrative operations. Used for complex APIs as an alternative to ioctl or filesystem-based interfaces},
+  tag = abbrev,
 }

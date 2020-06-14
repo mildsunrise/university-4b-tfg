@@ -16,17 +16,17 @@ This project is centered around the Linux kernel, and we'll be working on the **
 Before beginning work, it was important to have an overview of the whole I/O stack in Linux, even if simplified.
 When an I/O operation is issued from userspace upon a **mounted filesystem**, the following happens:
 
-1. **VFS:** The VFS (short for 'Virtual File System') layer handles the operation and calls the appropriate handler on the corresponding filesystem.
+1. **VFS:** The \ac{VFS} (short for 'Virtual File System') layer handles the operation and calls the appropriate handler on the corresponding filesystem.
 
 2. **Writeback cache:** The pages holding data to be written are marked as *dirty*. The **memory subsystem** (also called VM or MM) keeps track of dirty pages. The VFS operation then usually completes immediately, and at a later time, kernel workers enqueue (some of) the dirty pages to be actually written to the underlying block device. The pages are now in *writeback* state.
 
-3. **BIO:** At this point, the operation is called a BIO ---short for 'Block I/O'--- and it's handled by the **block layer**. It's placed on a per-device queue[^no-queue] (or set of queues), and the **I/O scheduler** (or elevator) selects operations from that queue and issues them to the hardware (disk drive). There are many elevators on Linux, such as `bfq` (which provides fair scheduling, explained in section \ref{subsec:resource-control}) or `noop` which is simple FCFS.
+3. **BIO:** At this point, the operation is called a \ac{BIO} ---short for 'Block I/O'--- and it's handled by the **block layer**. It's placed on a per-device queue[^no-queue] (or set of queues), and the **I/O scheduler** (or elevator) selects operations from that queue and issues them to the hardware (disk drive). There are many elevators on Linux, such as `bfq` (which provides fair scheduling, explained in section \ref{subsec:resource-control}) or `noop` which is simple \ac{FCFS}.
 
    [^no-queue]: Some special block devices (like loop devices, or the device mapper) don't use a queue or I/O scheduler.
 
 4. **Disk drive:** When the BIO is selected from the queue, the block driver issues it to the drive. After this, the operation is complete. However, the disk drive itself is often capable of caching the received operations. Since this caching layer is in hardware it's usually transparent to the kernel, except for the need to issue cache flushes when requested. Utilities like `hdparm` may be used to enable or disable the drive's cache.
 
-If the I/O operation is directly upon an open block device, it goes directly to step 3 and isn't of interest. Also of note is that the VFS layer does have some internal caches for inodes and dentrys, but this doesn't seem to be relevant either.
+If the I/O operation is directly upon an open block device, it goes directly to step 3 and isn't of interest. Also of note is that the VFS layer does have some internal caches for \ac{inode}s and \ac{dentry}s, but this doesn't seem to be relevant either.
 
 Step 2 (the writeback cache) is what we'll work with, and its behaviour and interface was further researched and is explained in section \ref{subsec:writeback-cache}.
 
@@ -84,7 +84,7 @@ And this integration between both components is often tricky, because the VFS la
 
 #### Throttling
 
-Like every buffer with finite capacity, the writeback cache needs a mechanism to throttle tasks that dirty pages to prevent it from filling indefinitely.
+Like every buffer with finite capacity, the writeback cache needs a mechanism to throttle \ac{task}s that dirty pages to prevent it from filling indefinitely.
 
 The main user-facing parameter to control this throttling is the **dirty threshold**, which defines the maximum percentage[^percentage] of the *free memory* (see above) in the system that can ever hold dirty pages[^dirty-pages]. Together with the **background dirty threshold** mentioned before, these define most of the throttling characteristics.
 
@@ -210,7 +210,7 @@ To register Kprobes as event sources, the user writes entries to:
 
 These entries specify what info should be obtained and how (i.e. registers, variables, arguments, dereferencing), the symbol+offset to insert the Kprobe at, and an event name. This then appears among the other events and may be enabled or disabled as usual.
 
-#### BPF
+#### \ac{BPF}
 
 ![Overview of current kernel BCC/BPF tracing tools](img/sota/bcc_tracing_tools_2019.png){#fig:bpf-tools width=100%}
 
