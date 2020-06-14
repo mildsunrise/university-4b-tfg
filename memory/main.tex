@@ -47,6 +47,30 @@ of the requirements for the degree in \\
 
 \end{center}
 
+
+%%% ABSTRACT %%%
+\newpage
+\section*{Abstract}
+
+{Every copy of the thesis must have an abstract. An abstract must provide a concise summary of the thesis. In style, the
+abstract should be a miniature version of the thesis: short introduction, a summary of the results, conclusions or main
+arguments presented in the thesis. The abstract may not exceed 150 words for a Degree’s thesis.}
+
+\newpage
+\section*{Resum}
+
+\begin{otherlanguage}{catalan}
+TODO
+\end{otherlanguage}
+
+\newpage
+\section*{Resumen}
+
+\begin{otherlanguage}{spanish}
+TODO
+\end{otherlanguage}
+
+
 %%% INDEX %%%
 \newpage
 {\hypersetup{linkcolor=black}
@@ -62,43 +86,23 @@ of the requirements for the degree in \\
 }
 
 \newpage
-\printacronyms[include=abbrev,name=Abbreviations]
-
-%%% ABSTRACT %%%
-\newpage
-\section*{Abstract}
-
-{Every copy of the thesis must have an abstract. An abstract must provide a concise summary of the thesis. In style, the
-abstract should be a miniature version of the thesis: short introduction, a summary of the results, conclusions or main
-arguments presented in the thesis. The abstract may not exceed 150 words for a Degree’s thesis.}
-
-\newpage
 \input{revision_history}
 
-\newpage
 
+%%% CONTENT %%%
+\newpage
 \input{introduction}
 
-%%% StateOfTheArt %%%
-\clearpage\section{State of the art of the technology used or applied in this thesis:}
-
-{A background, comprehensive review of the literature is required. This is known as the Review of Literature and should
-include relevant, recent research that has been done on the subject matter.}
-
-\subsection{Topic}
-
-Here you have a couple of references about LaTeX ~\cite{latexcompanion} and electrodynamics \cite{einstein}.
-
-\bigskip
-
-\subsection{Topic}
+\newpage
 \input{sota}
 
 %%% METHODOLOGY %%%
-%\clearpage\section{Methodology / project development: }
+\newpage
+\section{Methodology / project development}
 
-%{The Methodology is included in this chapter and should include all relevant %methods that were utilized as well as
-%research methods and measurements, software and hardware development, ...}
+{The Methodology is included in this chapter and should include all relevant
+methods that were utilized as well as
+research methods and measurements, software and hardware development, ...}
 
 %%% RESULTS: SECTIONS %%%
 
@@ -107,59 +111,46 @@ Here you have a couple of references about LaTeX ~\cite{latexcompanion} and elec
 %\vspace*{2cm}
 \section{Section 3}
 \label{sec:sec3}
-
-\lipsum[4] \ac{EU} is the European Union. \lipsum[5]
-\lipsum[6] \ac{ETSETB} is Telecos. \lipsum[7]
-
-\subsection{Subsection}
-\label{sec:subsec3.1}
-The book \cite{latexcompanion} \lipsum[15]
+TODO
 
 %%% SECTION5 %%%
 \newpage
 %\vspace*{2cm}
 \section{Section 5}
 \label{sec:sect5}
-\lipsum[4]
-
-\subsection{Overview}
-\label{subsec:sect5Overview}
-\lipsum[10]
-Visite the Knuth repository \cite{knuthwebsite}.
+TODO
 
 %%% TESTING %%%
 \clearpage
 %\vspace*{2cm}
 \section{Experiments and results}
 \label{sec:tests}
-\lipsum[9]
+TODO
 
 %%% BUDGET %%%
 \clearpage
 \section{Budget}
-{\selectlanguage{english}
-\foreignlanguage{english}{Depending on the thesis scope this document should include:}}
+
+{Depending on the thesis scope this document should include:}
 
 %%% ENVIRONMENT %%%
-\clearpage
-\section[Environment Impact (Optional)]{{Environment Impact (Optional)}}
-
-{Whether the tasks that have led to the realization of this thesis, as if its results have identifiable environmental
-impact, describe it in this section.}
+%\clearpage
+%\section[Environment Impact (Optional)]{{Environment Impact (Optional)}}
+%
+%{Whether the tasks that have led to the realization of this thesis, as if its results have identifiable environmental
+%impact, describe it in this section.}
 
 %%% CONCLUSIONS AND FUTURE %%%
 \clearpage
 \section{Conclusions}
 \label{sec:conclusions}
 
-\lipsum[4]
-
-\lipsum[3]
+TODO
 
 \section{Future Work}
 \label{sec:futwork}
 
-\lipsum[10]
+TODO
 
 %%% BIBLIOGRAPHY %%%
 \newpage
@@ -170,12 +161,17 @@ impact, describe it in this section.}
 \bibliography{bibliography.bib}
 
 %%% ANNEX %%%
-\clearpage
-\newpage
-\begin{appendices}
+%\clearpage
+%\newpage
+%\begin{appendices}
+%
+% {Appendices may be included in your thesis but it is not a requirement.}
+%
+%\end{appendices}
 
-{Appendices may be included in your thesis but it is not a requirement.}
-
-\end{appendices}
+%%% GLOSSARY %%%
+\cleardoublepage
+\addcontentsline{toc}{section}{Glossary}
+\printacronyms[include=abbrev,name=Glossary]
 
 \end{document}
