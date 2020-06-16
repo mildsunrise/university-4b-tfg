@@ -41,7 +41,7 @@
   breakindent=1em,
   autogobble,
 }
-\surroundwithmdframed[
+\mdfdefinestyle{minted}{%
   backgroundcolor=codebg,
   skipabove=8pt,
   skipbelow=8pt,
@@ -50,7 +50,12 @@
   innerleftmargin=14pt,
   innerrightmargin=14pt,
   linewidth=0pt,
-]{minted}
+}
+\surroundwithmdframed[style=minted]{minted}
+\let\inputmintedorg\inputminted
+\renewcommand{\inputminted}[2]{%
+  \begin{mdframed}[style=minted]\inputmintedorg{#1}{#2}\end{mdframed}
+}
 
 %RBG FFD33E / C95D40
 \definecolor{upcorange}{HTML}{FFD33E}

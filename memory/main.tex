@@ -52,22 +52,39 @@ of the requirements for the degree in \\
 \newpage
 \section*{Abstract}
 
-{Every copy of the thesis must have an abstract. An abstract must provide a concise summary of the thesis. In style, the
-abstract should be a miniature version of the thesis: short introduction, a summary of the results, conclusions or main
-arguments presented in the thesis. The abstract may not exceed 150 words for a Degree’s thesis.}
+Linux caches disk I/O for performance: writes complete immediately from userspace perspective, and are committed to storage later.
+But in the presence of heavy writers, this buffering can easily hurt system responsiveness if not handled correctly.
+
+This is well known and has received substantial work, but remains a problem today. In this thesis, we first research the relevant kernel subsystems \& technologies, measure and understand what's happening, then design a PoC to mitigate the adverse effects.
+
+We discover cache flushes to be the issue, because inodes are locked until written to disk. Today's large caches mean inodes from innocent processes can stay locked for long amounts of time. This often \emph{replaces} the intended throttling.
+
+We designed a daemon that detects heavy writers and lowers their I/O priority, allowing inodes from other processes to be written (and unlocked) first. It successfully reduces long pauses and improves responsiveness.
 
 \newpage
 \section*{Resum}
 
 \begin{otherlanguage}{catalan}
-TODO
+Linux cacheja les operacions I/O de disc: les escriptures acaben immediatament des de la perspective d'userspace, i més endavant s'escriuen realment al disc. Però en la presència de processos que escriuen sense límit, aquest buffering pot danyar fàcilment el temps de resposta del sistema si no es gestiona de forma justa.
+
+Es tracta d'un problema conegut i que s'ha treballat bastant, però que segueix estant present a dia d'avui. En aquest projecte s'investiguen els subsistemes i tecnologies rellevants del kernel, es mesura i entén el que està passant, i llavors es dissenya un PoC per mitigar els efectes adversos.
+
+Es descobreix que el problema sembla estar en els buidats de la cache, ja que els inodes és bloquegen fins que s'escriuen al disc. Avui dia amb caches tan grans, els inodes de processos innocents poden mantenir-se bloquejats durant un temps llarg mentre esperen ser escrits. Això fins i tot \emph{reemplaça} el throttling normal.
+
+S'ha dissenyat un daemon que detecta processos ofensius i els redueix la prioritat I/O, de forma que quan es buidi la cache, els inodes d'altres processos s'escriguin (i es desbloquegin) primer. Això aconsegueix reduir les llargues pauses i millora la fluidesa del sistema.
 \end{otherlanguage}
 
 \newpage
 \section*{Resumen}
 
 \begin{otherlanguage}{spanish}
-TODO
+Linux cachea las operaciones I/O de disco: las escrituras acaban inmediatamente desde la perspectiva de userspace, y más adelante se escriben realmente al disco. Pero en la presencia de procesos que escriben sin límite, este buffering puede dañar facilmente la responsividad del sistema si no se gestiona de forma justa.
+
+Se trata de un problema conocido y que se ha trabajado bastante, pero que sigue presente a día de hoy. En este proyecto se investigan los subsistemas y tecnologías relevantes del kernel, se mide y racionaliza el comportamiento observado, y finalmente se diseña un PoC para mitigar los efectos adversos.
+
+Se descubre que el problema parece estar en los vaciados de cache, ya que los inodes son bloqueados hasta que se escriben al disco. Hoy en día con cachés tan grandes, los inodes de procesos inocentes pueden mantenerse mucho tiempo bloqueados mientras esperan ser escritos. Esto aveces \emph{reemplaza} el throttling normal.
+
+Se ha diseñado un daemon que detecta procesos ofensivos y les reduce la prioridad I/O, de forma que cuando se vacie la caché, los inodes del resto de procesos se escriban (y desbloqueen) antes. Esto consigue reducir las largas pausas y mejora la fluidez del sistema.
 \end{otherlanguage}
 
 
@@ -81,7 +98,7 @@ TODO
 \newpage
 {\hypersetup{linkcolor=black}
 \listoffigures
-\lstlistoflistings
+\listoflistings
 \listoftables
 }
 
@@ -98,27 +115,8 @@ TODO
 
 %%% METHODOLOGY %%%
 \newpage
-\section{Methodology / project development}
+\input{development}
 
-{The Methodology is included in this chapter and should include all relevant
-methods that were utilized as well as
-research methods and measurements, software and hardware development, ...}
-
-%%% RESULTS: SECTIONS %%%
-
-%%% SECTION3 %%%
-\newpage
-%\vspace*{2cm}
-\section{Section 3}
-\label{sec:sec3}
-TODO
-
-%%% SECTION5 %%%
-\newpage
-%\vspace*{2cm}
-\section{Section 5}
-\label{sec:sect5}
-TODO
 
 %%% TESTING %%%
 \clearpage
@@ -161,13 +159,13 @@ TODO
 \bibliography{bibliography.bib}
 
 %%% ANNEX %%%
-%\clearpage
-%\newpage
-%\begin{appendices}
-%
-% {Appendices may be included in your thesis but it is not a requirement.}
-%
-%\end{appendices}
+\clearpage
+\newpage
+\begin{appendices}
+
+\input{appendix}
+
+\end{appendices}
 
 %%% GLOSSARY %%%
 \cleardoublepage

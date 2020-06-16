@@ -1,0 +1,16 @@
+\begin{tabular}{@{}llll@{}} \toprule
+  Kind & Parameters & Cycle behaviour & Notes \\
+\midrule
+  \textbf{control} & idle &  sleep for \mintinline{text}{idle} & \\
+\midrule
+  \textbf{load} & f, wait, size, block &  write of size \mintinline{text}{block} to file \mintinline{text}{f} & first cycle sleeps for \mintinline{text}{wait} \\
+    &&& stops after writing \mintinline{text}{size} bytes \\
+\midrule
+  \textbf{write} & f, idle &  small write to file \mintinline{text}{f} & \\
+    && sleep for \mintinline{text}{idle} & \\
+\midrule
+  \textbf{multiwrite} & f, idle &  open new file \mintinline{text}{f + suffix} & \mintinline{text}{suffix} is \mintinline{text}{".0"}, \mintinline{text}{".1"}, etc. \\
+    && small write to file & \\
+    && close file & \\
+    && sleep for \mintinline{text}{idle} & \\
+\bottomrule \end{tabular}

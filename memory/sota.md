@@ -6,6 +6,8 @@ During analysis, we'll probably need to get insight on what is happening in the 
 
 When developing a possible solution —be it in form of kernel patches, loadable modules or userspace daemons— we'll likely rely on **accounting mechanisms** to track resource usage of (groups of) tasks and provide fairness. **Resource control** mechanisms will also be needed to enforce limits on (groups of) tasks, in the case of a userspace daemon. Section \ref{subsec:resource-control} details relevant accounting & control mechanisms readily available in Linux.
 
+Finally, section \ref{subsec:other-technologies} details other technologies used in this thesis.
+
 
 ## Linux and the I/O stack {#subsec:io-stack}
 
@@ -64,7 +66,9 @@ In that regard, **writeback caching** allows writes to be cached as well, and pe
 
  - Tasks can continue their work without being having to wait for I/O writes, which means better latency and resource utilization, especially CPU efficiency.
 
- - Prevents 'bumpiness' (greatly varying latencies) in the physical device from damaging the performance of tasks. This is especially relevant in "read-write loops" (i.e. a download from the network into disk) which greatly reduce their throughput if there are unstabilities in one of the ends\cite{commit-soft-throttling}.
+ - Prevents 'bumpiness' (greatly varying latencies) in the physical device from damaging the performance of tasks. This is especially relevant in "read-write loops" (i.e. a download from the network into disk) which greatly reduce their throughput if there are unstabilities in one of the ends \cite{commit-soft-throttling}.
+
+ - I/O is submitted to the disk in bulks, which allows the I/O scheduler (or elevator) to build efficient schedules for their transfer.
 
 Conceptually, it acts like a large buffer for writes.
 
@@ -74,7 +78,7 @@ Writeback caching works by tracking pages that become **dirty**, i.e. modified w
 
 Kernel worker tasks wake up periodically and transition some of the pages into **writeback** state, which means they're being written to the block device (resulting in one or more in-progress BIOs). This is done according to some criteria, such as how long the page has been dirty, or whether the current amount of dirty pages surpasses a configured **background dirty threshold**.
 
-Once the page has been written (the BIO has finished), it's considered clean and is now eligible to be removed from the cache.
+Once the page has been written (the BIO has finished), it's marked as clean and is now eligible to be removed from the cache.
 
 #### Integration with VFS
 
@@ -88,11 +92,11 @@ Like every buffer with finite capacity, the writeback cache needs a mechanism to
 
 The main user-facing parameter to control this throttling is the **dirty threshold**, which defines the maximum percentage[^percentage] of the *free memory* (see above) in the system that can ever hold dirty pages[^dirty-pages]. Together with the **background dirty threshold** mentioned before, these define most of the throttling characteristics.
 
-[^percentage]: Modern kernels allow defining an absolute amount of memory instead of a percentage of a dynamic value\cite{mail-throttle-amount}. This is useful in systems with lots of RAM, as only *integer* percentages are accepted.
+[^percentage]: Modern kernels allow defining an absolute amount of memory instead of a percentage of a dynamic value \cite{mail-throttle-amount}. This is useful in systems with lots of RAM, as only *integer* percentages are accepted.
 
 [^dirty-pages]: In most contexts, especially throttling, *dirty pages* includes pages in writeback state as well.
 
-Previously, throttling seemed to be simple: when the dirty threshold is surpassed, new writes are no longer cached and effectively become synchronous (i.e. complete after processed by the block device). This was hurting interactivity and performance, and was later replaced by a **soft-throttling** scheme based on scheduler rate-limiting\cite{commit-soft-throttling}.
+Previously, throttling seemed to be simple: when the dirty threshold is surpassed, new writes are no longer cached and effectively become synchronous (i.e. complete after processed by the block device). This was hurting interactivity and performance, and was later replaced by a **soft-throttling** scheme based on scheduler rate-limiting \cite{commit-soft-throttling}.
 
 \begin{figure} \hypertarget{fig:curve-global}{%
   \centering
@@ -106,7 +110,9 @@ Previously, throttling seemed to be simple: when the dirty threshold is surpasse
   \caption{Representation of the per-block device throttling curve}\label{fig:curve-bdi}
 } \end{figure}
 
-Instead, processes now begin to be throttled *before* the dirty threshold is reached (at around the midpoint between it and the background dirty threshold, called the **setpoint**), and the pauses are designed to increase as the dirty limit is approached. The details are a bit more complicated, as two curves seem to be implemented: a global one, and another for the block device. These are represented in figures \ref{fig:curve-global} and \ref{fig:curve-bdi} (the curve parameters are marked in blue). The source code appears to indicate that the minimum of both curves is in effect\cite{source-writeback-curve}.
+Instead, processes now begin to be throttled *before* the dirty threshold is reached (at around the midpoint between it and the background dirty threshold, called the **setpoint**), and the pauses are designed to increase as the dirty limit is approached. The details are a bit more complicated: the curve that governs the throttling is represented in figure \ref{fig:curve-global}, the curve parameters are marked in blue \cite{source-writeback-curve}.
+
+Furthermore, the kernel supports block device-specific throttling, which is intended to apply backpressure from the disk queues into the cache & applications. It's enabled through `CONFIG_BLK_WBT` and implemented through a separate curve, represented in figure \ref{fig:curve-bdi}. The source code appears to indicate that the minimum of both curves is in effect.
 
 #### Unfairness
 
@@ -118,7 +124,7 @@ Taking that into account, it's reasonable to expect the same throttling applied 
 
 #### Existing parameters
 
-Writeback cache parameters can be adjusted on the fly through the sysctl interface\cite{docs-sysctl-vm}. These are the relevant ones:
+Writeback cache parameters can be adjusted on the fly through the sysctl interface \cite{docs-sysctl-vm}. These are the relevant ones:
 
 \begin{description}
 \item[\mintinline{text}{vm.dirty_background_ratio}]
@@ -151,7 +157,7 @@ Thus, *tracing* seems to be what we need. Available kernel tracing mechanisms we
 
 #### The kernel tracer (ftrace)
 
-Linux has a generic tracing system, which consumes **events** from multiple sources and aggregates them into a ringbuffer. Events are encoded in a binary format and include a timestamp (many clock sources are available), TID, CPU number and event-specific fields.
+Linux has a generic tracing system, which consumes **events** from multiple sources and aggregates them into a ringbuffer. Events are encoded in a binary format and include a timestamp (many clock sources are available), PID, CPU number and event-specific fields.
 
 The tracer has a flexible filter system. Specific events may be enabled or disabled in many ways: either manually, for some time, or in response to another event being fired. This allows to pin down selected events, which is relevant in situations like this one, where interesting data may be buried in a frequently logged event (I/O). There's also some support for aggregating data into histograms, for instance.
 
@@ -163,9 +169,9 @@ We won't go into the details of the user interface, for brevity and because this
 
 #### Tracepoints
 
-Tracepoints are a debugging mechanism. They are statically inserted in kernel code through a macro, at points of interest. Then, through the API, the user can supply a callback that will be injected at the tracepoint they wish. The only cost of tracepoints, if enabled, is a no-op instruction when not in use\cite{docs-tracepoints}.
+Tracepoints are a debugging mechanism. They are statically inserted in kernel code through a macro, at points of interest. Then, through the API, the user can supply a callback that will be injected at the tracepoint they wish. The only cost of tracepoints, if enabled, is a no-op instruction when not in use \cite{docs-tracepoints}.
 
-They can also serve as event sources. When inserting a tracepoint, the developer can specify additional *glue code* specifying the event name, fields and their representation. The tracepoint may then be enabled in the tracer and will generate an event every time it's hit\cite{docs-tracepoints-events}.
+They can also serve as event sources. When inserting a tracepoint, the developer can specify additional *glue code* specifying the event name, fields and their representation. The tracepoint may then be enabled in the tracer and will generate an event every time it's hit \cite{docs-tracepoints-events}.
 
 Tracepoints are organized in *subsystems*. In our case, we're mostly interested in the `writeback` subsystem, and specifically in the following events, which were identified to be useful in getting a general overview of the state of the cache:
 
@@ -200,7 +206,7 @@ A more recent technology, Kprobes (originally part of Dprobes) allows injecting 
 
 Kprobes are useful as they allow patching any function or spot on the fly. There's also a second type of Kprobes, called Kretprobes, that fire when an arbitrary function returns.
 
-Like tracepoints, Kprobes has a kernel API. However, it can be used together with the tracer as event sources, which is convenient\cite{docs-kprobe-tracing}. They can also invoke BPF programs. Both of these solutions are entirely user-space.
+Like tracepoints, Kprobes has a kernel API. However, it can be used together with the tracer as event sources, which is convenient \cite{docs-kprobe-tracing}. They can also invoke BPF programs. Both of these solutions are entirely user-space.
 
 To register Kprobes as event sources, the user writes entries to:
 
@@ -218,7 +224,7 @@ Short for Berkeley Packet Filter, it's a VM (Virtual Machine) that lives in the 
 
 It is primarily designed to be safe and compact: the kernel verifies the bytecode before running it to make sure there's no infinite loops, etc.
 
-BPF was originally created to filter network packets when capturing traffic, and the first version has been renamed to *classical BPF* (or simply, cBPF). The new version, *extended BPF* (eBPF), performs better and allows the programs to communicate among themselves and with user-space, through shared data structures\cite{article-ebpf}.
+BPF was originally created to filter network packets when capturing traffic, and the first version has been renamed to *classical BPF* (or simply, cBPF). The new version, *extended BPF* (eBPF), performs better and allows the programs to communicate among themselves and with user-space, through shared data structures \cite{article-ebpf}.
 
 Since then, BPF has found more and more uses. A very powerful one is **attaching BPF programs to Kprobes and tracepoints**. This (especially with BCC, see below) provides a powerful way to inspect kernel structures at an arbitrary point of execution that is easy, safe, portable and unobtrusive, entirely from user-space (i.e. instead of modifying the kernel or writing a kernel module).
 
@@ -233,6 +239,8 @@ Until now we've specifically covered available kernel technologies. User-space t
    ![Kernelshark screenshot showing an open event capture file](img/sota/kernelshark-1.png){#fig:kernelshark width=100%}
 
    It also contains libraries for parsing the event binary format, and a Python interface which can be very handy. Also included is **kernelshark** (figure \ref{fig:kernelshark}), a graphical viewer for event capture files produced by `trace-cmd`. The format is designed for efficiency, and kernelshark can quickly open logs with millions of events.
+
+ - **blktrace**: Tool that listens for events logged from the block layer, and relayed through debugfs in a similar way to the tracer. Contains very detailed info about block I/O including scheduler operation, driver operation, queues, latencies...
 
  - **perf**: Kernel profiler. Not investigated as it appears of little relevance to the project.
 
@@ -251,4 +259,45 @@ And some tools are more generic, allowing the user to script their behaviour:
 
 ## Resource control & accounting {#subsec:resource-control}
 
+This section details kernel technologies explored in the development phase of the proof-of-concept. These allow us to impose restrictions on resource consumption from (groups of) processes, which will hopefully be useful in mitigating the adverse effects of writeback caching.
 
+There's also some mention of APIs for resource accounting, which allow us to query resource consumption and will be useful to identify relevant processes and measures to take.
+
+#### \ac{cgroups}
+
+- explain v1 and v2
+  - difficulty of choosing... ideally our deamon should support both but we'll focus on v1 because it's used by systemd and limited scope
+- different controllers
+
+#### Memory cgroups (\ac{memcg})
+
+#### Block I/O cgroups (\ac{blkio})
+
+#### \ac{BFQ} scheduler
+
+#### Process stats APIs
+
+- explain `/proc`
+- explain \ac{netlink} API
+
+
+## Other used techologies {#subsec:other-technologies}
+
+#### \ac{UML}
+
+Short for User Mode Linux, this is a 'virtual' architecture shipped with Linux that it to be compiled as a regular executable. The kernel can then be 'booted' by simply executing it, and runs as a regular user-space process inside the host kernel.
+
+In essence, it's a light way (in terms of setup) to run a virtual machine, requires *no privileges*, boots quickly and is fairly portable (and also fun). It is not used in production, since it isn't especially secure or performant when compared to using a proper hypervisor that takes advantage of hardware acceleration.
+
+Using UML only requires setting `ARCH=um` when compiling the kernel. `make menuconfig` will show some UML-specific related options, such as whether to compile a 64-bit kernel and the processor type. `make` will then produce a `linux` executable. To boot the kernel, invoke this executable supplying kernel parameters as command-line arguments. Keep in mind these arguments are internally joined with spaces before processing.
+
+Files may be exposed to the kernel as block devices, through the UBD driver: add `ubdX=file` arguments such as `ubda=/tmp/rootfs` and it will appear as `/dev/ubda`. Copy-on-write may also be used by supplying a comma-separated list of files. UML also ships with a 'magic filesystem' that exposes the host filesystem: it's called hostfs and may be used like this:
+
+~~~ bash
+UML$ mount -t hostfs none /host -o /home/dev/uml
+UML$ cat /host/foo  # accesses /home/dev/uml/foo in the host
+~~~
+
+This causes problems with permissions and privileged operations when the kernel runs as an unprivileged user, because not even UML root will be able to modify the ownership of files, for instance. To remediate this, an additional filesystem is provided that stores the metadata separately, but it is not relevant to the project.
+
+Other peripherals are provided as well, such as multiple options to provide network (TUN or TAP) and serial lines / consoles. The amount of physical memory used by UML may be adjusted through the `memory` option, i.e. `memory=150M`.
