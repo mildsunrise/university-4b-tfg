@@ -122,7 +122,7 @@ The block device *does* seem to be taken into account, as we saw, but this doesn
 
 Taking that into account, it's reasonable to expect the same throttling applied to innocent, non-cache-starving processes than is being applied to the starving ones. Also, workers don't seem to apply any fairness when selecting pages for writeback.
 
-#### Existing parameters
+#### Existing parameters {#par:cache-parameters}
 
 Writeback cache parameters can be adjusted on the fly through the sysctl interface \cite{docs-sysctl-vm}. These are the relevant ones:
 

@@ -253,6 +253,7 @@ select(0, NULL, NULL, NULL, {tv_sec=1, tv_usec=0}
 ~~~
 
 Other than the extra `fstat` issued after opening the file, all kinds seemed to behave correctly. The full source code of `load.py` is listed at appendix \ref{subsec:code-load}.
+<!-- and may also be found in the submitted annex under the `analysis` folder. (removed because it breaks layout) -->
 
 
 ## Virtual environment
@@ -513,7 +514,7 @@ experiment.json  load.l1.pkl  load.mw1.pkl  trace.dat
 load.c1.pkl      load.l2.pkl  load.w1.pkl
 ~~~ 
 
-The full source code of `experiment.py` is listed at appendix \ref{subsec:code-experiment}.
+The full source code of `experiment.py` is listed at appendix \ref{subsec:code-experiment} and may be found in the submitted annex as well, under the `analysis` folder.
 
 #### Other considerations
 
