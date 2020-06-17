@@ -49,7 +49,9 @@ of the requirements for the degree in \\
 
 
 %%% ABSTRACT %%%
-\newpage
+\clearpage
+\phantomsection
+\addcontentsline{toc}{section}{Abstract}
 \section*{Abstract}
 
 Linux caches disk I/O for performance: writes complete immediately from userspace perspective, and are committed to storage later.
@@ -61,7 +63,9 @@ We discover cache flushes to be the issue, because inodes are locked until writt
 
 We designed a daemon that detects heavy writers and lowers their I/O priority, allowing inodes from other processes to be written (and unlocked) first. It successfully reduces long pauses and improves responsiveness.
 
-\newpage
+\clearpage
+\phantomsection
+\addcontentsline{toc}{section}{Resum}
 \section*{Resum}
 
 \begin{otherlanguage}{catalan}
@@ -74,7 +78,9 @@ Es descobreix que el problema sembla estar en els buidats de la cache, ja que el
 S'ha dissenyat un daemon que detecta processos ofensius i els redueix la prioritat I/O, de forma que quan es buidi la cache, els inodes d'altres processos s'escriguin (i es desbloquegin) primer. Això aconsegueix reduir les llargues pauses i millora la fluidesa del sistema.
 \end{otherlanguage}
 
-\newpage
+\clearpage
+\phantomsection
+\addcontentsline{toc}{section}{Resumen}
 \section*{Resumen}
 
 \begin{otherlanguage}{spanish}
@@ -87,6 +93,10 @@ Se descubre que el problema parece estar en los vaciados de cache, ya que los in
 Se ha diseñado un daemon que detecta procesos ofensivos y les reduce la prioridad I/O, de forma que cuando se vacie la caché, los inodes del resto de procesos se escriban (y desbloqueen) antes. Esto consigue reducir las largas pausas y mejora la fluidez del sistema.
 \end{otherlanguage}
 
+
+%%% REVISION HISTORY %%%
+\clearpage
+\input{revision_history}
 
 %%% INDEX %%%
 \newpage
@@ -101,9 +111,6 @@ Se ha diseñado un daemon que detecta procesos ofensivos y les reduce la priorid
 \listoflistings
 \listoftables
 }
-
-\newpage
-\input{revision_history}
 
 
 %%% CONTENT %%%
@@ -166,6 +173,7 @@ TODO
 
 %%% GLOSSARY %%%
 \cleardoublepage
+\phantomsection
 \addcontentsline{toc}{section}{Glossary}
 \printacronyms[include=abbrev,name=Glossary]
 
