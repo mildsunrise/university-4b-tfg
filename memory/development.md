@@ -26,7 +26,7 @@ Then we need to set up the tracer (clock \& events) and start it, as shown in li
     const io = require('socket.io')(server)
 
     app.get('/', (req, res) => {
-        res.sendFile(__dirname + '/index.html')
+      res.sendFile(__dirname + '/index.html')
     })
     app.use(express.static(__dirname + '/public'))
     server.listen(4444)
@@ -79,7 +79,7 @@ And then the hard part is parsing the events. The ideal way would be to parse th
 \caption{Receiving and parsing tracer events in text form}\label{lst:monitor-parsing}
 \end{listing}
 
-We also had to fix a [bug in Node.JS](https://github.com/nodejs/node/pull/32006) that prevented the `writeFileSync` calls from working. After that, we moved to the client. Again, we won't go into much detail but the JavaScript code is shown in \ref{lst:monitor-client-js}. It initializes a Smoothie Charts instance, listens for events from the server, and adds datapoints to the plot (taking care of converting from pages to \si{\mebi\byte}).
+We also had to fix a [bug in Node.JS](https://github.com/nodejs/node/pull/32006) that prevented the `writeFileSync` calls from working. After that, we moved to the client. Again, we won't go into much detail but the JavaScript code is shown in listing \ref{lst:monitor-client-js}. It initializes a Smoothie Charts instance, listens for events from the server, and adds datapoints to the plot (taking care of converting from pages to \si{\mebi\byte}).
 
 \begin{listing}
 \begin{minted}{js}
@@ -594,3 +594,216 @@ Call Trace:
 After some amount of effort, we were able to bisect this bug to [patch `ecb0a83e3`](https://github.com/torvalds/linux/commit/ecb0a83e3198f2c1142901687afacbc73602a13b) which first appeared in Linux 4.20-rc1. To reproduce, `CONFIG_REFCOUNT_FULL` has to be enabled on old versions before it was made default and the option removed.
 
 We [notified](http://lists.infradead.org/pipermail/linux-um/2020-March/003031.html) the linux-um mailing list with that info. Nevertheless, the system continues working correctly after the trace and data is flushed to the block device, so we decided to move on.
+
+
+## Data analysis {#subsec:timeline-analysis}
+
+After we can run experiments, we need a way to visualize the resulting data and see what's going on. We'll build a tool to render a **timeline** showing where the pauses occur on each load and how much they took. It should also plot the data from the kernel tracer, in a similar way to what we did in the monitor application (section \ref{subsec:monitor-app}). We'll use a typical [Jupyter](https://jupyter.org) + [NumPy](https://numpy.org) + [Matplotlib](https://matplotlib.org) setup.
+
+#### Basic timeline
+
+Let's omit the tracer data for now. Listing \ref{lst:timeline-parsing} shows code for loading data from a particular experiment, given the directory name of the experiment (timestamp). It populates `expdata` and a `loads` dictionary.
+
+\begin{listing}
+\begin{minted}{python}
+    import os
+    from os.path import join
+    import re
+    import json
+    import pickle
+    import numpy as np
+
+    expname = '04-11_05-01' # experiment to load
+
+    expbase = join('../exp', expname)
+    with open(join(expbase, 'experiment.json')) as f:
+      expdata = json.load(f)
+    expfiles = os.listdir(expbase)
+    loads = {}
+    for x in expfiles:
+      if m := re.fullmatch(r'load\.(.+)\.pkl', x):
+        with open(join(expbase, x), 'rb') as f:
+          load = pickle.load(f)
+          load['times'] = np.array(load['times'])
+          loads[m.group(1)] = load
+\end{minted}
+\caption{Loading \& parsing experiment data}\label{lst:timeline-parsing}
+\end{listing}
+
+![Example timeline produced by the visualization tool](img/development/example-timeline.pdf){#fig:timeline-example width=100%}
+
+Then the visualization code, see figure \ref{fig:timeline-example} for the finished product. First we need to extract the experiment's start and end timestamps; we can do that by looking at the initial and final times of one of the loads:
+
+~~~ python
+start, end = loads['c1']['times'][[0,-1]]
+# all plotted timestamps will be relative to start
+~~~
+
+One way to visualize cycle times is to plot steps, one for each cycle. Each step will start & end when the cycle begins or ends, and the height of the step will also correspond to the cycle time. In other words, we'll be drawing a sequence of *squares* whose sides are the cycle times (of course, X and Y axis will be scaled differently so they will render as rectangles). We made a helper for that:
+
+~~~ python
+def render_segments(ax, edges, values, *args, **kwargs):
+  if len(edges) != len(values)+1:
+    raise Exception('Got {} edges, {} values'.format(len(edges), len(values)))
+  res = ax.fill_between(np.repeat(edges, 2)[1:-1], np.repeat(values, 2), -1, *args, **kwargs)
+  ax.set_ylim(0, ax.get_ylim()[1])
+  return res
+
+# ...
+ax.set_title('')
+ts = loads['c1']['times'] - start
+render_segments(ax, ts, np.diff(ts))
+~~~
+
+Since our timeline will have different *panes* with a shared X (temporal) axis, and because many of these panes will share the same logic, we'll define functions to render each kind of pane given the `Axes` object and some parameters. This allows us to add, remove or reorder them easily. Listing \ref{lst:timeline-load-panes} shows the panes for a control load, offender load, and innocent load respectively. On innocent loads, we subtract the idle parameter (sleep) from the cycle time. On offender loads, we discard the first cycle since it's a big sleep.
+
+\begin{listing}
+\begin{minted}{python}
+    def p_control_task(ax, ln='c1'):
+      load = loads[ln]; ps = load['params']; ts = load['times'] - start
+      ax.set_title('{} control task (cycle time)'.format(ln))
+      render_segments(ax, ts, np.diff(ts))
+      ax.set_ylim(ps['idle']*(1-.05), ps['idle']*1.25)
+
+    def p_load_task(ax, ln='l1'):
+      load = loads[ln]; ps = load['params']; ts = load['times'] - start
+      ax.set_title('{} {} task (cycle time)'.format(ln, load['kind']))
+      ts = ts[1:]
+      render_segments(ax, ts, np.diff(ts))
+
+    def p_idle_task(ax, ln='w1'):
+      load = loads[ln]; ps = load['params']; ts = load['times'] - start
+      ax.set_title('{} {} task (cycle time minus idle)'.format(ln, load['kind']))
+      render_segments(ax, ts, np.diff(ts) - ps['idle'])
+\end{minted}
+\caption{Pane logic for load cycle times}\label{lst:timeline-load-panes}
+\end{listing}
+
+Once this is done, we can define a list of panes (their height, function and parameters) and create a blank figure using `subplots`. Then invoke the functions to render each axis, some other code to set up ticks and labels, and we get the result. This is shown in listing \ref{lst:timeline-render}.
+
+\begin{listing}
+\begin{minted}{python}
+    panes = [
+      (0.5, p_control_task, dict()),
+      (1, p_load_task, dict(ln='l1')),
+      (1, p_idle_task, dict(ln='mw1')),
+      (1, p_load_task, dict(ln='l2')),
+      (1, p_idle_task, dict(ln='w1')),
+    ]
+    fig, axs = subplots(sharex=True, figsize=(10,8), tight_layout=True, nrows=len(panes), gridspec_kw=dict( height_ratios=[ x[0] for x in panes ] ))
+    axs[-1].set_xlim(0, end - start)
+    axs[-1].set_xlabel('time [s]')
+    axs[-1].xaxis.set_major_locator(mpt.MultipleLocator(10))
+
+    for ax, (_, fn, kwargs) in zip(axs, panes):
+      ax.yaxis.set_major_formatter(mpt.EngFormatter(sep='', unit='s'))
+      fn(ax, **kwargs)
+
+    for ax in axs:
+      for load in loads.values():
+        if load['kind'] == 'load':
+          ax.plot([ load['times'][1] - start ]*2, ax.get_ylim(), lw=1, ls=(0, (4,4)), color='black')
+\end{minted}
+\caption{Rendering the whole timeline}\label{lst:timeline-render}
+\end{listing}
+
+\clearpage
+
+#### Tracer data
+
+Now it's time to add in the info from the tracer events. As mentioned in section \ref{subsec:tracing}, `trace-cmd` includes a Python interface. It's not very well maintained and we were unable to determine clearly if the intent of this interface was to provide a means to write plugins, or to be used as a library in regular Python scripts (our case), or both \cite{trace-cmd-python-plugin-docs}.
+
+In any case, the Python bindings ended up installed at `/usr/lib/trace-cmd/python` but when we tried to load them, we got linking errors:
+
+~~~
+$ export PYTHONPATH=/usr/lib/trace-cmd/python
+$ python
+Python 3.8.1 (default, Jan 22 2020, 06:38:00) 
+[GCC 9.2.0] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import ctracecmd
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+ImportError: /usr/lib/trace-cmd/python/ctracecmd.so: undefined symbol: tracecmd_append_cpu_data
+>>> 
+$ ldd /usr/lib/trace-cmd/python/ctracecmd.so 
+	linux-vdso.so.1 (0x00007fffbbd57000)
+	libc.so.6 => /usr/lib/libc.so.6 (0x00007f31765a2000)
+	/usr/lib64/ld-linux-x86-64.so.2 (0x00007f317685a000)
+~~~
+
+To get the library to load, we needed to look up the missing symbols and remove them from the source code (it looks as if the definition was removed, but some undefined references were left). We also needed to modify the Makefile so it would build correctly.
+
+That wasn't enough, because the code was for a very old version of Python 2 that used `DictMixin`. After this and several other fixes, we got the code working and were able to open the `trace.dat` file and parse it. Horray!
+
+~~~ python
+import tracecmd
+trace = tracecmd.Trace('path/to/trace.dat')
+trace.read_next_event()
+# => 3502.111919739 CPU0 global_dirty_state: pid=15091 comm=python3 type=801 nr_dirty=b'\\xed\\...
+~~~
+
+The resulting patches to `trace-cmd` codebase can be found in `misc/trace-cmd.patch` in the submitted annex. The resulting (compiled) Python bindings are also included in `misc/tracecmd`. Then we need to add the appropriate code to the notebook to parse the events, see listing \ref{lst:timeline-trace-parse}.
+
+\begin{listing}
+\begin{minted}{python}
+    import sys
+    sys.path.append('../misc/tracecmd')
+    import tracecmd
+
+    trace = tracecmd.Trace(join(expbase, 'trace.dat'))
+    events = []
+    while (event := trace.read_next_event()) != None:
+        events.append(event)
+    events = sorted(events, key=lambda e: e.ts)
+    gds_events = [e for e in events if e.name == 'global_dirty_state']
+    bdp_events = [e for e in events if e.name == 'balance_dirty_pages']
+\end{minted}
+\caption{Parsing the \mintinline{text}{trace.dat} file from Python}\label{lst:timeline-trace-parse}
+\end{listing}
+
+After that, we implemented two new panes in the timeline: one that shows the cache state, like the monitor application, and one that measures how many events per second are found of every event type. The implementations for these panes are shown in listing \ref{lst:timeline-trace-panes} and are rendered in the second and third positions of figure \ref{fig:timeline-example}. The legend is a bit obstructing, so we'll remove it on actual timelines.
+
+\begin{listing}
+\begin{minted}{python}
+    def p_event_density(ax):
+      ax.set_title('tracing events count')
+      ax.set_ylabel('events / s')
+      def plot_times(events, *args, **kwargs):
+        if not len(events): return
+        ts = np.array([ e.ts / 1e9 for e in events ]) - start
+        bins = min(int((end - start) / .4), 300)
+        weights = [bins / (end - start)]*len(ts)
+        ax.hist(ts, range=ax.get_xlim(), weights=weights, bins=bins, log=True, histtype='step', *args, **kwargs)
+      plot_times(gds_events, label='state')
+      plot_times(bdp_events, label='balance')
+      ax.set_ylim(1,100e3)
+      ax.yaxis.set_ticks((1,1e1,1e2,1e3,1e4,1e5))
+      ax.yaxis.set_major_formatter(mpt.EngFormatter(sep=''))
+      ax.legend()
+
+    def p_dirty_state(ax):
+      ax.set_title('dirty state overview')
+      from_pages = lambda pages: pages * 4096
+      ts = np.array([ e.ts / 1e9 for e in gds_events ]) - start
+      ax.plot(ts, [ from_pages(int(e['background_thresh'])) for e in gds_events ], lw=1, ls=(0,(3,2)), color='green', label='background thresh.')
+      ax.plot(ts, [ from_pages(int(e['dirty_thresh'])) for e in gds_events ], lw=1, ls=(0,(3,2)), color='brown', label='dirty thresh.')
+      ax.plot(ts, [ from_pages(int(e['dirty_limit'])) for e in gds_events ], lw=1, ls=(0,(3,2)), color='red', label='dirty limit')
+      ax.plot(ts, [ from_pages(int(e['nr_dirty'])+int(e['nr_writeback'])) for e in gds_events ], color='black', label='dirty + writeback', zorder=-1)
+      ax.plot(ts, [ from_pages(int(e['nr_dirty'])) for e in gds_events ], color='blue', lw=1, label='dirty', )
+      ax.yaxis.set_major_formatter(mpt.EngFormatter(sep='', unit='B'))
+      ax.set_ylim(0, ax.get_ylim()[1])
+      ax.legend()
+\end{minted}
+\caption{Pane logic for kernel tracer data}\label{lst:timeline-trace-panes}
+\end{listing}
+
+We could also verify that the timestamps of the kernel tracer were synchronized with those of the loads, so they use `CLOCK_MONOTONIC` time as well. Now we have a decent amount of info in the timeline and we may move to analyzing the data and investigating what's going on.
+
+#### Other changes
+
+The full source code (notebook file) is included in the submitted annex, see `analysis/timeline.ipynb`. We won't go into them, but several changes \& improvements were made to the code at a later time in order to implement:
+
+ - Live experiments (these have no offender loads, see section \ref{subsec:live-experiments})
+ - Close-up timelines (see figure \ref{fig:tl-closeup})
+ - Experiment comparison (see figure \ref{fig:bfq-comparison})

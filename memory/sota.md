@@ -1,5 +1,5 @@
 # State of the art {#sec:sota}
-  
+
 This chapter presents a conceptual overview of the current state of the relevant kernel subsystems and APIs we'll be working with during this project. The central part to analyze is the **memory (VM) subsystem**, which is directly responsible of the writeback cache, but as we'll see later, the **block I/O subsystem** and **filesystem (VFS) layer** are of special importance as well. Those are presented within sections \ref{subsec:io-stack} & \ref{subsec:writeback-cache}.
 
 During analysis, we'll probably need to get insight on what is happening in the kernel. For complexity and practicity, this should be preferably done in a *non-invasive way* that avoids modifying the kernel or altering the results of the experiments themselves. Section \ref{subsec:tracing} presents an overview of the currently available mechanisms for tracing & debugging the Linux kernel.
@@ -32,7 +32,7 @@ If the I/O operation is directly upon an open block device, it goes directly to 
 
 Step 2 (the writeback cache) is what we'll work with, and its behaviour and interface was further researched and is explained in section \ref{subsec:writeback-cache}.
 
-![Simplified view of the Linux I/O stack, adapted from \cite{linux-io-diagrams}.](img/sota/IO_stack_of_the_Linux_kernel_simplified.pdf){#fig:io-stack-flow height=100%}
+![Simplified view of the Linux I/O stack, adapted from \cite{linux-io-diagrams}](img/sota/IO_stack_of_the_Linux_kernel_simplified.pdf){#fig:io-stack-flow height=100%}
 
 Figure \ref{fig:io-stack-flow} shows a representation of the flow. Please note how the page cache (i.e. the VM layer) isn't *after* the VFS layer, but *next to it*. As will be seen later, these layers interact in both directions.
 
@@ -285,7 +285,7 @@ There's also some mention of APIs for resource accounting, which allow us to que
 
 #### \ac{UML}
 
-Short for User Mode Linux, this is a 'virtual' architecture shipped with Linux that it to be compiled as a regular executable. The kernel can then be 'booted' by simply executing it, and runs as a regular user-space process inside the host kernel.
+Short for User Mode Linux, this is a 'virtual' architecture shipped with Linux that allows it to be compiled as a regular executable. The kernel can then be 'booted' by simply executing it, and runs as a regular user-space process inside the host kernel.
 
 In essence, it's a light way (in terms of setup) to run a virtual machine, requires *no privileges*, boots quickly and is fairly portable (and also fun). It is not used in production, since it isn't especially secure or performant when compared to using a proper hypervisor that takes advantage of hardware acceleration.
 
