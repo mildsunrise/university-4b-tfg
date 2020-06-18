@@ -102,13 +102,17 @@ This seems to imply that the cause for these pauses is the writeback *itself*, n
 
 Indeed, a look at the kernel's source code seems to confirm that inodes are locked while in writeback state \cite{source-include-fs}:
 
+> Inode state bits.  Protected by `inode->i_lock`
+>
+> [...]
+>
 > Two bits are used for locking and completion notification, `I_NEW` and `I_SYNC`.
 >
 > [...]
 >
 > **I_SYNC**: Writeback of inode is running. The bit is set during data writeback, and cleared with a wakeup on the bit address once it is done. The bit is also used to pin the inode in memory for flusher thread.
 
-Or also \cite{source-fs-writeback}:
+And also \cite{source-fs-writeback}:
 
 ~~~ c
 static void inode_sync_complete(struct inode *inode)
@@ -178,7 +182,7 @@ It *was* made possible to specify the thresholds in bytes, rather than integer p
 
 ## PoC phase {#subsec:poc}
 
-we decided to center on live exp for now
+TODO <!--we decided to center on live exp for now -->
 
 \begin{landscape}
   \begin{figure} \hypertarget{fig:tl-closeup-bfq}{%
