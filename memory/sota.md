@@ -101,13 +101,13 @@ Previously, throttling seemed to be simple: when the dirty threshold is surpasse
 \begin{figure} \hypertarget{fig:curve-global}{%
   \centering
   \input{img/sota/throttling_curve_global}
-  \caption{Representation of the global throttling curve}\label{fig:curve-global}
+  \caption{Representation of the global throttling curve, according to \cite{source-curves}}\label{fig:curve-global}
 } \end{figure}
 
 \begin{figure} \hypertarget{fig:curve-bdi}{%
   \centering
   \input{img/sota/throttling_curve_bdi}
-  \caption{Representation of the per-block device throttling curve}\label{fig:curve-bdi}
+  \caption{Representation of the per-block device throttling curve, according to \cite{source-curves}}\label{fig:curve-bdi}
 } \end{figure}
 
 Instead, processes now begin to be throttled *before* the dirty threshold is reached (at around the midpoint between it and the background dirty threshold, called the **setpoint**), and the pauses are designed to increase as the dirty limit is approached. The details are a bit more complicated: the curve that governs the throttling is represented in figure \ref{fig:curve-global}, the curve parameters are marked in blue \cite{source-writeback-curve}.

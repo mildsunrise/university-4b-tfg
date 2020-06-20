@@ -1,0 +1,26 @@
+\begin{subtable}{.45\textwidth}
+  \centering
+  \begin{tabular}{@{}lr@{}} \toprule
+    Parameter & Value \\
+  \midrule
+    Kernel version & 5.6.4-arch1-1 \\
+    Disk type & SSD \\
+    Disk throughput & (measured) \SI{70}{\mebi\byte\per\second} \\
+    Filesystem size & \SI{130}{\mebi\byte} \\
+    Memory size & \SI{8}{\gibi\byte} \\
+    Main command & \mintinline{text}{pacman -Syu} \\
+  \bottomrule \end{tabular}
+  \caption{Global environment parameters}
+\end{subtable} %
+~~
+\begin{subtable}{.5\textwidth}
+  \centering
+  \begin{tabular}{@{}llrr@{}} \toprule
+    Name & Kind & Sleep period \\
+  \midrule
+    \mintinline{text}{c1} & control & \SI{50}{\milli\second} \\
+    \mintinline{text}{w1} & write (innocent) & \SI{50}{\milli\second} \\
+    \mintinline{text}{mw1} & multiwrite (innocent) & \SI{100}{\milli\second} \\
+  \bottomrule \end{tabular}  
+  \caption{Load processes present}
+\end{subtable}

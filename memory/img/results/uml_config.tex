@@ -1,0 +1,26 @@
+\begin{subtable}{\textwidth}
+  \centering
+  \begin{tabular}{@{}lr@{}} \toprule
+    Parameter & Value \\
+  \midrule
+    Kernel version & 5.6.0-rc7 \\
+    Write throughput & \SI{1}{\mebi\byte\per\second} \\
+    Filesystem size & \SI{130}{\mebi\byte} \\
+    Memory size & \SI{150}{\mebi\byte} \\
+  \bottomrule \end{tabular}
+  \caption{Global environment parameters}
+\end{subtable}
+
+\begin{subtable}{\textwidth}
+  \centering
+  \begin{tabular}{@{}llrrrr@{}} \toprule
+    Name & Kind & Sleep period & Start time & Total size & Block size \\
+  \midrule
+    \mintinline{text}{c1} & control & \SI{50}{\milli\second} &&& \\
+    \mintinline{text}{w1} & write (innocent) & \SI{50}{\milli\second} &&& \\
+    \mintinline{text}{mw1} & multiwrite (innocent) & \SI{100}{\milli\second} &&& \\
+    \mintinline{text}{l1} & load (offender) & -- & \SI{5}{\second} & \SI{65}{\mebi\byte} & \SI{1024}{\byte} \\
+    \mintinline{text}{l2} & load (offender) & -- & \SI{43}{\second} & \SI{26}{\mebi\byte} & \SI{512}{\byte} \\
+  \bottomrule \end{tabular}  
+  \caption{Load processes present}
+\end{subtable}

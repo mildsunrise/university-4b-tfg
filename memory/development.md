@@ -1,5 +1,14 @@
 # Methodology / project development {#sec:development}
 
+Carrying out this project required defining an **experiment model**, and the development of different tooling to:
+
+ - Interface with the kernel tracer, and get familiar with the available data.
+ - Simulate the behaviour we're trying to analyze, in the form of both offender processes and innocent processes.
+ - Automate experiments, and carry them in a controlled environment to make them (more) reproducible
+ - Analyze the resulting data and draw conclusions
+
+This section walks through the reasoning, design and development of the experiment model and tooling. Specific experiments, results or proof-of-concept development are presented later in section \ref{sec:results}; however, some of the tools were developed in parallel with the experiments.
+
 ## Realtime monitor application {#subsec:monitor-app}
 
 Before starting to design the experiments, it was useful to have a bit more of insight into what's happening in the cache. We explored the **kernel tracer** on (section \ref{subsec:tracing}), and found the `global_dirty_state` tracepoint to be of interest, as it holds valuous info that can give us a first overview of the cache state (how many dirty pages exist, thresholds, writeback, ...).
@@ -601,6 +610,8 @@ We [notified](http://lists.infradead.org/pipermail/linux-um/2020-March/003031.ht
 
 After we can run experiments, we need a way to visualize the resulting data and see what's going on. We'll build a tool to render a **timeline** showing where the pauses occur on each load and how much they took. It should also plot the data from the kernel tracer, in a similar way to what we did in the monitor application (section \ref{subsec:monitor-app}). We'll use a typical [Jupyter](https://jupyter.org) + [NumPy](https://numpy.org) + [Matplotlib](https://matplotlib.org) setup.
 
+For the impatient, the finished product can be seen later in the analysis section, see figure \ref{fig:tl-uml-simple} for an example. We'll now present the structure of the code in a simplified way, see the full source code for reference.
+
 #### Basic timeline
 
 Let's omit the tracer data for now. Listing \ref{lst:timeline-parsing} shows code for loading data from a particular experiment, given the directory name of the experiment (timestamp). It populates `expdata` and a `loads` dictionary.
@@ -631,9 +642,8 @@ Let's omit the tracer data for now. Listing \ref{lst:timeline-parsing} shows cod
 \caption{Loading \& parsing experiment data}\label{lst:timeline-parsing}
 \end{listing}
 
-![Example timeline produced by the visualization tool](img/development/example-timeline.pdf){#fig:timeline-example width=100%}
 
-Then the visualization code, see figure \ref{fig:timeline-example} for the finished product. First we need to extract the experiment's start and end timestamps; we can do that by looking at the initial and final times of one of the loads:
+Then the visualization code. First we need to extract the experiment's start and end timestamps; we can do that by looking at the initial and final times of one of the loads:
 
 ~~~ python
 start, end = loads['c1']['times'][[0,-1]]
@@ -735,7 +745,7 @@ $ ldd /usr/lib/trace-cmd/python/ctracecmd.so
 
 To get the library to load, we needed to look up the missing symbols and remove them from the source code (it looks as if the definition was removed, but some undefined references were left). We also needed to modify the Makefile so it would build correctly.
 
-That wasn't enough, because the code was for a very old version of Python 2 that used `DictMixin`. After this and several other fixes, we got the code working and were able to open the `trace.dat` file and parse it. Horray!
+That wasn't enough, because the code was for a very old version of Python 2 that used things like `DictMixin`. After this and several other fixes, we got the code working and were able to open the `trace.dat` file and parse it. Horray!
 
 ~~~ python
 import tracecmd
@@ -763,7 +773,7 @@ The resulting patches to `trace-cmd` codebase can be found in `misc/trace-cmd.pa
 \caption{Parsing the \mintinline{text}{trace.dat} file from Python}\label{lst:timeline-trace-parse}
 \end{listing}
 
-After that, we implemented two new panes in the timeline: one that shows the cache state, like the monitor application, and one that measures how many events per second are found of every event type. The implementations for these panes are shown in listing \ref{lst:timeline-trace-panes} and are rendered in the second and third positions of figure \ref{fig:timeline-example}. The legend is a bit obstructing, so we'll remove it on actual timelines.
+After that, we implemented two new panes in the timeline: one that shows the cache state, like the monitor application, and one that measures how many events per second are found of every event type. The implementations for these panes are shown in listing \ref{lst:timeline-trace-panes} and are rendered in the second and third positions of figure \ref{fig:tl-uml-simple}. The legend is a bit obstructing, so we'll remove it on most timelines.
 
 \begin{listing}
 \begin{minted}{python}
@@ -805,6 +815,6 @@ We could also verify that the timestamps of the kernel tracer were synchronized 
 
 The full source code (notebook file) is included in the submitted annex, see `analysis/timeline.ipynb`. We won't go into them, but several changes \& improvements were made to the code at a later time in order to implement:
 
- - Live experiments (these have no offender loads, see section \ref{subsec:live-experiments})
+ - Live experiments (these have no offender loads, see page \pageref{par:live-experiments})
  - Close-up timelines (see figure \ref{fig:tl-closeup})
  - Experiment comparison (see figure \ref{fig:bfq-comparison})

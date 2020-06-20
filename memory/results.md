@@ -1,15 +1,19 @@
 # Experiments and results {#sec:results}
 
+With proper reasearch & tooling in place, we now walk through the performed experiments, results and the conclusions or theories drawn from them: this is the analysis phase (section \ref{subsec:analysis}). We'll then investigate ways to mitigate the side effects and develop a PoC (section \ref{subsec:poc}).
+
+It is advisable to read section \ref{sec:development} first, to be familiar with the experiment model and environment.
+
 ## Analysis phase {#subsec:analysis}
 
 #### UML tests
 
-With proper tooling in place, we started performing experiments inside our UML kernel and analyzing them. We did several iterations which can be summarized in an experiment shown in figure \ref{fig:tl-uml-simple}. This experiment uses the configuration shown in table \ref{tbl:base-loads}, and we can see:
+We started performing experiments inside our UML kernel and analyzing them. We did several iterations which can be summarized in an experiment shown in figure \ref{fig:tl-uml-simple}. This experiment uses the configuration shown in table \ref{table:uml-config}, and we can see:
 
  - At $t = \SI{0}{\second}$: only the control \& innocent loads are running. We can observe almost no I/O, and the cache growing very slowly.
 
  - At $t = \SI{5}{\second}$: the first offender load starts kicking in, trying to write as much as possible. The dirty pages grow and reach the `dirty_limit` in a couple of seconds.
- We start observing **long pauses** (several seconds) followed by no throttling, on both the offender load and the multiwrite load, but not on the write load.
+ We start observing **long pauses** (several seconds) interleaved by periods of zero throttling, on both the offender load and the multiwrite load, but not on the write load.
 
  - At $t \approx \SI{25}{\second}$: The kernel starts lowering the `dirty_limit`, which alters the global throttling curve[^only-global] (see figure \ref{fig:curve-global}) to apply more throttling to the processes. Long pauses stop and we start observing rate-limiting on the offender load (this can be seen through constant, but small, pauses on the `l1` pane; we can also observe how dirty pages grow much slower than before).
 
@@ -17,7 +21,13 @@ With proper tooling in place, we started performing experiments inside our UML k
 
  - At $t = \SI{43}{\second}$: The second offender load kicks in, but has zero impact on the rest of the system. It quickly gets rate-limited. The rate-limiting seems to be shared on both tasks, and is increased a bit to account for the new pressure.
 
-![Timeline from UML base experiment](img/results/tl-uml-simple.pdf){#fig:tl-uml-simple width=100%}
+\begin{table} \hypertarget{table:uml-config}{%
+  \centering
+  \input{img/results/uml_config.tex}
+  \caption{Base configuration for UML experiments}\label{table:uml-config}
+} \end{table}
+
+![Timeline from UML base experiment](img/development/example-timeline.pdf){#fig:tl-uml-simple width=100%}
 
 We can also observe a \SI{1}{\second} pause at $t = \SI{26}{\second}$, but since this pause also affected the control load and event count panes, it can be discarded as it was probably caused by the UML kernel being stopped for a while at host level.
 
@@ -39,15 +49,22 @@ We then performed several variations of the experiment to control for other fact
 
 ![Timeline from UML experiment, but disabling the cache](img/results/tl-uml-sync.pdf){#fig:tl-uml-sync width=100%}
 
-#### Live experiment
+\clearpage
+#### Live experiments {#par:live-experiments}
 
-While this looked like a promising reproduction of the problem, the environment ---while highly controlled--- is still different from a real one in terms of sizes: the cache is very small, the bandwidth is also small, ... Also, the offender load could be doing something different to what a normal load would do. Thus, we wanted to perform a more realistic experiment to see if it matched what we saw inside UML.
+This looked like a promising reproduction of the problem, but the environment ---while highly controlled--- is still different from a real one in terms of sizes: the cache is very small, the bandwidth is also small, ... Also, the offender load could be doing something different to what a normal load would do. Thus, we wanted to perform a more realistic experiment to see if it matched what we saw inside UML.
 
-So, a modified copy of `experiment.py` was made, which runs the loads directly on the host. Also, instead of running offender loads it starts an actual command (which in our tests was `pacman -Syu` to upgrade the system). This script is called `live_experiment.py` and its source code may be found in appendix \ref{sec:code-experiment} as well as in the `analysis` folder of the submitted annex.
+So, a stripped down version of `experiment.py` was made, which runs the loads directly on the host. Also, instead of running offender loads it starts an actual command (which in our tests was `pacman -Syu` to upgrade the system). This script is called `live_experiment.py` and its source code may be found in appendix \ref{sec:code-experiment} as well as in the `analysis` folder of the submitted annex.
 
 ![Timeline from a live experiment (system upgrade)](img/results/tl-live-simple.pdf){#fig:tl-live-simple width=100%}
 
-Again we needed many iterations of the experiment to apply fixes and get usable data, one of which is shown in figure \ref{fig:tl-live-simple}. We won't go into a temporal description of the events like before, but there's an important thing to note: **no throttling is being applied, yet there are similar unwanted pauses**.
+\begin{table} \hypertarget{table:live-config}{%
+  \centering
+  \input{img/results/live_config.tex}
+  \caption{Base configuration for live experiments}\label{table:live-config}
+} \end{table}
+
+Again we needed many iterations of the experiment to apply fixes and get usable data, one of which is shown in figure \ref{fig:tl-live-simple} and table \ref{table:live-config} for the configuration. We won't go into a temporal description of the events like before, but there's an important thing to note: **no throttling is being applied, yet there are similar unwanted pauses**.
 
 To verify that no throttling is ocurring, we can look at how no `balance_dirty_pages` events occur in the second pane, unlike in figure \ref{fig:tl-uml-simple}. And it's expected, since the dirty pages barely get to grow past the dirty background limit. Other things to note are: a much larger cache (\SI{1}{\giga\byte}), and that a lot more of these unwanted pauses affect the `w1` load as well.
 
@@ -61,7 +78,7 @@ We then attempted to get more data on what was happening in the live experiment.
  - All events in the whole `writeback` subsystem
  - `syscalls` events to precisely track when possibly blocking syscalls (`write`, `openat`, `close`) start \& end.
 
-However these are a *lot* of events, especially on a real-life system. Since we are probably happy with just capturing a handful of pauses, we manually turning the tracer on or off through the `tracing_on` file while `trace-cmd` was recording. We waited for a pause to happen, then turned the tracer on, and after around \SI{20}{\second} we got another pause. We then turned the tracer off.
+However these are a *lot* of events, especially on a real-life system. Since we are probably happy with just capturing a handful of pauses, we proceeded by manually turning the tracer on & off through the `tracing_on` file while `trace-cmd` was recording. We waited for a pause to happen, then turned the tracer on, and after around \SI{20}{\second} we got another pause. We then turned the tracer off.
 
 This gave us a `trace.dat` dump of about \SI{720}{\mega\byte}. With help of our visualization tool, we noted the timestamps of our pauses and cropped the `trace.dat` file to those timestamps, leaving some padding:
 
@@ -77,7 +94,7 @@ We first produced a zoomed-in version of the timeline to have some overview of t
  2. The cache moves a lot (around \SI{100}{\mega\byte}) of pages into writeback state (difference between black and blue line).
  3. The innocent load gets out of sleep, attempts to do I/O and gets blocked (pause).
  4. There is a period of almost no I/O, judging by the events count pane and the little growth in dirty pages. That also means we have less samples, but we can at least see how...
- 5. These writeback pages get written (the lines touch again)
+ 5. These writeback pages get fully written (the lines touch again)
  6. I/O resumes, and *after some time*, our innocent load gets unblocked.
 
 \begin{landscape}
@@ -98,14 +115,14 @@ This seems to imply that the cause for these pauses is the writeback *itself*, n
   \caption{Tracer events prior to finish of a long pause}\label{fig:event-log-before-end}
 } \end{figure}
 
+It is also important to look at how there is a period (point 6) where high-rate I/O starts again, yet our innocent load remains blocked. Maybe the offender load has been unblocked first and starts writing again, but it is not obvious why this would happen.
+
 #### The cause
 
 Indeed, a look at the kernel's source code seems to confirm that inodes are locked while in writeback state \cite{source-include-fs}:
 
 > Inode state bits.  Protected by `inode->i_lock`
->
-> [...]
->
+> [...]  
 > Two bits are used for locking and completion notification, `I_NEW` and `I_SYNC`.
 >
 > [...]
@@ -117,16 +134,16 @@ And also \cite{source-fs-writeback}:
 ~~~ c
 static void inode_sync_complete(struct inode *inode)
 {
-	inode->i_state &= ~I_SYNC;
-	/* If inode is clean an unused, put it into LRU now... */
-	inode_add_lru(inode);
-	/* Waiters must see I_SYNC cleared before being woken up */
-	smp_mb();
-	wake_up_bit(&inode->i_state, __I_SYNC);
+  inode->i_state &= ~I_SYNC;
+  /* If inode is clean an unused, put it into LRU now... */
+  inode_add_lru(inode);
+  /* Waiters must see I_SYNC cleared before being woken up */
+  smp_mb();
+  wake_up_bit(&inode->i_state, __I_SYNC);
 }
 ~~~
 
-Knowing all this, we draw the conclusion that these unwanted pauses are a direct consequence of (a) having a large cache, and (b) inodes being locked while waiting for writeback. Large caches make it possible (and frequent!) for large amounts of data to be queued for writeback when the cache is flushed. This means some of those inodes can be locked for a long time before they're finally written, and this is what is probably what's blocking our innocent load too.
+Knowing all this, we draw the conclusion that these unwanted pauses are a direct consequence of (a) having a large cache, and (b) inodes being locked while waiting for writeback. Large caches make it possible (and frequent!) for large amounts of data to be queued for writeback when the cache is flushed. This means some of those inodes can be locked for a long time before they're finally written, and this is probably what's blocking our innocent load too.
 
 To be clear: the writeback cache is a complex component and the reality is probably a bit more complicated, but that conclusion means that any offender will cause long pauses not only on itself, but any system process that writes to the filesystem at that time.
 
@@ -138,7 +155,7 @@ The relevant variable here is the amount of time it takes to flush the cache, wh
     \simeq \frac{\SI{375}{\mega\byte}}{\SI{70}{\mega\byte\per\second}} \simeq \SI{5.4}{\second}
 \end{equation*}
 
-Over the last couple of decades, RAM size has increased almost logarithmically \cite{ram-growth}. Disk sizes \& densisties have also increased, but disk *throughput* has remained almost the same. So around 2010, flush times were on the order of a couple tenths of a second and didn't hurt responsiveness that much.
+Over the last couple of decades, RAM size has increased almost logarithmically \cite{ram-growth}. Disk sizes \& densisties have also increased, but disk *throughput* has remained almost the same. So around 2005, flush times were probably on the order of *tenths* of a second and didn't hurt responsiveness that much.
 
 While doing initial research, we found people complaining about large caches on the Linux kernel mailing list around late 2013 \cite{lkml-thresholds}:
 
