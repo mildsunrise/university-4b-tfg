@@ -32,7 +32,7 @@ If the I/O operation is directly upon an open block device, it goes directly to 
 
 Step 2 (the writeback cache) is what we'll work with, and its behaviour and interface was further researched and is explained in section \ref{subsec:writeback-cache}.
 
-![Simplified view of the Linux I/O stack, adapted from \cite{linux-io-diagrams}](img/sota/IO_stack_of_the_Linux_kernel_simplified.pdf){#fig:io-stack-flow height=100%}
+![Simplified view of the Linux I/O stack, adapted from \protect\cite{linux-io-diagrams}](img/sota/IO_stack_of_the_Linux_kernel_simplified.pdf){#fig:io-stack-flow height=100%}
 
 Figure \ref{fig:io-stack-flow} shows a representation of the flow. Please note how the page cache (i.e. the VM layer) isn't *after* the VFS layer, but *next to it*. As will be seen later, these layers interact in both directions.
 
@@ -92,7 +92,7 @@ Like every buffer with finite capacity, the writeback cache needs a mechanism to
 
 The main user-facing parameter to control this throttling is the **dirty threshold**, which defines the maximum percentage[^percentage] of the *free memory* (see above) in the system that can ever hold dirty pages[^dirty-pages]. Together with the **background dirty threshold** mentioned before, these define most of the throttling characteristics.
 
-[^percentage]: Modern kernels allow defining an absolute amount of memory instead of a percentage of a dynamic value \cite{mail-throttle-amount}. This is useful in systems with lots of RAM, as only *integer* percentages are accepted.
+[^percentage]: Modern kernels allow defining an absolute amount of memory instead of a percentage of a dynamic value \cite{lkml-thresholds}. This is useful in systems with lots of RAM, as only *integer* percentages are accepted.
 
 [^dirty-pages]: In most contexts, especially throttling, *dirty pages* includes pages in writeback state as well.
 
@@ -101,13 +101,13 @@ Previously, throttling seemed to be simple: when the dirty threshold is surpasse
 \begin{figure} \hypertarget{fig:curve-global}{%
   \centering
   \input{img/sota/throttling_curve_global}
-  \caption{Representation of the global throttling curve, according to \cite{source-curves}}\label{fig:curve-global}
+  \caption{Representation of the global throttling curve, according to \protect\cite{source-writeback-curve}}\label{fig:curve-global}
 } \end{figure}
 
 \begin{figure} \hypertarget{fig:curve-bdi}{%
   \centering
   \input{img/sota/throttling_curve_bdi}
-  \caption{Representation of the per-block device throttling curve, according to \cite{source-curves}}\label{fig:curve-bdi}
+  \caption{Representation of the per-block device throttling curve, according to \protect\cite{source-writeback-curve}}\label{fig:curve-bdi}
 } \end{figure}
 
 Instead, processes now begin to be throttled *before* the dirty threshold is reached (at around the midpoint between it and the background dirty threshold, called the **setpoint**), and the pauses are designed to increase as the dirty limit is approached. The details are a bit more complicated: the curve that governs the throttling is represented in figure \ref{fig:curve-global}, the curve parameters are marked in blue \cite{source-writeback-curve}.
@@ -171,7 +171,7 @@ We won't go into the details of the user interface, for brevity and because this
 
 Tracepoints are a debugging mechanism. They are statically inserted in kernel code through a macro, at points of interest. Then, through the API, the user can supply a callback that will be injected at the tracepoint they wish. The only cost of tracepoints, if enabled, is a no-op instruction when not in use \cite{docs-tracepoints}.
 
-They can also serve as event sources. When inserting a tracepoint, the developer can specify additional *glue code* specifying the event name, fields and their representation. The tracepoint may then be enabled in the tracer and will generate an event every time it's hit \cite{docs-tracepoints-events}.
+They can also serve as event sources. When inserting a tracepoint, the developer can specify additional *glue code* specifying the event name, fields and their representation. The tracepoint may then be enabled in the tracer and will generate an event every time it's hit \cite{tracepoints-events}.
 
 Tracepoints are organized in *subsystems*. In our case, we're mostly interested in the `writeback` subsystem, and specifically in the following events, which were identified to be useful in getting a general overview of the state of the cache:
 
@@ -285,7 +285,7 @@ There's also some mention of APIs for resource accounting, which allow us to que
 
 #### \ac{UML}
 
-Short for User Mode Linux, this is a 'virtual' architecture shipped with Linux that allows it to be compiled as a regular executable. The kernel can then be 'booted' by simply executing it, and runs as a regular user-space process inside the host kernel.
+Short for User Mode Linux, this is a 'virtual' architecture shipped with Linux that allows it to be compiled as a regular executable. The kernel can then be 'booted' by simply executing it, and runs as a regular user-space process inside the host kernel \cite{docs-uml}.
 
 In essence, it's a light way (in terms of setup) to run a virtual machine, requires *no privileges*, boots quickly and is fairly portable (and also fun). It is not used in production, since it isn't especially secure or performant when compared to using a proper hypervisor that takes advantage of hardware acceleration.
 

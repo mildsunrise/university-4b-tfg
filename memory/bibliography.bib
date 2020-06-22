@@ -1,0 +1,184 @@
+% Linux commits
+
+@misc{commit-soft-throttling,
+    author    = "Wu Fengguang",
+    title     = "Linux patch \mintinline{text}{143dfe861}: \emph{writeback: {IO}-less balance\_dirty\_pages()}",
+    year      = 2010,
+    month     = "August",
+    volume    = "v3.2-rc1",
+    url       = "https://github.com/torvalds/linux/commit/143dfe8611a63030ce0c79419dc362f7838be557",
+}
+
+@misc{commit-hard-throttle,
+    author    = "Wu Fengguang",
+    title     = "Linux patch \mintinline{text}{1df647197}: \emph{writeback: hard throttle 1000+ dd on a slow USB stick}",
+    year      = 2011,
+    month     = "January",
+    volume    = "v3.2-rc3",
+    url       = "https://github.com/torvalds/linux/commit/1df647197c5b8aacaeb58592cba9a1df322c9000",
+}
+
+@misc{commit-free-pages,
+    author    = "Johannes Weiner",
+    title     = "Linux patch \mintinline{text}{a1c3bfb2f}: \emph{mm/page-writeback.c: do not count anon pages as dirtyable memory}",
+    year      = 2014,
+    month     = "January",
+    volume    = "v3.14-rc1",
+    url       = "https://github.com/torvalds/linux/commit/a1c3bfb2f67ef766de03f1f56bdfff9c8595ab14",
+}
+
+@misc{commit-memcg-writeback,
+    author    = "Sha Zhengju",
+    title     = "Linux patch \mintinline{text}{3ea67d06e}: \emph{memcg: add per cgroup writeback pages accounting}",
+    year      = 2013,
+    month     = "September",
+    volume    = "v3.12-rc1",
+    url       = "https://github.com/torvalds/linux/commit/3ea67d06e4679a16f69f66f43a8d6ee4778985fc",
+}
+
+
+% Linux source code
+
+@misc{source-writeback-curve,
+    title     = "Linux source code: \mintinline{text}{mm/page-writeback.c}",
+    url       = "https://github.com/torvalds/linux/blob/v5.6/mm/page-writeback.c",
+    note      = "Line 829",
+}
+
+@misc{source-fs-writeback,
+    title     = "Linux source code: \mintinline{text}{fs/fs-writeback.c}",
+    url       = "https://github.com/torvalds/linux/blob/v5.6/fs/fs-writeback.c",
+    note      = "Line 1195",
+}
+
+@misc{source-include-fs,
+    title     = "Linux source code: \mintinline{text}{include/linux/fs.h}",
+    url       = "https://github.com/torvalds/linux/blob/v5.6/include/linux/fs.h",
+    note      = "Line 2093",
+}
+
+
+% Linux documentation
+
+@misc{docs-inodes-pages-problem,
+    title     = "Linux documentation: Control Group v2",
+    url       = "https://www.kernel.org/doc/html/latest/admin-guide/cgroup-v2.html#writeback",
+    note      = "“Writeback” section",
+}
+
+@misc{docs-memory-ownership,
+    title     = "Linux documentation: Control Group v2",
+    url       = "https://www.kernel.org/doc/html/latest/admin-guide/cgroup-v2.html#writeback",
+    note      = "“Memory ownership” section",
+}
+
+@misc{docs-kprobe-tracing,
+    title     = "Linux documentation: Kprobe-based Event Tracing",
+    url       = "https://www.kernel.org/doc/html/latest/trace/kprobetrace.html",
+}
+
+@misc{docs-vfs,
+    title     = "Linux documentation on the VFS layer",
+    url       = "https://www.kernel.org/doc/html/latest/filesystems/vfs.html",
+}
+
+@misc{docs-vm,
+    title     = "Linux documentation on the VM layer",
+    url       = "https://www.kernel.org/doc/html/latest/vm",
+}
+
+@misc{docs-uml,
+    title     = "Linux documentation on User Mode Linux",
+    url       = "https://www.kernel.org/doc/html/latest/virt/uml/user_mode_linux.html",
+}
+
+@misc{docs-bio,
+    title     = "Linux documentation on the BIO layer",
+    url       = "https://www.kernel.org/doc/html/latest/block",
+}
+
+@misc{docs-tracer,
+    title     = "Linux documentation on available tracing technologies",
+    url       = "https://www.kernel.org/doc/html/latest/trace",
+}
+
+@misc{docs-tracer-config,
+    title     = "Linux documentation on configuring the event tracer",
+    url       = "https://www.kernel.org/doc/html/latest/trace/events.html",
+}
+
+@misc{docs-tracepoints,
+    title     = "Linux documentation on tracepoints",
+    url       = "https://www.kernel.org/doc/html/latest/trace",
+}
+
+@misc{docs-sysctl-vm,
+    title     = "Linux documentation for \mintinline{text}{/proc/sys/vm/}",
+    url       = "https://www.kernel.org/doc/html/latest/admin-guide/sysctl/vm.html",
+}
+
+@misc{docs-cgroup1-memory,
+    title     = "Linux documentation on memory cgroups (v1)",
+    url       = "https://www.kernel.org/doc/html/latest/admin-guide/cgroup-v1/memory.html",
+}
+
+
+% Mailing lists
+
+@misc{lkml-thresholds,
+    title     = "Linux Kernel Mailing List thread: \emph{Disabling in-memory write cache for x86-64 in Linux II}",
+    year      = 2013,
+    month     = "October",
+    url       = "https://lore.kernel.org/lkml/20131029203050.GE9568@quack.suse.cz/",
+}
+
+@misc{lkml-cgroup-dirty,
+    title     = "Linux Kernel Mailing List thread: \emph{[PATCH v5 0/9] memcg: per cgroup dirty page accounting}",
+    year      = 2011,
+    month     = "February",
+    url       = "https://lore.kernel.org/lkml/1298669760-26344-1-git-send-email-gthelen@google.com/",
+}
+
+
+% Other
+
+@misc{tracepoints-events,
+    author    = "Steven Rostedt",
+    title     = "Using the \mintinline{text}{TRACE_EVENT()} macro",
+    year      = 2010,
+    month     = "March",
+    url       = "https://lwn.net/Articles/379903/",
+    volume    = "LWN",
+}
+
+@misc{article-ebpf,
+    author    = "Matt Fleming",
+    title     = "A thorough introduction to eBPF",
+    year      = 2017,
+    month     = "December",
+    url       = "https://lwn.net/Articles/740157/",
+    volume    = "LWN",
+}
+
+@misc{ram-growth,
+    author    = "PC Matic Research",
+    title     = "Memory Trends",
+    year      = 2020,
+    url       = "https://techtalk.pcmatic.com/research-charts-memory/",
+}
+
+@misc{linux-io-diagrams,
+    author    = "Werner Fischer, Georg Schönberger",
+    title     = "Linux Storage Stack Diagram",
+    year      = 2014,
+    month     = "October",
+    url       = "https://www.thomas-krenn.com/en/wiki/Linux_Storage_Stack_Diagram",
+}
+
+@misc{trace-cmd-python-plugin-docs,
+    author    = "Johannes Berg",
+    title     = "trace-cmd Python Plugin Documentation",
+    year      = 2010,
+    month     = "May",
+    url       = "https://github.com/rostedt/trace-cmd/blob/master/Documentation/README.PythonPlugin",
+}

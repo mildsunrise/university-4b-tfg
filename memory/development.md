@@ -20,7 +20,7 @@ The best tool we had at hand (i.e. had experience working with, and seemed to be
 [Node.JS](https://nodejs.org) is a platform for event-driven programming in JavaScript. Since it's based on an event loop and uses the same language as the browser, it was a natural choice for this application. We chose [Express](https://expressjs.com) for the server, [socket.io](https://socket.io) for the client-server communication, and [Smoothie Charts](https://smoothiecharts.org) for the real-time plots.
 
 We won't go into much detail on the development here. First the usual server boilerplate code, which is shown in listing \ref{lst:monitor-server-boilerplate}.
-Then we need to set up the tracer (clock \& events) and start it, as shown in listing \ref{lst:monitor-tracer-setup}. Keep in mind that tracefs is mounted on `/sys/kernel/debug/tracing` in old systems, and `/sys/kernel/tracing` on recent ones.
+Then we need to set up the tracer (clock \& events) and start it, as shown in listing \ref{lst:monitor-tracer-setup}. Keep in mind that tracefs is mounted on `/sys/kernel/debug/tracing` in old systems, and `/sys/kernel/tracing` on recent ones \cite{docs-tracer-config}.
 
 \begin{listing}
 \begin{minted}{js}
