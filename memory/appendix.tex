@@ -1,4 +1,8 @@
 \newcommand{\beginscriptlisting}{\vskip 2em}
+\newcommand{\appendixinput}[2]{%
+  \vskip 1em
+  \begin{mdframed}[style=minted]\inputminted[fontsize=\small]{#1}{#2}\end{mdframed}
+}
 
 \section{Experiment code}
 \label{sec:code-experiment}
@@ -7,7 +11,7 @@
 \label{subsec:code-load}
 %This is the source code for the \mintinline{text}{load.py} executable script:
 %\begin{listing}
-    \inputminted{python}{code/load.py}
+\appendixinput{python}{code/load.py}
 %    \caption{Source code for the \mintinline{text}{load.py} executable script}
 %    \label{lst:load}
 %\end{listing}
@@ -15,9 +19,9 @@
 \beginscriptlisting
 \subsection*{\mintinline{text}{experiment.py} script}
 \label{subsec:code-experiment}
-\inputminted{python}{code/experiment.py}
+\appendixinput{python}{code/experiment.py}
 
 \beginscriptlisting
 \subsection*{\mintinline{text}{live_experiment.py} script}
 \label{subsec:code-live-experiment}
-\inputminted{python}{code/live_experiment.py}
+\appendixinput{python}{code/live_experiment.py}

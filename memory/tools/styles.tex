@@ -52,10 +52,6 @@
   linewidth=0pt,
 }
 \surroundwithmdframed[style=minted]{minted}
-\let\inputmintedorg\inputminted
-\renewcommand{\inputminted}[2]{%
-  \begin{mdframed}[style=minted]\inputmintedorg{#1}{#2}\end{mdframed}
-}
 
 %RBG FFD33E / C95D40
 \definecolor{upcorange}{HTML}{FFD33E}

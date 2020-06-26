@@ -48,7 +48,7 @@ def main():
 
     # Create device file, filled with 0xFF
     print('-- Creating block device --')
-    dev_file = tempfile.NamedTemporaryFile(dir='/run/user/{}'.format(os.getuid()))
+    dev_file = tempfile.NamedTemporaryFile( dir='/run/user/{}'.format(os.getuid()))
     block = bytes([ 0xFF ] * 4096)
     missing = dev_size
     while missing: missing -= dev_file.write(block[:missing])
