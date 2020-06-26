@@ -199,15 +199,63 @@ It *was* made possible to specify the thresholds in bytes, rather than integer p
 
 ## PoC phase {#subsec:poc}
 
-TODO <!--we decided to center on live exp for now -->
+Once we have a clear enough understanding of the problem, we'll try to investigate ways to alleviate the problem. Note that the pauses reproduced inside the UML kernel (figure \ref{fig:tl-uml-simple}) seem to have a different nature than the pauses reproduced in the live experiments (figure \ref{fig:tl-closeup}), where no throttling is even triggered.
+
+The first objective involves altering our tests from the analysis phase, trying different approaches until we measure a consistent reduction in pauses experienced by innocent loads.
+
+Once (and if) we find a mechanism to reduce these pauses, we'll then automate it into a *userspace daemon* to apply it automatically on a live system, whenever it detects an offender task.
+
+#### Initial efforts
+
+It's important to note that this thesis isn't entirely in chronological order. Due to time / workplan constraints, this PoC development phase was performed partially in parallel with the analysis phase. Before the cause of the long pauses was pinned down we tried many approaches, including:
+
+ - CPU-limiting the offender loads.
+
+ - Limiting their memory consumption using `memcg` cgroups (which should theoretically limit their allowed amount of dirty pages, indirectly).
+
+ - Throttling their block I/O bandwidth using `blkio` cgroups.
+
+As well as combinations of multiple restrictions. All this didn't seem to have statistically significant effects on pauses.
+
+Later, when it was discovered that the origin of those pauses (in live experiments) was due to cache flushes, we moved our efforts into live experiments. After a bit of more research into the block I/O layer, we tried using the BFQ I/O scheduler.
+
+#### BFQ experiments
+
+As explained in section \ref{subsec:resource-control}, BFQ is a fair I/O scheduler. It works by reserving the disk to one task for some time, then switching to the next. By adjusting the proportion of time assigned to each task using *weights*, both bandwidth and latency can be theoretically controlled. BFQ also supports *hierarchical distributions* and different *queues* which are served in strict priority order.
+
+Thus, we switched from our default `mq-deadline` to using BFQ:
+
+~~~ bash
+echo bfq > /sys/block/sda/queue/scheduler
+~~~
+
+**Note:** Not all block device drivers use I/O schedulers; some of them handle BIOs directly. In our case, the root filesystem was mounted on an LVM volume, which uses the *device mapper* and is an example of such a device. Since BIOs are eventually forwarded to the disk (`sda`) device, the effect should be the same as if the FS was directly mounted there. Our understanding of the block I/O layer is still limited though, so we could be wrong.
+
+Given the origin of our pauses, it seems intuitive that lowering the priority of the offender tasks should allow flushed writes from other tasks to be processed first, thus reducing pauses. This is what we tried next.
+
+According to BFQ's documentation, the scheduler automatically detects interactive tasks and assigns higher weights to them by default \cite{docs-bfq}. This seems to be in line with what we're looking for; however, we're not just looking for higher weights for our innocent tasks, but for their requests to be served *first*. Some preliminary experiments confirmed that simply switching to the scheduler didn't seem to reduce pauses substantially.
 
 \begin{landscape}
   \begin{figure} \hypertarget{fig:tl-closeup-bfq}{%
     \centering
     \includegraphics[width=1\columnwidth]{img/results/close-up-bfq.pdf}
-    \caption{Timeline close-up when using BFQ and setting priorities}\label{fig:tl-closeup-bfq}
+    \caption{Timeline close-up when using BFQ and the \mintinline{text}{idle} class}\label{fig:tl-closeup-bfq}
   } \end{figure}
 \end{landscape}
+
+BFQ distributions can be set through `blkio` cgroups, like we did before, but it can also be controlled through per-process I/O priorities. These priorities can be managed through the `ionice` command or programmatically using `ioprio_get` and `ioprio_set`. It's important to note, though, that these "I/O priorities" usually control the *weight* of the task, not its actual priority queue. To place the task on a different queue, we have to supply a different I/O class when setting the priority to the process.
+
+Thus, in addition to using the BFQ scheduler, we also tried starting the offender load in the `idle` class. This should cause their requests to be the last ones to be processed, hopefully reducing innocent pauses. We modified `live_experiment.py` to launch the main command prefixed with `ionice -c idle`, and then performed some experiments.
+
+The results seemed to show that **pauses were greatly reduced**. Figure \ref{fig:tl-closeup-bfq} shows a close up of one of the live experiments. Compared to figure \ref{fig:tl-closeup}, we can appreciate how there's still periods of no I/O in the system (at \SIrange{76}{77}{\second}, at \SIrange{77.7}{79.5}{\second}, and at \SI{82.7}{\second}) but our innocent load still runs unaffected, with its operations completing immediately!
+
+There *is* a \SI{170}{\milli\second} pause near the end of the timeline though, but these were rare as figure. Figure \ref{fig:tl-live-bfqidle} shows the overview of another experiment, and again, the biggest pause we can see is \SI{585}{\milli\second} long, followed by \SI{195}{\milli\second} and \SI{127}{\milli\second}. Disks have internal caches, background processes, may reorder requests, etc. and this is probably the reason pauses do not entirely go away.
+
+![Timeline from a live experiment using BFQ and the `idle` class](img/results/tl-live-bfqidle.pdf){#fig:tl-live-bfqidle width=100%}
+
+#### Final results
+
+To better measure & compare the effects of different approaches to reducing pauses, we ran these tests in a different machine. This machine has a *much slower disk* which, together with the default cache size, results in pauses that can easily reach \SI{40}{\second}. It is an extremely large cache and should give us a clearer comparison of both approaches. When performing comparisons, it's important to account for cache size and written data.
 
 \begin{figure} \hypertarget{fig:bfq-comparison}{%
   \centering
@@ -215,3 +263,12 @@ TODO <!--we decided to center on live exp for now -->
   \includegraphics[width=.8\textwidth]{img/results/bfq-comparison-2.pdf}
   \caption{Pause comparison before / after enabling BFQ, on a large cache}\label{fig:bfq-comparison}
 } \end{figure}
+
+After running the experiments, we created an histogram plotting the longest pauses experienced in every experiment, together with some parameters. One of them is the **wait time** which measures, given a random instant, how much we have to wait for the current pause to end. The results can be seen in figure \ref{fig:bfq-comparison}.
+
+We can see how simply enabling BFQ *does* appear to reduce the longest pauses a bit, but setting the `idle` class on the offender is needed for substantial effects: it brings the longest pause to half the time, achieves \textbf{\SI[detect-weight=true]{210}{\percent} reduction on wait time} and also a \SI{30}{\percent} reduction on the total time the innocent load stays paused for.
+
+We also attempted to use the machine while the experiments were running, and can confirm that it was barely possible except when putting the offender in the `idle` class. Thus, while far from a perfect solution, we can verify that lowering I/O priorities substantially improves system responsiveness.
+
+<!-- TODO -->
+

@@ -608,7 +608,7 @@ We [notified](http://lists.infradead.org/pipermail/linux-um/2020-March/003031.ht
 
 ## Data analysis {#subsec:timeline-analysis}
 
-After we can run experiments, we need a way to visualize the resulting data and see what's going on. We'll build a tool to render a **timeline** showing where the pauses occur on each load and how much they took. It should also plot the data from the kernel tracer, in a similar way to what we did in the monitor application (section \ref{subsec:monitor-app}). We'll use a typical [Jupyter](https://jupyter.org) + [NumPy](https://numpy.org) + [Matplotlib](https://matplotlib.org) setup.
+After we can run experiments, we need a way to visualize the resulting data and see what's going on. We'll build a tool to render a **timeline** showing where the pauses occur on each load and how much they took. It should also plot the data from the kernel tracer, in a similar way to what we did in the monitor application (section \ref{subsec:monitor-app}). We'll use a [Jupyter](https://jupyter.org) + [NumPy](https://numpy.org) + [Matplotlib](https://matplotlib.org) setup, which is typical in data science.
 
 For the impatient, the finished product can be seen later in the analysis section, see figure \ref{fig:tl-uml-simple} for an example. We'll now present the structure of the code in a simplified way, see the full source code for reference.
 
@@ -661,7 +661,7 @@ def render_segments(ax, edges, values, *args, **kwargs):
   return res
 
 # ...
-ax.set_title('')
+ax.set_title('cycle times of the c1 load')
 ts = loads['c1']['times'] - start
 render_segments(ax, ts, np.diff(ts))
 ~~~

@@ -169,7 +169,7 @@ We won't go into the details of the user interface, for brevity and because this
 
 #### Tracepoints
 
-Tracepoints are a debugging mechanism. They are statically inserted in kernel code through a macro, at points of interest. Then, through the API, the user can supply a callback that will be injected at the tracepoint they wish. The only cost of tracepoints, if enabled, is a no-op instruction when not in use \cite{docs-tracepoints}.
+Tracepoints are a debugging mechanism. They are statically inserted in kernel code through a macro, at points of interest. Then, through the API, the user can supply a callback that will be injected at the tracepoint they wish. The only cost of tracepoints, if enabled, is a branch condition check when not in use \cite{docs-tracepoints}.
 
 They can also serve as event sources. When inserting a tracepoint, the developer can specify additional *glue code* specifying the event name, fields and their representation. The tracepoint may then be enabled in the tracer and will generate an event every time it's hit \cite{tracepoints-events}.
 
