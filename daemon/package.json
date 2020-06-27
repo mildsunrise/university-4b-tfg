@@ -1,0 +1,16 @@
+{
+    "name": "daemon",
+    "description": "Userspace daemon that monitor tasks, and lowers the I/O class of heavy writers",
+    "private": true,
+    "dependencies": {
+        "@types/node": "^14.0.14",
+        "nan": "^2.14.1",
+        "netlink": "^0.1.4",
+        "ts-node": "^8.10.2",
+        "typescript": "^3.9.5"
+    },
+    "scripts": {
+        "build": "tsc",
+        "start": "node dist/server.js"
+    }
+}
