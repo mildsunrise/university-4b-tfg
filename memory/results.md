@@ -197,7 +197,7 @@ This wasn't implemented, which is not surprising given there's no straightforwar
 It *was* made possible to specify the thresholds in bytes, rather than integer percentages (see page \pageref{par:cache-parameters}), but it is not enabled by default and we are not aware of any distributions that take care of setting them up.
 
 
-## PoC phase {#subsec:poc}
+## Mitigation phase {#subsec:mitigation}
 
 Once we have a clear enough understanding of the problem, we'll try to investigate ways to alleviate the problem. Note that the pauses reproduced inside the UML kernel (figure \ref{fig:tl-uml-simple}) seem to have a different nature than the pauses reproduced in the live experiments (figure \ref{fig:tl-closeup}), where no throttling is even triggered.
 
@@ -249,7 +249,7 @@ Thus, in addition to using the BFQ scheduler, we also tried starting the offende
 
 The results seemed to show that **pauses were greatly reduced**. Figure \ref{fig:tl-closeup-bfq} shows a close up of one of the live experiments. Compared to figure \ref{fig:tl-closeup}, we can appreciate how there's still periods of no I/O in the system (at \SIrange{76}{77}{\second}, at \SIrange{77.7}{79.5}{\second}, and at \SI{82.7}{\second}) but our innocent load still runs unaffected, with its operations completing immediately!
 
-There *is* a \SI{170}{\milli\second} pause near the end of the timeline though, but these were rare as figure. Figure \ref{fig:tl-live-bfqidle} shows the overview of another experiment, and again, the biggest pause we can see is \SI{585}{\milli\second} long, followed by \SI{195}{\milli\second} and \SI{127}{\milli\second}. Disks have internal caches, background processes, may reorder requests, etc. and this is probably the reason pauses do not entirely go away.
+There *is* a \SI{170}{\milli\second} pause near the end of the timeline though, but these were rare. Figure \ref{fig:tl-live-bfqidle} shows the overview of another experiment, and again, the biggest pause we can see is \SI{585}{\milli\second} long, followed by \SI{195}{\milli\second} and \SI{127}{\milli\second}. Disks have internal caches, background processes, may reorder requests, etc. and this is a probable reason why pauses do not entirely go away.
 
 ![Timeline from a live experiment using BFQ and the `idle` class](img/results/tl-live-bfqidle.pdf){#fig:tl-live-bfqidle width=100%}
 
@@ -272,3 +272,255 @@ We also attempted to use the machine while the experiments were running, and can
 
 <!-- TODO -->
 
+## PoC development {#subsec:poc}
+
+The idea is now to create a daemon that will constantly monitor tasks in the system, detect offenders among them (according to some criteria) and lower their I/O priority to reduce the adverse effects on the rest of the system.
+
+#### Initial design
+
+Since an event loop seems ideal for this task, we'll choose Node.JS to code the daemon as we did in the realtime monitor application (section \ref{subsec:monitor-app}).
+
+First we need to detect which tasks are offenders. We can use the **taskstats interface** presented in section \ref{subsec:resource-control}, which among other things lets us track the total read & write I/O performed by each process in real time. We'll use our previous [node_netlink](https://github.com/mildsunrise/node_netlink) project to access this interface from Node.
+
+The intuitive way to proceed is to choose a window (of, let's say, \SI{5}{\second}) and filter the write I/O of every process through that window. If this filtered number surpasses a certain threshold (sustained I/O) then we identify this process as an offender. Then, when an offender drops below another threshold (leaving an hysteresis margin) we'd no longer consider it an offender.
+
+However there's many pitfalls to watch over:
+
+ 1. We don't know what filesystem these writes are going to, or if they are going through the page cache. They *do* seem to report disk I/O, after looking through `iotop` source code and doing some quick tests.
+ 2. Process-level detection may not be accurate. One process may start many workers to do the I/O.
+ 3. An offender may also may be constantly starting subprocesses to do I/O, which would never be detected by our long window.
+
+Pitfalls (2) and (3) can be solved by recursively aggregating stats from children into their parents, with a decay factor (otherwise we'd end up picking the root node in the tree). taskstats informs us of processes statistics when they die, so this aggregation can be done without races.
+
+To solve pitfalls (1) and (2) we could use the kernel tracer, the blktrace API, or hook up a BPF program (which would also be a much more efficient way to collect the info) to the writeback tracepoints. Due to our limited scope, we ended up continuing with the taskstats approach.
+
+We'll use exponential smoothing instead of a FIR window because it's easy to implement and requires no extra memory. We'll choose a time constant of $\tau = \SI{8}{\second}$, and will obtain samples every $T_s = \SI{1}{\second}$. We can then obtain the decay coefficient $\alpha = 1 - e^{-\nicefrac{T_s}{\tau}}$.
+
+As per the thresholds, the user will configure the device bandwidth and we'll have two factors to derive both thresholds. The threshold to be detected as offender will be $k_1 = \SI{70}{\percent}$ of the configured bandwidth, and the threshold to be restablished again will be $k_2 = \SI{20}{\percent}$.
+
+We also need to perform corrective actions whenever we find (non-)offenders. As said above, we could use either the cgroup interface or set I/O priority on every process. For simplicity we'll use the latter, since cgroup brings its own range of problems (you need to cooperate with the version of cgroup in use, the existing hierarchy, ...).
+
+#### Development
+
+We'll now walk through the userspace daemon's code in a simplified way. We won't list the full source code here; refer to \ref{sec:code-daemon} and the `daemon` directory in the submitted annex for reference.
+
+First, we need access to the taskstats interface. This basically involves:
+
+ - Creating a Generic Netlink socket.
+ - Calling appropriate commands to query info and register interest when a task exits \cite{docs-taskstats}.
+ - Parsing attributes and the taskstats struct fields according to `linux/taskstats.h` \cite{docs-taskstats-struct}.
+
+![Test program consuming data from the taskstats API](img/results/taskstats-screenshot-1.png){#fig:taskstats-example width=100% height=100%}
+
+\begin{listing}
+\begin{minted}{typescript}
+    import { createTaskstats, Taskstats } from './taskstats'
+
+    const socket = await createTaskstats()
+
+    await socket.getTask(process.pid) // Get our own stats
+
+    // Listen for task exits
+    socket.on('taskExit', (t: Taskstats, p?: Taskstats) => {
+        console.log('task exited:', {
+            tid: t.acPID, comm: t.acComm, uid: t.acUID,
+            readBytes: t.readBytes, writeBytes: t.writeBytes })
+        if (p) console.log('belonging to process', p.acPID)
+    })
+
+    const cpus: number = os.cpus().length
+    console.log(`Tracking ${cpus} cpus`)
+    await socket.registerCpuMask(`0-${cpus-1}`)
+    socket.socket.socket.ref()
+\end{minted}
+\caption{Code demonstrating use our taskstats bindings}\label{lst:taskstats-example}
+\end{listing}
+
+After some amount of effort, we had functional bindings and could successfully access the data! It's too much code to reproduce here, but listing \ref{lst:taskstats-example} & figure \ref{fig:taskstats-example} show a test program to demonstrate use of the interface. However, we had to deal with certain undocumented aspects of the API and, among other things, process-level taskstats don't have `version` and many other fields set on events.
+
+**This includes the data we need**, so we have no option left but to aggregate it ourselves from individual tasks, which the docs mention as "inefficient and potentially inaccurate (due to lack of atomicity)". For scope & complexity reasons we'll ignore the task exits, even if it makes us vulnerable to pitfall (3).
+
+\begin{listing}
+\begin{minted}{typescript}
+    // Pseudo-filesystem, shouldn't block the loop...
+    const listPids = (): number[] =>
+        readdirSync('/proc').filter(x => /^\d+$/.test(x)).map(x => Number(x))
+    const listTids = (pid: number): number[] => {
+        try {
+            return readdirSync(`/proc/${pid}/task`).map(x => Number(x))
+        } catch (e) {
+            if ((e as any).code === 'ENOENT')
+                return []
+            throw e
+        }
+    }
+    const readPPID = (pid: number) => {
+        try {
+            return Number(/^\d+ \([\s\S]+\) . (\d+)/.exec(
+                readFileSync(`/proc/${pid}/stat`, 'utf8'))![1])
+        } catch (e) {
+            if ((e as any).code === 'ENOENT')
+                return
+            throw e
+        }
+    }
+\end{minted}
+\caption{Fetching info from procfs}\label{lst:proc-helpers}
+\end{listing}
+
+Another problem is that the taskstats API does not have a way to list all tasks, so we'll resort to accessing `/proc` and `/proc/<x>/task` (which is what `iotop` does). We'll also use `/proc/<x>/stat` occasionally. Listing \ref{lst:proc-helpers} shows the helper code for this. It's important to note that **everything we do is subject to races**, and a process can disappear at any time after we list it. To be robust, we detect `ENOENT` (when operating on `/proc`) and `ESCRH` (when using `ioprio_set` or the taskstats interface) and ignore the task / process if it pops up:
+
+~~~ typescript
+const ignoreEsrch = (e: Error) =>
+    (e.message === 'Request rejected: ESRCH'
+      || (e as any).code === 'ESRCH') ? null : Promise.reject(e)
+~~~
+
+\begin{listing}
+\begin{minted}{typescript}
+    interface ProcessData {
+        pid: number
+        command?: string
+        parent: number
+        writtenBytes: bigint
+    }
+
+    function aggregateData(pid: number, tasks: Map<number, Taskstats>): ProcessData {
+        let writtenBytes: bigint = 0n
+        let parent: number | null = null
+        tasks.forEach(t => {
+            writtenBytes += getWrittenBytes(t)
+            parent = t.acPPID
+        })
+        return {
+            pid, command: tasks.get(pid)?.acComm, parent: parent!, writtenBytes
+        }
+    }
+
+    const fetchProcesses = (cb: (p: ProcessData) => any) =>
+        new PromisePool(function *() {
+            for (const pid of listPids()) {
+                const tasks: Map<number, Taskstats> = new Map()
+                const tids = listTids(pid)
+                let done = 0
+                for (const tid of tids) {
+                    yield fetchSocket.getTask(tid)
+                        .then(t => tasks.set(tid, t), ignoreEsrch)
+                        .then(() => {
+                            if (++done === tids.length && tasks.size)
+                                cb(aggregateData(pid, tasks))
+                        })
+                }
+            }
+        }() as any, fetchConcurrency).start()
+\end{minted}
+\caption{Fetching info from taskstats \& aggregating into processes}\label{lst:fetch-aggregate}
+\end{listing}
+
+Then, we need to periodically fetch statistics for all tasks and aggregate them using the decay coefficient. Issuing thousands of concurrent queries could easily exhaust the Netlink receive buffer, so we'll use a promise pool to limit concurrency to $100$ by default. Finally, we'll aggregate data into processes (task groups) before passing it down to the rest of the code. This is shown in listing \ref{lst:fetch-aggregate}.
+
+Once we have the infrastructure in place, we can store the information in our tree and perform the exponential smoothing:
+
+~~~ typescript
+const gone = new Set(tree.keys())
+await fetchProcesses(p => {
+    gone.delete(p.pid)
+    const node = tree.get(p.pid)!
+    if (!node)
+        return initializeNode(p)
+    node.parent = p.parent
+
+    const delta = p.writtenBytes - node.writtenBytes
+    node.writtenBytes = p.writtenBytes
+    
+    const bandwidth = (Number(delta) / 1e6) / (cycle / 1e3)
+    node.writeBw += decayCoeff * (bandwidth - node.writeBw)
+})
+~~~
+
+Because polling the statistics for *each and every thread in the system* one by one and then aggregating the results is a heavy operation (each cycle takes about \SI{150}{\milli\second}), we ended up taking samples every $T_s = \SI{2}{\second}$.
+
+After this, some housekeeping is needed to clean up processes that have died since the last iteration. Then we traverse the tree, adding up the childrens into their parents with the corresponding factor. We track the node with the most aggregated bandwidth, and return it:
+
+~~~ typescript
+type NodeScore = { pid: number, bw: number }
+function findOffender(pid: number) {
+    const node = tree.get(pid)!
+    let max: NodeScore | null = null
+    const maxOf = (x: NodeScore) => (max && max.bw >= x.bw) ? max : x
+
+    let childrenBw = 0
+    for (const child of node.children) {
+        const result = findOffender(child)
+        max = maxOf(result)
+        childrenBw += result.bw
+    }
+    const bw = node.writeBw + childrenBw * parentFactor
+    return maxOf({ pid, bw })
+}
+~~~
+
+\begin{listing}
+\begin{minted}{cpp}
+    #include <nan.h>
+    #include <errno.h>
+    #include <unistd.h>
+    #include <sys/syscall.h>
+
+    NAN_METHOD(SetIoprio) {
+        int which = Nan::To<int>(info[0]).FromJust();
+        int who = Nan::To<int>(info[1]).FromJust();
+        int ioprio = Nan::To<int>(info[2]).FromJust();
+        int res = syscall(SYS_ioprio_set, which, who, ioprio);
+        if (res < 0)
+            Nan::ThrowError(Nan::ErrnoException(errno, "ioprio_set", "Could not set I/O priority"));
+    }
+
+    NAN_MODULE_INIT(Init) {
+        Nan::SetMethod(target, "setIoprio", SetIoprio);
+    }
+
+    NODE_MODULE(native_binding, Init)
+\end{minted}
+\caption{Native binding to set I/O priority (C++ part)}\label{lst:ioprio-set-cpp}
+\end{listing}
+
+\begin{listing}
+\begin{minted}{typescript}
+    const native = require('../build/Release/native_binding')
+
+    // ...
+    export const CLASS_SHIFT = 13
+    export const PRIO_MASK = (1 << CLASS_SHIFT) - 1
+    // ...
+    export const PRIO_VALUE = (class_: number, data: number) =>
+        (class_ << CLASS_SHIFT) | data
+
+    // ...
+    export enum Class {
+      NONE,
+      RT,
+      BE,
+      IDLE,
+    }
+
+    // ...
+    export enum Who {
+      PROCESS = 1,
+      PGRP,
+      USER,
+    }
+
+    // ...
+
+    /** Set ioprio on a process */
+    export function set(pid: number, class_: Class, data: number) {
+        native.setIoprio(Who.PROCESS, pid, PRIO_VALUE(class_, data))
+    }
+\end{minted}
+\caption{Native binding to set I/O priority (TypeScript part)}\label{lst:ioprio-set-ts}
+\end{listing}
+
+Next up is the logic to restrict offenders (and unrestrict them afterwards). To change the I/O priorities it may be tempting to just spawn the `ionice` command, but this will likely block since it involves reading the executable from the disk into memory. Thus, creating a native binding to call `ioprio_set` would be a good option, even if it brings complexity up. Listings \ref{lst:ioprio-set-cpp} and \ref{lst:ioprio-set-ts} show the relevant code.
+
+We can now put everything together to (un)-restrict offenders we find. Some preliminary tests confirm the daemon works correctly, despite a sustained \SI{8}{\percent} CPU consumption which is higher than what we'd hoped for.

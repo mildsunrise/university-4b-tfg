@@ -7,6 +7,10 @@
 \section{Experiment code}
 \label{sec:code-experiment}
 
+This appendix only reproduces the code for running experiments,
+see the \mintinline{text}{analysis} directory in the submitted
+annex for the data analysis notebook and other code.
+
 \subsection*{\mintinline{text}{load.py} script}
 \label{subsec:code-load}
 %This is the source code for the \mintinline{text}{load.py} executable script:
@@ -25,3 +29,17 @@
 \subsection*{\mintinline{text}{live_experiment.py} script}
 \label{subsec:code-live-experiment}
 \appendixinput{python}{code/live_experiment.py}
+
+\clearpage
+\section{PoC code}
+\label{sec:code-daemon}
+
+This appendix only reproduces the main script of the deamon,
+see the \mintinline{text}{daemon} directory in the submitted
+annex for the rest of the code, including the bindings to
+taskstats and ioprio.
+
+\subsection*{\mintinline{text}{lib/server.ts}}
+\label{subsec:code-load}
+\appendixinput{typescript}{code/server.ts}
+
