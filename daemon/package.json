@@ -4,6 +4,7 @@
     "private": true,
     "dependencies": {
         "@types/node": "^14.0.14",
+        "es6-promise-pool": "^2.5.0",
         "nan": "^2.14.1",
         "netlink": "^0.1.4",
         "ts-node": "^8.10.2",

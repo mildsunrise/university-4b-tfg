@@ -44,5 +44,5 @@ export const NORM = 4
 
 /** Set ioprio on a process */
 export function set(pid: number, class_: Class, data: number) {
-    native.setIoprio(Who.PROCESS, pid, PRIO_VALUE(class_, data));
+    native.setIoprio(Who.PROCESS, pid, PRIO_VALUE(class_, data))
 }

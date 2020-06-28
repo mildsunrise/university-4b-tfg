@@ -64,7 +64,7 @@ export class TaskstatsSocket extends EventEmitter {
             // multiple threads and the last one exited. If present, this
             // second struct has most fields set to zero, including version!
             const p = parseTaskstats(msg.aggrTgid.stats!, false)
-            if (!(p.acPID === 0 || p.acPID === msg.aggrTgid.tgid))
+            if (!(p.acPID === 0 || p.acPID === msg.aggrTgid.tgid) || !msg.aggrTgid.tgid)
                 throw new Error(`struct (${p.acPID}) not matching TGID (${msg.aggrTgid.tgid})`)
             p.acPID = msg.aggrTgid.tgid
             this.emit('taskExit', t, p)
@@ -110,9 +110,12 @@ export class TaskstatsSocket extends EventEmitter {
         const msg = omsg[0]
         //if (omsg[0].cmd !== Commands.NEW)
         //    throw new Error('Invalid kind of response')
-        if (!msg.aggrPid || msg.aggrPid.pid !== pid || !msg.aggrPid.stats)
+        if (!msg.aggrPid || !msg.aggrPid.stats)
             throw new Error('Response without aggr_pid attributes')
-        return parseTaskstats(msg.aggrPid.stats)
+        const stats = parseTaskstats(msg.aggrPid.stats)
+        if (msg.aggrPid.pid !== pid || stats.acPID !== pid)
+            throw new Error('PIDs not matching')
+        return stats
     }
     async getProcess(pid: number): Promise<Taskstats> {
         const omsg = await this.request(Commands.GET, { tgid: pid })
@@ -121,9 +124,12 @@ export class TaskstatsSocket extends EventEmitter {
         const msg = omsg[0]
         //if (omsg[0].cmd !== Commands.NEW)
         //    throw new Error('Invalid kind of response')
-        if (!msg.aggrTgid || msg.aggrTgid.tgid !== pid || !msg.aggrTgid.stats)
+        if (!msg.aggrTgid || !msg.aggrTgid.stats)
             throw new Error('Response without aggr_tgid attributes')
-        return parseTaskstats(msg.aggrTgid.stats)
+        const stats = parseTaskstats(msg.aggrTgid.stats)
+        if (msg.aggrTgid.tgid !== pid || stats.acPID !== pid)
+            throw new Error('PIDs not matching')
+        return stats
     }
 }
 

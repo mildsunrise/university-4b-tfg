@@ -17,208 +17,189 @@ export enum Scheduler {
 }
 
 export interface Taskstats {
-    version?: number
-    
-    ____pad0?: Buffer
+    version: number
     
     /** Exit status */
-    acExitcode?: number
+    acExitcode: number
     
     /** Record flags */
-    acFlag?: number
+    acFlag: number
     
     /** task_nice */
-    acNice?: number
+    acNice: number
     
-    ____pad1?: Buffer
+    cpuCount: bigint
     
-    cpuCount?: bigint
+    cpuDelayTotal: bigint
     
-    cpuDelayTotal?: bigint
+    blkioCount: bigint
     
-    blkioCount?: bigint
+    blkioDelayTotal: bigint
     
-    blkioDelayTotal?: bigint
+    swapinCount: bigint
     
-    swapinCount?: bigint
+    swapinDelayTotal: bigint
     
-    swapinDelayTotal?: bigint
+    cpuRunRealTotal: bigint
     
-    cpuRunRealTotal?: bigint
-    
-    cpuRunVirtualTotal?: bigint
+    cpuRunVirtualTotal: bigint
     
     /** Command name */
-    acComm?: string
+    acComm: string
     
-    acSched?: Scheduler | keyof typeof Scheduler
+    acSched: Scheduler | keyof typeof Scheduler
     
-    __acPad?: Buffer
-    
-    ____pad2?: Buffer
-    
-    acUID?: number
+    acUID: number
     
     /** Group ID */
-    acGID?: number
+    acGID: number
     
     /** Process ID */
-    acPID?: number
+    acPID: number
     
     /** Parent process ID */
-    acPPID?: number
+    acPPID: number
     
     /** Begin time [sec since 1970] */
-    acBtime?: number
+    acBtime: number
     
-    ____pad3?: Buffer
-    
-    acEtime?: bigint
+    acEtime: bigint
     
     /** User CPU time [usec] */
-    acUtime?: bigint
+    acUtime: bigint
     
     /** SYstem CPU time [usec] */
-    acStime?: bigint
+    acStime: bigint
     
     /** Minor Page Fault Count */
-    acMinFlt?: bigint
+    acMinFlt: bigint
     
     /** Major Page Fault Count */
-    acMajFlt?: bigint
+    acMajFlt: bigint
     
     /** accumulated RSS usage in MB-usec */
-    coreMem?: bigint
+    coreMem: bigint
     
     /** accumulated VM  usage in MB-usec */
-    virtMem?: bigint
+    virtMem: bigint
     
     /** High-watermark of RSS usage, in KB */
-    hiwaterRSS?: bigint
+    hiwaterRSS: bigint
     
     /** High-water VM usage, in KB */
-    hiwaterVM?: bigint
+    hiwaterVM: bigint
     
     /** bytes read */
-    readChar?: bigint
+    readChar: bigint
     
     /** bytes written */
-    writeChar?: bigint
+    writeChar: bigint
     
     /** read syscalls */
-    readSyscalls?: bigint
+    readSyscalls: bigint
     
     /** write syscalls */
-    writeSyscalls?: bigint
+    writeSyscalls: bigint
     
     /** bytes of read I/O */
-    readBytes?: bigint
+    readBytes: bigint
     
     /** bytes of write I/O */
-    writeBytes?: bigint
+    writeBytes: bigint
     
     /** bytes of cancelled write I/O */
-    cancelledWriteBytes?: bigint
+    cancelledWriteBytes: bigint
     
     /** voluntary_ctxt_switches */
-    nvcsw?: bigint
+    nvcsw: bigint
     
     /** nonvoluntary_ctxt_switches */
-    nivcsw?: bigint
+    nivcsw: bigint
     
     /** utime scaled on frequency etc */
-    acUtimeScaled?: bigint
+    acUtimeScaled: bigint
     
     /** stime scaled on frequency etc */
-    acStimeScaled?: bigint
+    acStimeScaled: bigint
     
     /** scaled cpu_run_real_total */
-    cpuScaledRunRealTotal?: bigint
+    cpuScaledRunRealTotal: bigint
     
-    freepagesCount?: bigint
+    freepagesCount: bigint
     
-    freepagesDelayTotal?: bigint
+    freepagesDelayTotal: bigint
     
-    thrashingCount?: bigint
+    thrashingCount: bigint
     
-    thrashingDelayTotal?: bigint
+    thrashingDelayTotal: bigint
     
     /** 64-bit begin time */
-    acBtime64?: bigint
+    acBtime64: bigint
 }
 
 /** Parses the attributes of a [[Taskstats]] object */
 export function parseTaskstats(r: Buffer): Taskstats {
     if (r.length !== __LENGTH_Taskstats) throw Error('Unexpected length for Taskstats')
-    const x: Taskstats = {}
-    x.version = structs.readU16.call(r, 0)
-    x.____pad0 = r.slice(2, 2 + 2)
-    x.acExitcode = structs.readU32.call(r, 4)
-    x.acFlag = structs.readU8.call(r, 8)
-    x.acNice = structs.readU8.call(r, 9)
-    x.____pad1 = r.slice(10, 10 + 6)
-    x.cpuCount = structs.readU64.call(r, 16)
-    x.cpuDelayTotal = structs.readU64.call(r, 24)
-    x.blkioCount = structs.readU64.call(r, 32)
-    x.blkioDelayTotal = structs.readU64.call(r, 40)
-    x.swapinCount = structs.readU64.call(r, 48)
-    x.swapinDelayTotal = structs.readU64.call(r, 56)
-    x.cpuRunRealTotal = structs.readU64.call(r, 64)
-    x.cpuRunVirtualTotal = structs.readU64.call(r, 72)
-    const acComm = r.slice(80, 80 + 32)
-    const idx = acComm.indexOf(0)
-    x.acComm = acComm.slice(0, idx === -1 ? acComm.length : idx).toString()
-    x.acSched = structs.getEnum(Scheduler, structs.readU8.call(r, 112))
-    x.__acPad = r.slice(113, 113 + 3)
-    x.____pad2 = r.slice(116, 116 + 4)
-    x.acUID = structs.readU32.call(r, 120)
-    x.acGID = structs.readU32.call(r, 124)
-    x.acPID = structs.readU32.call(r, 128)
-    x.acPPID = structs.readU32.call(r, 132)
-    x.acBtime = structs.readU32.call(r, 136)
-    x.____pad3 = r.slice(140, 140 + 4)
-    x.acEtime = structs.readU64.call(r, 144)
-    x.acUtime = structs.readU64.call(r, 152)
-    x.acStime = structs.readU64.call(r, 160)
-    x.acMinFlt = structs.readU64.call(r, 168)
-    x.acMajFlt = structs.readU64.call(r, 176)
-    x.coreMem = structs.readU64.call(r, 184)
-    x.virtMem = structs.readU64.call(r, 192)
-    x.hiwaterRSS = structs.readU64.call(r, 200)
-    x.hiwaterVM = structs.readU64.call(r, 208)
-    x.readChar = structs.readU64.call(r, 216)
-    x.writeChar = structs.readU64.call(r, 224)
-    x.readSyscalls = structs.readU64.call(r, 232)
-    x.writeSyscalls = structs.readU64.call(r, 240)
-    x.readBytes = structs.readU64.call(r, 248)
-    x.writeBytes = structs.readU64.call(r, 256)
-    x.cancelledWriteBytes = structs.readU64.call(r, 264)
-    x.nvcsw = structs.readU64.call(r, 272)
-    x.nivcsw = structs.readU64.call(r, 280)
-    x.acUtimeScaled = structs.readU64.call(r, 288)
-    x.acStimeScaled = structs.readU64.call(r, 296)
-    x.cpuScaledRunRealTotal = structs.readU64.call(r, 304)
-    x.freepagesCount = structs.readU64.call(r, 312)
-    x.freepagesDelayTotal = structs.readU64.call(r, 320)
-    x.thrashingCount = structs.readU64.call(r, 328)
-    x.thrashingDelayTotal = structs.readU64.call(r, 336)
-    x.acBtime64 = structs.readU64.call(r, 344)
-    return x
+    return {
+        get version() { return structs.readU16.call(r, 0) },
+        get acExitcode() { return structs.readU32.call(r, 4) },
+        get acFlag() { return structs.readU8.call(r, 8) },
+        get acNice() { return structs.readU8.call(r, 9) },
+        get cpuCount() { return structs.readU64.call(r, 16) },
+        get cpuDelayTotal() { return structs.readU64.call(r, 24) },
+        get blkioCount() { return structs.readU64.call(r, 32) },
+        get blkioDelayTotal() { return structs.readU64.call(r, 40) },
+        get swapinCount() { return structs.readU64.call(r, 48) },
+        get swapinDelayTotal() { return structs.readU64.call(r, 56) },
+        get cpuRunRealTotal() { return structs.readU64.call(r, 64) },
+        get cpuRunVirtualTotal() { return structs.readU64.call(r, 72) },
+        get acComm() { 
+            const acComm = r.slice(80, 80 + 32)
+            const idx = acComm.indexOf(0)
+            return acComm.slice(0, idx === -1 ? acComm.length : idx).toString()
+        },
+        get acSched() { return structs.getEnum(Scheduler, structs.readU8.call(r, 112)) },
+        get acUID() { return structs.readU32.call(r, 120) },
+        get acGID() { return structs.readU32.call(r, 124) },
+        acPID: structs.readU32.call(r, 128),
+        get acPPID() { return structs.readU32.call(r, 132) },
+        get acBtime() { return structs.readU32.call(r, 136) },
+        get acEtime() { return structs.readU64.call(r, 144) },
+        get acUtime() { return structs.readU64.call(r, 152) },
+        get acStime() { return structs.readU64.call(r, 160) },
+        get acMinFlt() { return structs.readU64.call(r, 168) },
+        get acMajFlt() { return structs.readU64.call(r, 176) },
+        get coreMem() { return structs.readU64.call(r, 184) },
+        get virtMem() { return structs.readU64.call(r, 192) },
+        get hiwaterRSS() { return structs.readU64.call(r, 200) },
+        get hiwaterVM() { return structs.readU64.call(r, 208) },
+        get readChar() { return structs.readU64.call(r, 216) },
+        get writeChar() { return structs.readU64.call(r, 224) },
+        get readSyscalls() { return structs.readU64.call(r, 232) },
+        get writeSyscalls() { return structs.readU64.call(r, 240) },
+        get readBytes() { return structs.readU64.call(r, 248) },
+        get writeBytes() { return structs.readU64.call(r, 256) },
+        get cancelledWriteBytes() { return structs.readU64.call(r, 264) },
+        get nvcsw() { return structs.readU64.call(r, 272) },
+        get nivcsw() { return structs.readU64.call(r, 280) },
+        get acUtimeScaled() { return structs.readU64.call(r, 288) },
+        get acStimeScaled() { return structs.readU64.call(r, 296) },
+        get cpuScaledRunRealTotal() { return structs.readU64.call(r, 304) },
+        get freepagesCount() { return structs.readU64.call(r, 312) },
+        get freepagesDelayTotal() { return structs.readU64.call(r, 320) },
+        get thrashingCount() { return structs.readU64.call(r, 328) },
+        get thrashingDelayTotal() { return structs.readU64.call(r, 336) },
+        get acBtime64() { return structs.readU64.call(r, 344) },
+    }
 }
 
 /** Encodes a [[Taskstats]] object into a stream of attributes */
 export function formatTaskstats(x: Taskstats, r: Buffer = Buffer.alloc(__LENGTH_Taskstats)): Buffer {
     if (r.length !== __LENGTH_Taskstats) throw Error('Unexpected length for Taskstats')
     x.version && structs.writeU16.call(r, x.version, 0)
-    if (x.____pad0 && x.____pad0.length !== 2)
-        throw Error('____pad0: Unexpected buffer length')
-        x.____pad0 && x.____pad0.copy(r, 2)
     x.acExitcode && structs.writeU32.call(r, x.acExitcode, 4)
     x.acFlag && structs.writeU8.call(r, x.acFlag, 8)
     x.acNice && structs.writeU8.call(r, x.acNice, 9)
-    if (x.____pad1 && x.____pad1.length !== 6)
-        throw Error('____pad1: Unexpected buffer length')
-        x.____pad1 && x.____pad1.copy(r, 10)
     x.cpuCount && structs.writeU64.call(r, x.cpuCount, 16)
     x.cpuDelayTotal && structs.writeU64.call(r, x.cpuDelayTotal, 24)
     x.blkioCount && structs.writeU64.call(r, x.blkioCount, 32)
@@ -234,20 +215,11 @@ export function formatTaskstats(x: Taskstats, r: Buffer = Buffer.alloc(__LENGTH_
         acComm.copy(r, 80)
     }
     x.acSched && structs.writeU8.call(r, structs.putEnum(Scheduler, x.acSched), 112)
-    if (x.__acPad && x.__acPad.length !== 3)
-        throw Error('__acPad: Unexpected buffer length')
-        x.__acPad && x.__acPad.copy(r, 113)
-    if (x.____pad2 && x.____pad2.length !== 4)
-        throw Error('____pad2: Unexpected buffer length')
-        x.____pad2 && x.____pad2.copy(r, 116)
     x.acUID && structs.writeU32.call(r, x.acUID, 120)
     x.acGID && structs.writeU32.call(r, x.acGID, 124)
     x.acPID && structs.writeU32.call(r, x.acPID, 128)
     x.acPPID && structs.writeU32.call(r, x.acPPID, 132)
     x.acBtime && structs.writeU32.call(r, x.acBtime, 136)
-    if (x.____pad3 && x.____pad3.length !== 4)
-        throw Error('____pad3: Unexpected buffer length')
-        x.____pad3 && x.____pad3.copy(r, 140)
     x.acEtime && structs.writeU64.call(r, x.acEtime, 144)
     x.acUtime && structs.writeU64.call(r, x.acUtime, 152)
     x.acStime && structs.writeU64.call(r, x.acStime, 160)

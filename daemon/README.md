@@ -1,5 +1,6 @@
 Userspace daemon that monitor tasks, and lowers the I/O class of heavy writers.
 
+Requires Node v14.
 The kernel requires `CONFIG_TASKSTATS` and `TASK_IO_ACCOUNTING`.
 
 ## Usage
