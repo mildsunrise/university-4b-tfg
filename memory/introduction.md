@@ -22,7 +22,7 @@ This research project, which is carried out at the Department of Computer Archit
 \clearpage
 ## The problem {#subsec:problem}
 
-The idea for this independent project comes from several attempts of diagnosing system unresponsiveness from the author, often in production environments. This problem occurs frequently, as the only requisite is to have an application that writes lots of data to the disk.
+The idea for this independent project comes from several attempts of diagnosing system unresponsiveness from the author, often in production environments. Simply starting a system upgrade or a backup would render some machines almost *unusable*. This problem occurs frequently, as the only requisite is to have an application that writes lots of data to the disk.
 
 The cache is always enabled by default, since it greatly improves performance:
 
@@ -121,11 +121,13 @@ Due to the nature of Linux there is plenty of documentation, discussion and comm
 
 #### Initial work plan
 
-Figure \ref{fig:block-diagram} shows the general structure of the work breakdown, and figures \ref{fig:work-packages} and \ref{fig:gantt} show the work packages and Gantt diagram, respectively. Critical review was initially planned to happen shortly after starting WP2.
+Figure \ref{fig:block-diagram} shows the general structure of the work breakdown, table \ref{fig:work-packages} shows the work packages and figure \ref{fig:gantt} shows the Gantt diagram. Critical review was initially planned to happen shortly after starting WP2.
 
 #### Deviations
 
 The main source of deviation was the unexpected cause for pauses: we didn't expect them to be caused by cache flushes. This required researching new approaches and studying the block layer in more detail. In the end, we were still able to get both a functional mitigation, and a working Proof-of-Concept. Some of the tasks from WP2 and were conducted in parallel with WP3, and most of WP3 couldn't be carried out. In addition, WP1 ended up getting more weight than WP2. We believe incidentals of this magnitude are natural in any research project, though.
+
+Another unexpected deviation not reflected in the Gantt was that we ended up spending more time building appropriate tooling than using that tooling. On the other hand, that also gave us a deeper understanding of many kernel technologies beyond the immediate subject of the project.
 
 This project was also substantially impacted by COVID-19, originating changes in both the work distribution (about a week of delay at the time of the critical review) and the deadline schedule from ETSETB.
 

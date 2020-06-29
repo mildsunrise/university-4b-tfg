@@ -266,7 +266,7 @@ To better measure & compare the effects of different approaches to reducing paus
 
 After running the experiments, we created an histogram plotting the longest pauses experienced in every experiment, together with some parameters. One of them is the **wait time** which measures, given a random instant, how much we have to wait for the current pause to end. The results can be seen in figure \ref{fig:bfq-comparison}.
 
-We can see how simply enabling BFQ *does* appear to reduce the longest pauses a bit, but setting the `idle` class on the offender is needed for substantial effects: it brings the longest pause to half the time, achieves \textbf{\SI[detect-weight=true]{210}{\percent} reduction on wait time} and also a \SI{30}{\percent} reduction on the total time the innocent load stays paused for.
+We can see how simply enabling BFQ *does* appear to reduce the longest pauses a bit, but setting the `idle` class on the offender is needed for substantial effects: it brings the longest pause to half the time, achieves **\SI[detect-weight=true]{210}{\percent} reduction on wait time** and also a \SI{30}{\percent} reduction on the total time the innocent load stays paused for.
 
 We also attempted to use the machine while the experiments were running, and can confirm that it was barely possible except when putting the offender in the `idle` class. Thus, while far from a perfect solution, we can verify that lowering I/O priorities substantially improves system responsiveness.
 

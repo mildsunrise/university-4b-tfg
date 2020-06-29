@@ -1,6 +1,8 @@
 # State of the art {#sec:sota}
 
-This chapter presents a conceptual overview of the current state of the relevant kernel subsystems and APIs we'll be working with during this project. The central part to analyze is the **memory (VM) subsystem**, which is directly responsible of the writeback cache, but as we'll see later, the **block I/O subsystem** and **filesystem (VFS) layer** are of special importance as well. Those are presented within sections \ref{subsec:io-stack} & \ref{subsec:writeback-cache}.
+This chapter presents a conceptual overview of the current state of the relevant kernel subsystems and APIs we'll be working with during this project. Linux is a huge piece of software and its source code can be hard to navigate, so having a conceptual understanding of the relevant components & the roles they play out is crucial.
+
+The central part to analyze is the **memory (VM) subsystem**, which is directly responsible of the writeback cache, but as we'll see later, the **block I/O subsystem** and **filesystem (VFS) layer** are of special importance as well. Those are presented within sections \ref{subsec:io-stack} & \ref{subsec:writeback-cache}.
 
 During analysis, we'll probably need to get insight on what is happening in the kernel. For complexity and practicity, this should be preferably done in a *non-invasive way* that avoids modifying the kernel or altering the results of the experiments themselves. Section \ref{subsec:tracing} presents an overview of the currently available mechanisms for tracing & debugging the Linux kernel.
 
