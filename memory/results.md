@@ -270,7 +270,16 @@ We can see how simply enabling BFQ *does* appear to reduce the longest pauses a 
 
 We also attempted to use the machine while the experiments were running, and can confirm that it was barely possible except when putting the offender in the `idle` class. Thus, while far from a perfect solution, we can verify that lowering I/O priorities substantially improves system responsiveness.
 
-<!-- TODO -->
+<!-- FIXME: we could talk about how this didn't make a change at UML experiments -->
+
+<!-- FIXME: we used blktrace -->
+
+<!-- FIXME:
+Quoting the `ioprio_set` manual page:
+
+> I/O priorities are supported for reads and for synchronous (`O_DIRECT`, `O_SYNC`) writes.  I/O priorities are not supported for asynchronous writes because they are issued outside the context of the  program dirtying the memory, and thus program-specific priorities do not apply.
+-->
+
 
 ## PoC development {#subsec:poc}
 
@@ -523,4 +532,12 @@ function findOffender(pid: number) {
 
 Next up is the logic to restrict offenders (and unrestrict them afterwards). To change the I/O priorities it may be tempting to just spawn the `ionice` command, but this will likely block since it involves reading the executable from the disk into memory. Thus, creating a native binding to call `ioprio_set` would be a good option, even if it brings complexity up. Listings \ref{lst:ioprio-set-cpp} and \ref{lst:ioprio-set-ts} show the relevant code.
 
-We can now put everything together to (un)-restrict offenders we find. Some preliminary tests confirm the daemon works correctly, despite a sustained \SI{8}{\percent} CPU consumption which is higher than what we'd hoped for.
+We can now put everything together to (un)-restrict offenders we find. Several tests confirm the daemon works correctly, despite a sustained \SI{7}{\percent} CPU consumption which is higher than what we'd hoped for.
+
+<!--
+#### Deployment
+
+ - use systemd
+ - deploy in real system
+ - verify it starts up & detects offenders
+-->

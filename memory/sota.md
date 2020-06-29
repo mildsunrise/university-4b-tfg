@@ -265,20 +265,49 @@ There's also some mention of APIs for resource accounting, which allow us to que
 
 #### \ac{cgroups}
 
-- explain v1 and v2
-  - difficulty of choosing... ideally our deamon should support both but we'll focus on v1 because it's used by systemd and limited scope
-- different controllers
+Short for Control Ggroups, it's the primary mechanism for resource control in Linux. They allow placing hard limits, soft limits or weights to groups of processes regarding CPU, memory, I/O and more. cgroups are hierarchical, making them a good technology for containers. They can also be used for accounting.
+
+They're used via a set of magic filesystems typically mounted in `/sys/fs/cgroup`. Each cgroup is represented by a directory, and cgroups can be created / removed with `mkdir` & `rmdir`. Inside the directory of a cgroup there's many files to query or modify every parameter.
+
+By default, processes are attached to the root cgroup (which can't be deleted). Processes may be moved to another cgroup by writing their PID to the `cgroups.procs` file in the cgroup's directory. The current cgroup of a process may be queried by reading `/proc/<pid>/cgroup`. There's no control for individual tasks, only processes.
+
+A variety of cgroup *controllers* are available, each one offering control for a certain kind of resource. The `memcg` controller manages memory, `blkio` manages block I/O, ... There are also controllers for less tangible resources like I/O latency.
+
+There's two versions of cgroups, v1 & v2, which can partially coexist on a system. In v1, every controller has its own cgroups (and hierarchy) independently from the rest, but in v2, there's a single hierarchy for all controllers. A system may use a certain controller for v1 or v2, but not both: this means we should theoretically support both versions just in case. `systemd` is present in most modern systems and uses `memcg` with v1, so we'll need to use v1 as well. v1 controllers are mounted at `/sys/fs/cgroup/<controller name>`, so to create a memory cgroup one would use:
+
+~~~ bash
+mkdir /sys/fs/cgroup/memory/mycgroup
+~~~
+
+v2 is a single magic fileystem typically mounted at `/sys/fs/cgroup/unified`.
+
+Other APIs can also integrate with cgroups, like taskstats, some I/O schedulers (explained below), or eBPF.
 
 #### Memory cgroups (\ac{memcg})
 
+One of the cgroup controllers we'll likely be working with is `memcg`, which lets the user place soft & hard limits on the memory usage of the cgroup. It also offers accounting for various VM related operations such as faults, swapping, ... \cite{docs-cgroup1-memory}
+
+At one point \cite{lkml-cgroup-dirty}, dirty page accounting was being implemented and offer a way to change the dirty pages limit for the cgroup. However, it appears to not have reached the mainland kernel.
+
 #### Block I/O cgroups (\ac{blkio})
+
+This cgroup controller allows throttling the read or write bandwidth, per block device. It also allows some accounting on the performed I/O and allows setting the weight of the cgroup, which is used by priority-aware I/O schedulers, like BFQ (see below).
 
 #### \ac{BFQ} scheduler
 
+Short for Budget Fair Scheduler, it is a time (and bandwidth) proportional I/O scheduler, designed to operate in conjunction with cgroups or I/O process priorities, see `ioprio_set`. It works by dividing time in slices and reserving every slice to a particular task or group. The relative amount of time reserved depends on the weight of the process \cite{docs-bfq}.
+
+However BFQ also has multiple queues that are served in strict priority; this can be specified by setting a different I/O class, in addition to the I/O priority value (which ends up mapped to weight linearly). There are three: realtime, best effort and idle. Hierarchical distributions are also accepted.
+
+By default, BFQ automatically detects interactive tasks and raises their weights. As natural BFQ has a somewhat modest overhead compared to simpler schedulers like `mq-deadline`, which is frequently the default.
+
 #### Process stats APIs
 
-- explain `/proc`
-- explain \ac{netlink} API
+To obtain info and statistics at the process level, applications usually operate on procfs (`/proc`). However if we need more specific statistics, then the **taskstats API** seems to offer them.
+
+taskstats is an accounting API that supplies much more detailed info about processes and individual tasks, and also informs the listeners through events when a task dies. Among the provided data is delay accounting, memory usage, disk I/O, syscall counts, ... \cite{docs-taskstats}
+
+taskstats is implemented on top of the Generic Network protocol, and unlike procfs, requires root or the `CAP_NET_ADMIN` capability to be used ---this was done due to the sensitivity of the data, which among other things made it easier to guess passwords. Several tools use this API, like `iotop`.
 
 
 ## Other used techologies {#subsec:other-technologies}

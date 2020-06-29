@@ -4,8 +4,8 @@ Carrying out this project required defining an **experiment model**, and the dev
 
  - Interface with the kernel tracer, and get familiar with the available data.
  - Simulate the behaviour we're trying to analyze, in the form of both offender processes and innocent processes.
- - Automate experiments, and carry them in a controlled environment to make them (more) reproducible
- - Analyze the resulting data and draw conclusions
+ - Automate experiments, and carry them in a controlled environment to make them (more) reproducible.
+ - Analyze the resulting data and draw conclusions.
 
 This section walks through the reasoning, design and development of the experiment model and tooling. Specific experiments, results or proof-of-concept development are presented later in section \ref{sec:results}; however, some of the tools were developed in parallel with the experiments.
 

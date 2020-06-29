@@ -27,8 +27,7 @@ def check_lost_events():
     for cpu in os.listdir(base):
         with open(join(base, cpu, 'stats')) as f:
             stats = dict( re.fullmatch(r'(.+?): (.*)', x.rstrip()).groups() for x in f )
-        lost = int(stats['overrun']) + int(stats['dropped events'])
-        if lost:
+        if lost := int(stats['overrun']) + int(stats['dropped events']):
             raise Exception('{} lost events on {}'.format(lost, cpu))
 
 base = dirname(dirname(abspath(__file__)))
@@ -133,7 +132,6 @@ def inside_kernel():
     print('-- Powering off --')
     libc.syncfs(os.open('/', 0)) # force hostfs to sync data... poweroff unmounts forcefully
     libc.reboot(0x4321fedc)
-
 
 if os.getpid() == 1:
     # we're init inside the VM! omfg!
