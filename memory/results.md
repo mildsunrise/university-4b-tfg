@@ -449,7 +449,7 @@ await fetchProcesses(p => {
 
 Because polling the statistics for *each and every thread in the system* one by one and then aggregating the results is a heavy operation (each cycle takes about \SI{150}{\milli\second}), we ended up taking samples every $T_s = \SI{2}{\second}$.
 
-After this, some housekeeping is needed to clean up processes that have died since the last iteration. Then we traverse the tree, adding up the childrens into their parents with the corresponding factor. We track the node with the most aggregated bandwidth, and return it:
+After this, some housekeeping is needed to clean up processes that have died since the last iteration. Then we traverse the tree, adding up the children into their parents with the corresponding factor. We track the node with the most aggregated bandwidth, and return it:
 
 ~~~ typescript
 type NodeScore = { pid: number, bw: number }
@@ -530,7 +530,7 @@ function findOffender(pid: number) {
 \caption{Native binding to set I/O priority (TypeScript part)}\label{lst:ioprio-set-ts}
 \end{listing}
 
-Next up is the logic to restrict offenders (and unrestrict them afterwards). To change the I/O priorities it may be tempting to just spawn the `ionice` command, but this will likely block since it involves reading the executable from the disk into memory. Thus, creating a native binding to call `ioprio_set` would be a good option, even if it brings complexity up. Listings \ref{lst:ioprio-set-cpp} and \ref{lst:ioprio-set-ts} show the relevant code.
+Next up is the logic to restrict offenders (and unrestrict them afterwards). To change the I/O priorities it may be tempting to just spawn the `ionice` command, but this could block since it involves reading the executable from the disk into memory. Thus, creating a native binding to call `ioprio_set` would be a good option, even if it brings complexity up. Listings \ref{lst:ioprio-set-cpp} and \ref{lst:ioprio-set-ts} show the relevant code.
 
 We can now put everything together to (un)-restrict offenders we find. Several tests confirm the daemon works correctly, despite a sustained \SI{7}{\percent} CPU consumption which is higher than what we'd hoped for.
 
