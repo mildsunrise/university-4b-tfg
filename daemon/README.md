@@ -15,6 +15,7 @@ Install dependencies and compile everything:
 
 ~~~
 npm install
+npm run build
 ~~~
 
 To work, you need to set an I/O priority aware scheduler, such as CFQ or BFQ:
