@@ -214,7 +214,7 @@ const fetchConcurrency = 100
         if (currentOffender !== null) {
             if (findOffender(currentOffender).bw < innocentThreshold * diskBandwidth) {
                 log('Unrestricting back')
-                await recursivelyAct(async x => ioprio.set(x, ioprio.Class.BE, 0), currentOffender)
+                await recursivelyAct(async x => ioprio.set(x, ioprio.Class.BE, 4), currentOffender)
                 currentOffender = null
             }
         } else {
